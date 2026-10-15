@@ -102,4 +102,20 @@ test('calculateTouchstoneBenchmarks computes accurate 1g, 1 Kasu (8g), 1 Tulam (
   assert.equal(b916.threeSovereigns24gNet, Math.round(7350 * 24 * 0.99))
 })
 
+test('footer Follow Trust Gold section renders accessible SVG icon buttons instead of plain text pills and includes motion rules', async () => {
+  const fs = await import('node:fs/promises')
+  const pageSource = await fs.readFile(new URL('../app/page.tsx', import.meta.url), 'utf8')
+  const css = await fs.readFile(new URL('../app/globals.css', import.meta.url), 'utf8')
+
+  assert.ok(pageSource.includes('social-icon-btn'), 'app/page.tsx must use .social-icon-btn for footer social icons')
+  assert.ok(pageSource.includes('aria-label="Follow Trust Gold Services on Instagram"'), 'Instagram icon button must have accessible aria-label')
+  assert.ok(pageSource.includes('aria-label="Follow Trust Gold Services on Facebook"'), 'Facebook icon button must have accessible aria-label')
+  assert.ok(pageSource.includes('aria-label="Subscribe to Trust Gold Services on YouTube"'), 'YouTube icon button must have accessible aria-label')
+  assert.ok(pageSource.includes('aria-label="Chat with Trust Gold Services on WhatsApp"'), 'WhatsApp icon button must have accessible aria-label')
+
+  assert.ok(css.includes('.social-icon-btn'), 'globals.css must style .social-icon-btn')
+  assert.ok(css.includes('.scroll-progress'), 'globals.css must style .scroll-progress')
+  assert.ok(css.includes('.gold-marquee-bar'), 'globals.css must style .gold-marquee-bar')
+  assert.ok(css.includes('.spotlight-card'), 'globals.css must style .spotlight-card')
+})
 

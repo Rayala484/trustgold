@@ -36,6 +36,25 @@ import {
 } from '@/lib/gold-calculator'
 import { triggerTrustGoldIntro } from '@/components/GoldOpening'
 import { GoldTouchstoneAssay } from '@/components/GoldTouchstoneAssay'
+import {
+  AnimatedINR,
+  Magnetic,
+  PageMotion,
+  Split,
+} from '@/components/SiteMotion'
+
+const HERO_RAYS = Array.from({ length: 40 }, (_, i) => (i * 360) / 40)
+
+const MARQUEE_ITEMS = [
+  'BIS 916 HUID Hallmarked Gold',
+  'SBI · HDFC · ICICI Bank Gold Loan Release',
+  'Muthoot · Manappuram · IIFL Pledge Release',
+  'Direct Purchase or Melt in Your Presence',
+  'Flat 1% Processing Fee · 99% Net Value',
+  '0.01g Calibrated Open-Counter Weighing',
+  'Instant Spot RTGS · IMPS · UPI · Cash Payout',
+  'Canara · Union · Federal Bank Loan Closure',
+] as const
 
 const KYC_DOCS = {
   'direct-sale': [
@@ -247,6 +266,7 @@ export default function TrustGoldRedesignedPage() {
 
       {/* Sticky Translucent Navigation Header */}
       <header className="site-header">
+        <span aria-hidden="true" className="scroll-progress" />
         <div className="nav-bar">
           <a
             href="#top"
@@ -303,14 +323,16 @@ export default function TrustGoldRedesignedPage() {
               <Phone size={15} />
               <span>{BUSINESS_INFO.phoneDisplay}</span>
             </a>
-            <a
-              href={defaultWhatsAppUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-gold btn-sm"
-            >
-              WhatsApp Quote <ArrowRight size={15} />
-            </a>
+            <Magnetic>
+              <a
+                href={defaultWhatsAppUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-gold btn-sm"
+              >
+                WhatsApp Quote <ArrowRight size={15} />
+              </a>
+            </Magnetic>
             <button
               type="button"
               className="menu-toggle"
@@ -324,28 +346,68 @@ export default function TrustGoldRedesignedPage() {
         </div>
       </header>
 
+      <PageMotion />
+
       <main>
         {/* ====================================================================
             HERO + INTERACTIVE GOLD & PLEDGED RELEASE CALCULATOR
             ==================================================================== */}
         <section className="hero-vault">
+          {/* Slowly Rotating 40-Ray Sovereign Gold Sunburst Behind Hero */}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 600 600"
+            className="hero-sunburst"
+          >
+            {HERO_RAYS.map((angle) => (
+              <line
+                key={angle}
+                x1="300"
+                y1={angle % 18 ? 138 : 118}
+                x2="300"
+                y2="36"
+                transform={`rotate(${angle} 300 300)`}
+                stroke="#e6b95c"
+                strokeOpacity={0.35}
+                strokeWidth={angle % 18 ? 1.2 : 2.1}
+                strokeLinecap="round"
+              />
+            ))}
+            <circle
+              cx="300"
+              cy="300"
+              r="148"
+              fill="none"
+              stroke="#e6b95c"
+              strokeOpacity={0.18}
+            />
+          </svg>
+
           <div className="container-shell hero-grid">
             {/* Left Editorial Column */}
             <div>
-              <div className="telugu-pill">
+              <div
+                className="telugu-pill rise"
+                style={{ '--d': '40ms' } as React.CSSProperties}
+              >
                 <span className="telugu-pill-dot" />
                 <span>
                   {BUSINESS_INFO.teluguTagline} · Gandhinagar, Vijayawada
                 </span>
               </div>
 
-              <h1 className="hero-display">
-                Transparent Gold Buying.{' '}
-                <span className="hero-display-gold">Customer’s Choice.</span>{' '}
-                Clear Value.
-              </h1>
+              <Split
+                as="h1"
+                mode="load"
+                text="Transparent Gold Buying. Customer’s Choice. Clear Value."
+                goldWords={['Customer’s', 'Choice.']}
+                className="hero-display"
+              />
 
-              <p className="hero-lead">
+              <p
+                className="hero-lead rise"
+                style={{ '--d': '260ms' } as React.CSSProperties}
+              >
                 Sell old gold or release bank &amp; NBFC pledged gold in
                 Vijayawada with complete dignity. We clearly explain today’s
                 gold rate, purity, stone deductions, and our flat{' '}
@@ -354,25 +416,35 @@ export default function TrustGoldRedesignedPage() {
                 melting in your presence.
               </p>
 
-              <div className="hero-actions">
-                <a
-                  href={defaultWhatsAppUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-gold"
-                >
-                  <MessageCircle size={18} /> Get Free WhatsApp Valuation
-                </a>
-                <a
-                  href={`tel:${BUSINESS_INFO.phone}`}
-                  className="btn btn-outline-light tabular-nums"
-                >
-                  <Phone size={17} /> Call {BUSINESS_INFO.phoneDisplay}
-                </a>
+              <div
+                className="hero-actions rise"
+                style={{ '--d': '380ms' } as React.CSSProperties}
+              >
+                <Magnetic>
+                  <a
+                    href={defaultWhatsAppUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-gold"
+                  >
+                    <MessageCircle size={18} /> Get Free WhatsApp Valuation
+                  </a>
+                </Magnetic>
+                <Magnetic>
+                  <a
+                    href={`tel:${BUSINESS_INFO.phone}`}
+                    className="btn btn-outline-light tabular-nums"
+                  >
+                    <Phone size={17} /> Call {BUSINESS_INFO.phoneDisplay}
+                  </a>
+                </Magnetic>
               </div>
 
               {/* Founder Personal Guarantee Strip */}
-              <div className="hero-founder-strip">
+              <div
+                className="hero-founder-strip rise"
+                style={{ '--d': '480ms' } as React.CSSProperties}
+              >
                 <div
                   style={{
                     width: 48,
@@ -391,7 +463,7 @@ export default function TrustGoldRedesignedPage() {
                 <div className="hero-founder-meta">
                   <strong>Open-Counter Assay Promise</strong>
                   <span>
-                     Gandhinagar, Vijayawada · Serving AP &amp; Telangana
+                    Gandhinagar, Vijayawada · Serving AP &amp; Telangana
                   </span>
                   <p>
                     “Selling gold should never feel confusing or unfair. Every
@@ -401,7 +473,10 @@ export default function TrustGoldRedesignedPage() {
                 </div>
               </div>
 
-              <div className="hero-metrics">
+              <div
+                className="hero-metrics rise"
+                style={{ '--d': '580ms' } as React.CSSProperties}
+              >
                 <div className="metric-item">
                   <strong className="tabular-nums">3 Types</strong>
                   <span>Hallmark 22K · 916 Mark · Unmarked Gold</span>
@@ -418,7 +493,11 @@ export default function TrustGoldRedesignedPage() {
             </div>
 
             {/* Right Column: Interactive Live Assay & Loan Release Estimator */}
-            <div id="calculator" className="calculator-shell">
+            <div
+              id="calculator"
+              className="calculator-shell spotlight-card rise"
+              style={{ '--d': '220ms' } as React.CSSProperties}
+            >
               <div className="calc-header">
                 <div className="calc-title-block">
                   <h2>Live Value &amp; Release Estimator</h2>
@@ -647,10 +726,11 @@ export default function TrustGoldRedesignedPage() {
                 <div className="receipt-row">
                   <span>
                     Indicative Gross Value (@{' '}
-                    {formatINR(estimate.effectiveRatePerGram)}/g)
+                    <AnimatedINR value={estimate.effectiveRatePerGram} />
+                    /g)
                   </span>
                   <strong className="tabular-nums">
-                    {formatINR(estimate.grossValue)}
+                    <AnimatedINR value={estimate.grossValue} />
                   </strong>
                 </div>
                 <div className="receipt-row">
@@ -659,14 +739,14 @@ export default function TrustGoldRedesignedPage() {
                     value)
                   </span>
                   <strong className="tabular-nums">
-                    − {formatINR(estimate.processingFee)}
+                    − <AnimatedINR value={estimate.processingFee} />
                   </strong>
                 </div>
                 {mode === 'pledged-release' && (
                   <div className="receipt-row">
                     <span>Less: Bank / NBFC Loan Closure Settlement</span>
                     <strong className="tabular-nums">
-                      − {formatINR(estimate.loanPayoffAmount)}
+                      − <AnimatedINR value={estimate.loanPayoffAmount} />
                     </strong>
                   </div>
                 )}
@@ -678,7 +758,7 @@ export default function TrustGoldRedesignedPage() {
                       : 'Estimated Spot Payout to You'}
                   </span>
                   <span className="receipt-total-value tabular-nums">
-                    {formatINR(estimate.netCustomerPayout)}
+                    <AnimatedINR value={estimate.netCustomerPayout} />
                   </span>
                 </div>
               </div>
@@ -697,6 +777,42 @@ export default function TrustGoldRedesignedPage() {
         </section>
 
         {/* ====================================================================
+            INFINITE BULLION & BANK GOLD LOAN RELEASE MARQUEE STRIP
+            ==================================================================== */}
+        <section
+          aria-label="Supported banks, NBFCs and hallmark purities"
+          className="gold-marquee-bar"
+        >
+          <div className="gold-marquee">
+            <ul className="gold-marquee-track">
+              {[0, 1].map((copy) =>
+                MARQUEE_ITEMS.map((item) => (
+                  <li
+                    key={`${copy}-${item}`}
+                    aria-hidden={copy === 1 ? 'true' : undefined}
+                    className="gold-marquee-item"
+                  >
+                    <span>{item}</span>
+                    <svg
+                      aria-hidden="true"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      className="gold-marquee-star"
+                    >
+                      <path
+                        d="M7 0l1.6 5.4L14 7l-5.4 1.6L7 14l-1.6-5.4L0 7l5.4-1.6z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
+        </section>
+
+        {/* ====================================================================
             THE CRAFT OF GOLD VALUATION: BASANITE TOUCHSTONE & 916 ASSAY BENCH
             ==================================================================== */}
         <GoldTouchstoneAssay
@@ -710,18 +826,20 @@ export default function TrustGoldRedesignedPage() {
         <section id="categories" className="section-pad">
           <div className="container-shell">
             <span className="section-tag">3 Gold Categories We Buy</span>
-            <h2 className="section-heading">
-              Clear valuation for every mark, purity, and ornament.
-            </h2>
-            <p className="section-sub">
+            <Split
+              text="Clear valuation for every mark, purity, and ornament."
+              goldWords={['mark,', 'purity,']}
+              className="section-heading"
+            />
+            <p data-reveal className="section-sub">
               Whether your ornaments carry a BIS 916 hallmark, a traditional 916
               stamp, or no mark at all, we evaluate every piece openly in your
               presence and explain the exact calculation before you decide.
             </p>
 
-            <div className="categories-grid">
+            <div data-reveal-group className="categories-grid">
               {GOLD_CATEGORIES.map((cat) => (
-                <article key={cat.id} className="category-card">
+                <article key={cat.id} className="category-card spotlight-card">
                   <div>
                     <div className="category-card-top">
                       <span className="category-num">
@@ -761,7 +879,7 @@ export default function TrustGoldRedesignedPage() {
             </div>
 
             {/* Customer's Choice Banner: Direct Purchase vs Melting in Presence */}
-            <div className="choice-banner">
+            <div data-reveal className="choice-banner spotlight-card">
               <div>
                 <span
                   className="section-tag"
@@ -849,24 +967,28 @@ export default function TrustGoldRedesignedPage() {
         <section id="services" className="section-pad section-alabaster">
           <div className="container-shell">
             <span className="section-tag">Our Core Services</span>
-            <h2 className="section-heading">
-              Practical gold solutions for Vijayawada families.
-            </h2>
-            <p className="section-sub">
+            <Split
+              text="Practical gold solutions for Vijayawada families."
+              goldWords={['gold', 'solutions']}
+              className="section-heading"
+            />
+            <p data-reveal className="section-sub">
               Whether you want to unlock cash from unused family ornaments or
               close a rising gold loan at a bank or NBFC, our team handles
               every step respectfully and quickly.
             </p>
 
-            <div className="services-showcase">
-              <article className="service-feature-card">
-                <div className="service-media">
-                  <Image
-                    src="/images/old-gold-purchase.png"
-                    alt="Old gold jewellery ready for transparent valuation at Trust Gold Services"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
+            <div data-reveal-group className="services-showcase">
+              <article className="service-feature-card spotlight-card">
+                <div data-img-reveal className="service-media">
+                  <div data-parallax className="parallax-media-wrap">
+                    <Image
+                      src="/images/old-gold-purchase.png"
+                      alt="Old gold jewellery ready for transparent valuation at Trust Gold Services"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
                 </div>
                 <div className="service-body">
                   <span
@@ -918,14 +1040,16 @@ export default function TrustGoldRedesignedPage() {
                 </div>
               </article>
 
-              <article className="service-feature-card">
-                <div className="service-media">
-                  <Image
-                    src="/images/pledged-gold-release.png"
-                    alt="Trust Gold Services executive assisting customer with bank pledged gold release"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
+              <article className="service-feature-card spotlight-card">
+                <div data-img-reveal className="service-media">
+                  <div data-parallax className="parallax-media-wrap">
+                    <Image
+                      src="/images/pledged-gold-release.png"
+                      alt="Trust Gold Services executive assisting customer with bank pledged gold release"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  </div>
                 </div>
                 <div className="service-body">
                   <span
@@ -988,13 +1112,15 @@ export default function TrustGoldRedesignedPage() {
           <div className="container-shell founder-grid">
             {/* Left Column: Single Founder Portrait */}
             <div className="portrait-stage">
-              <div className="portrait-main-frame">
-                <Image
-                  src="/images/owner-2.png"
-                  alt="Manohar Reddy — Founder, Trust Gold Services"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 480px"
-                />
+              <div data-img-reveal className="portrait-main-frame">
+                <div data-parallax className="parallax-media-wrap">
+                  <Image
+                    src="/images/owner-2.png"
+                    alt="Manohar Reddy — Founder, Trust Gold Services"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 480px"
+                  />
+                </div>
                 <div
                   style={{
                     position: 'absolute',
@@ -1030,11 +1156,13 @@ export default function TrustGoldRedesignedPage() {
             </div>
 
             {/* Right Column: Story, Vision & Mission from Client Brief */}
-            <div>
+            <div data-reveal>
               <span className="section-tag">Our Story &amp; Leadership</span>
-              <h2 className="section-heading">
-                “Because gold carries value—but trust carries even more.”
-              </h2>
+              <Split
+                text="“Because gold carries value—but trust carries even more.”"
+                goldWords={['gold', 'trust']}
+                className="section-heading"
+              />
 
               <p
                 style={{
@@ -1101,11 +1229,13 @@ export default function TrustGoldRedesignedPage() {
             ==================================================================== */}
         <section id="documents" className="section-pad">
           <div className="container-shell kyc-container">
-            <div>
+            <div data-reveal>
               <span className="section-tag">Compliance &amp; Checklist</span>
-              <h2 className="section-heading">
-                Know the exact documents before you visit our shop.
-              </h2>
+              <Split
+                text="Know the exact documents before you visit our shop."
+                goldWords={['exact', 'documents']}
+                className="section-heading"
+              />
               <p className="section-sub" style={{ marginBottom: 24 }}>
                 To protect both you and our business, we follow a clean,
                 documented verification process. Select your service below to
@@ -1172,12 +1302,13 @@ export default function TrustGoldRedesignedPage() {
             </div>
 
             <div
+              data-reveal-group
               className={
                 kycSwitching ? 'doc-cards-grid switching' : 'doc-cards-grid'
               }
             >
               {KYC_DOCS[kycTab].map((doc, idx) => (
-                <div key={doc.title} className="doc-card">
+                <div key={doc.title} className="doc-card spotlight-card">
                   <div className="doc-icon">
                     {idx === 0 ? (
                       <UserCheck size={19} />
@@ -1205,50 +1336,60 @@ export default function TrustGoldRedesignedPage() {
         <section id="process" className="section-pad section-alabaster">
           <div className="container-shell">
             <span className="section-tag">How It Works</span>
-            <h2 className="section-heading">
-              Four calm, visible steps from arrival to spot payout.
-            </h2>
-            <p className="section-sub">
+            <Split
+              text="Four calm, visible steps from arrival to spot payout."
+              goldWords={['visible', 'spot', 'payout.']}
+              className="section-heading"
+            />
+            <p data-reveal className="section-sub">
               No back-room testing and no rushed pressure. Everything happens at
               our front counter in Gandhinagar, Vijayawada.
             </p>
 
-            <div className="steps-grid">
-              <div className="step-card">
-                <span className="step-num">STEP 01</span>
-                <h3>Share Details or Walk In</h3>
-                <p>
-                  Visit Shop No. 5, Vasisth Enclave in Gandhinagar, or send
-                  your ornament / bank loan details on WhatsApp for a free
-                  initial estimate.
-                </p>
-              </div>
+            <div className="steps-timeline-wrap">
+              <span
+                aria-hidden="true"
+                data-draw
+                className="steps-golden-line"
+              />
+              <div data-reveal-group className="steps-grid">
+                <div className="step-card spotlight-card">
+                  <span className="step-num">STEP 01</span>
+                  <h3>Share Details or Walk In</h3>
+                  <p>
+                    Visit Shop No. 5, Vasisth Enclave in Gandhinagar, or send
+                    your ornament / bank loan details on WhatsApp for a free
+                    initial estimate.
+                  </p>
+                </div>
 
-              <div className="step-card">
-                <span className="step-num">STEP 02</span>
-                <h3>Choose Your Assay Method</h3>
-                <p>
-                  Watch purity testing and digital weighing in front of you.
-                  Choose direct valuation or request melting in your presence.
-                </p>
-              </div>
+                <div className="step-card spotlight-card">
+                  <span className="step-num">STEP 02</span>
+                  <h3>Choose Your Assay Method</h3>
+                  <p>
+                    Watch purity testing and digital weighing in front of you.
+                    Choose direct valuation or request melting in your presence.
+                  </p>
+                </div>
 
-              <div className="step-card">
-                <span className="step-num">STEP 03</span>
-                <h3>Review Clear Breakdown</h3>
-                <p>
-                  We show the live day’s rate, purity, stone weight, and flat
-                  1% processing fee on paper before you make your decision.
-                </p>
-              </div>
+                <div className="step-card spotlight-card">
+                  <span className="step-num">STEP 03</span>
+                  <h3>Review Clear Breakdown</h3>
+                  <p>
+                    We show the live day’s rate, purity, stone weight, and flat
+                    1% processing fee on paper before you make your decision.
+                  </p>
+                </div>
 
-              <div className="step-card">
-                <span className="step-num">STEP 04</span>
-                <h3>Instant Spot Settlement</h3>
-                <p>
-                  Receive immediate payment via Cash, UPI, IMPS, or RTGS—or let
-                  our team close your bank loan and hand over your balance.
-                </p>
+                <div className="step-card spotlight-card">
+                  <span className="step-num">STEP 04</span>
+                  <h3>Instant Spot Settlement</h3>
+                  <p>
+                    Receive immediate payment via Cash, UPI, IMPS, or RTGS—or
+                    let our team close your bank loan and hand over your
+                    balance.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -1259,24 +1400,30 @@ export default function TrustGoldRedesignedPage() {
             ==================================================================== */}
         <section id="faq" className="section-pad">
           <div className="container-shell faq-layout">
-            <div>
+            <div data-reveal>
               <span className="section-tag">Questions, Answered</span>
-              <h2 className="section-heading">Clarity before commitment.</h2>
+              <Split
+                text="Clarity before commitment."
+                goldWords={['Clarity']}
+                className="section-heading"
+              />
               <p className="section-sub" style={{ marginBottom: 24 }}>
                 We believe every customer should understand exactly how their
                 gold is valued before stepping into our shop.
               </p>
-              <a
-                href={defaultWhatsAppUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-navy"
-              >
-                <MessageCircle size={17} /> Ask Us Directly on WhatsApp
-              </a>
+              <Magnetic>
+                <a
+                  href={defaultWhatsAppUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-navy"
+                >
+                  <MessageCircle size={17} /> Ask Us Directly on WhatsApp
+                </a>
+              </Magnetic>
             </div>
 
-            <div className="faq-accordion">
+            <div data-reveal-group className="faq-accordion">
               {FAQS.map((item, idx) => {
                 const isOpen = openFaq === idx
                 return (
@@ -1306,21 +1453,23 @@ export default function TrustGoldRedesignedPage() {
             ==================================================================== */}
         <section id="contact" className="section-pad section-vault">
           <div className="container-shell contact-layout">
-            <div>
+            <div data-reveal>
               <span className="section-tag">Visit or Contact Us</span>
-              <h2 className="section-heading">
-                Ready for a transparent gold valuation in Vijayawada?
-              </h2>
+              <Split
+                text="Ready for a transparent gold valuation in Vijayawada?"
+                goldWords={['transparent', 'gold']}
+                className="section-heading"
+              />
               <p className="section-sub">
                 Call us directly, message us on WhatsApp, or visit our
                 Gandhinagar office. You will always receive honest guidance with
                 zero obligation.
               </p>
 
-              <div className="contact-info-list">
+              <div data-reveal-group className="contact-info-list">
                 <a
                   href={`tel:${BUSINESS_INFO.phone}`}
-                  className="contact-info-card pressable"
+                  className="contact-info-card pressable spotlight-card"
                 >
                   <Phone size={20} />
                   <div>
@@ -1335,7 +1484,7 @@ export default function TrustGoldRedesignedPage() {
                   href={BUSINESS_INFO.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="contact-info-card pressable"
+                  className="contact-info-card pressable spotlight-card"
                 >
                   <MapPin size={20} />
                   <div>
@@ -1346,7 +1495,7 @@ export default function TrustGoldRedesignedPage() {
 
                 <a
                   href={`mailto:${BUSINESS_INFO.email}`}
-                  className="contact-info-card pressable"
+                  className="contact-info-card pressable spotlight-card"
                 >
                   <Mail size={20} />
                   <div>
@@ -1355,7 +1504,7 @@ export default function TrustGoldRedesignedPage() {
                   </div>
                 </a>
 
-                <div className="contact-info-card">
+                <div className="contact-info-card spotlight-card">
                   <Clock size={20} />
                   <div>
                     <small>Working Hours</small>
@@ -1365,7 +1514,7 @@ export default function TrustGoldRedesignedPage() {
               </div>
             </div>
 
-            <div className="contact-form-card">
+            <div data-reveal className="contact-form-card spotlight-card">
               {contactSubmitted ? (
                 <div style={{ textAlign: 'center', padding: '28px 12px' }}>
                   <ShieldCheck
@@ -1541,7 +1690,7 @@ export default function TrustGoldRedesignedPage() {
       </main>
 
       {/* ====================================================================
-          FOOTER WITH AUTHENTIC SOCIALS, MAPS & CONTACT LINKS
+          FOOTER WITH AUTHENTIC SOCIAL ICONS, MAPS & CONTACT LINKS
           ==================================================================== */}
       <footer className="site-footer">
         <div className="container-shell">
@@ -1616,30 +1765,87 @@ export default function TrustGoldRedesignedPage() {
             <div>
               <h4 className="footer-heading">Follow Trust Gold</h4>
               <div className="social-pills">
-                <a
-                  href={BUSINESS_INFO.socials.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="social-pill pressable"
-                >
-                  Instagram
-                </a>
-                <a
-                  href={BUSINESS_INFO.socials.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="social-pill pressable"
-                >
-                  Facebook
-                </a>
-                <a
-                  href={BUSINESS_INFO.socials.youtube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="social-pill pressable"
-                >
-                  YouTube
-                </a>
+                <Magnetic>
+                  <a
+                    href={BUSINESS_INFO.socials.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-icon-btn pressable"
+                    aria-label="Follow Trust Gold Services on Instagram"
+                    title="Instagram"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.9"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                    </svg>
+                  </a>
+                </Magnetic>
+
+                <Magnetic>
+                  <a
+                    href={BUSINESS_INFO.socials.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-icon-btn pressable"
+                    aria-label="Follow Trust Gold Services on Facebook"
+                    title="Facebook"
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M13.5 21v-7.5h2.55l.38-2.95H13.5V8.67c0-.85.24-1.43 1.46-1.43h1.56V4.6c-.27-.04-1.2-.12-2.28-.12-2.26 0-3.8 1.38-3.8 3.91v2.16H8v2.95h2.44V21h3.06z" />
+                    </svg>
+                  </a>
+                </Magnetic>
+
+                <Magnetic>
+                  <a
+                    href={BUSINESS_INFO.socials.youtube}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-icon-btn pressable"
+                    aria-label="Subscribe to Trust Gold Services on YouTube"
+                    title="YouTube"
+                  >
+                    <svg
+                      width="21"
+                      height="21"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M21.58 7.19a2.75 2.75 0 0 0-1.94-1.95C17.92 4.78 12 4.78 12 4.78s-5.92 0-7.64.46A2.75 2.75 0 0 0 2.42 7.2C1.96 8.9 1.96 12 1.96 12s0 3.1.46 4.81a2.75 2.75 0 0 0 1.94 1.95c1.72.46 7.64.46 7.64.46s5.92 0 7.64-.46a2.75 2.75 0 0 0 1.94-1.95c.46-1.71.46-4.81.46-4.81s0-3.1-.46-4.81zM9.95 15.02V8.98L15.2 12l-5.25 3.02z" />
+                    </svg>
+                  </a>
+                </Magnetic>
+
+                <Magnetic>
+                  <a
+                    href={defaultWhatsAppUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-icon-btn pressable"
+                    aria-label="Chat with Trust Gold Services on WhatsApp"
+                    title="WhatsApp"
+                  >
+                    <MessageCircle size={19} />
+                  </a>
+                </Magnetic>
               </div>
             </div>
           </div>

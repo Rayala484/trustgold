@@ -5,9 +5,9 @@ import { ArrowUpRight, Flame, Scale, ShieldCheck, Sparkles } from 'lucide-react'
 import {
   GOLD_TOUCHSTONE_MARKS,
   calculateTouchstoneBenchmarks,
-  formatINR,
   type GoldCategoryId,
 } from '@/lib/gold-calculator'
+import { AnimatedINR, Split } from '@/components/SiteMotion'
 
 interface GoldTouchstoneAssayProps {
   ratePerGram22k: number
@@ -76,12 +76,14 @@ export function GoldTouchstoneAssay({
               />
               The Craft of Honest Gold Valuation · గీటు రాయి &amp; 916 Assay
             </span>
-            <h2 id="touchstone-heading" className="section-heading">
-              Every honest valuation begins with how gold reads on the stone and
-              the scale.
-            </h2>
+            <Split
+              id="touchstone-heading"
+              text="Every honest valuation begins with how gold reads on the stone and the scale."
+              goldWords={['gold', 'stone', 'scale']}
+              className="section-heading"
+            />
           </div>
-          <p className="touchstone-lead">
+          <p data-reveal className="touchstone-lead">
             Before a single rupee is quoted, we test your ornament’s exact
             fineness in front of your eyes—from traditional Basanite touchstone
             streaks (<em>గీటు రాయి</em>) and BIS 916 HUID inspection to digital
@@ -91,9 +93,9 @@ export function GoldTouchstoneAssay({
           </p>
         </div>
 
-        <div className="touchstone-grid">
+        <div data-reveal-group className="touchstone-grid">
           {/* Left Column: Interactive Black Basanite Touchstone Slab */}
-          <div className="basanite-slab">
+          <div className="basanite-slab spotlight-card">
             <div className="basanite-top-bar">
               <span className="basanite-badge">
                 BLACK BASANITE TOUCHSTONE · గీటు రాయి పరీక్ష
@@ -177,7 +179,7 @@ export function GoldTouchstoneAssay({
           </div>
 
           {/* Right Column: Live Open-Counter Assay Bench & Kasu/Tulam Payouts */}
-          <div className="assay-bench-card" aria-live="polite">
+          <div className="assay-bench-card spotlight-card" aria-live="polite">
             <div className="assay-bench-top">
               <div>
                 <span className="assay-bench-tag">
@@ -189,7 +191,10 @@ export function GoldTouchstoneAssay({
               </div>
               <div className="assay-rate-badge tabular-nums">
                 <small>Effective Rate</small>
-                <strong>{formatINR(benchmarks.effectiveRatePerGram)}/g</strong>
+                <strong>
+                  <AnimatedINR value={benchmarks.effectiveRatePerGram} />
+                  /g
+                </strong>
               </div>
             </div>
 
@@ -218,7 +223,7 @@ export function GoldTouchstoneAssay({
               <div className="weight-benchmark-box">
                 <span className="wb-unit">1 Gram · 1 గ్రాము</span>
                 <strong className="wb-val tabular-nums">
-                  {formatINR(benchmarks.oneGramNet)}
+                  <AnimatedINR value={benchmarks.oneGramNet} />
                 </strong>
                 <button
                   type="button"
@@ -234,7 +239,7 @@ export function GoldTouchstoneAssay({
               <div className="weight-benchmark-box highlight">
                 <span className="wb-unit">1 Kasu (Sovereign) · 8g</span>
                 <strong className="wb-val tabular-nums">
-                  {formatINR(benchmarks.oneSovereign8gNet)}
+                  <AnimatedINR value={benchmarks.oneSovereign8gNet} />
                 </strong>
                 <button
                   type="button"
@@ -250,7 +255,7 @@ export function GoldTouchstoneAssay({
               <div className="weight-benchmark-box highlight">
                 <span className="wb-unit">1 Tulam (Tola) · 10g</span>
                 <strong className="wb-val tabular-nums">
-                  {formatINR(benchmarks.oneTola10gNet)}
+                  <AnimatedINR value={benchmarks.oneTola10gNet} />
                 </strong>
                 <button
                   type="button"
@@ -266,7 +271,7 @@ export function GoldTouchstoneAssay({
               <div className="weight-benchmark-box">
                 <span className="wb-unit">3 Kasulu · 24 Grams</span>
                 <strong className="wb-val tabular-nums">
-                  {formatINR(benchmarks.threeSovereigns24gNet)}
+                  <AnimatedINR value={benchmarks.threeSovereigns24gNet} />
                 </strong>
                 <button
                   type="button"

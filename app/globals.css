@@ -3381,4 +3381,610 @@ html.lenis body {
   }
 }
 
+/* ==========================================================================
+   17. Competitor-Informed Conversion Hierarchy, Bilingual Toggle & Worked Ledgers
+   ========================================================================== */
+
+/* Telugu Typography Enhancement */
+.lang-te-root {
+  font-family: var(--font-telugu), var(--font-sans), system-ui, sans-serif;
+  line-height: 1.72;
+}
+
+.lang-te-root .hero-display,
+.lang-te-root .section-heading {
+  font-family: var(--font-telugu), var(--font-display), Georgia, serif;
+  line-height: 1.24;
+  letter-spacing: -0.01em;
+}
+
+/* Segmented EN | తెలుగు Language Switcher */
+.lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(230, 185, 92, 0.34);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.lang-pill-btn {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+
+.lang-pill-btn.active {
+  background: linear-gradient(180deg, #e2ad42 0%, #c89026 100%);
+  color: #051024;
+}
+
+/* Hero Reassurance Microcopy */
+.hero-reassurance-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: -16px 0 26px;
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* 3 Core Trust Pillars (#trust-pillars) */
+.three-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.pillar-feature-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px 26px;
+  border: 1px solid var(--rule-light);
+  box-shadow: 0 18px 40px -22px rgba(5, 16, 36, 0.14);
+  display: flex;
+  flex-direction: column;
+  transition: transform 220ms var(--ease-out),
+    border-color 220ms var(--ease-out), box-shadow 220ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pillar-feature-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(200, 146, 42, 0.55);
+    box-shadow: 0 24px 48px -20px rgba(5, 16, 36, 0.22);
+  }
+}
+
+.pillar-feature-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.pillar-feature-num {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--bullion-gold);
+}
+
+.pillar-feature-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--alabaster);
+  border: 1px solid rgba(200, 146, 42, 0.35);
+  color: var(--vault-navy);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pillar-feature-card h3 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.42rem;
+  font-weight: 700;
+  color: var(--vault-navy);
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+
+.pillar-feature-sub {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--bullion-gold-deep);
+  margin-bottom: 12px;
+}
+
+.pillar-feature-card p {
+  margin: 0 0 18px;
+  font-size: 0.91rem;
+  color: var(--ink-muted);
+  line-height: 1.65;
+}
+
+.pillar-feature-proof {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule-light);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--vault-navy);
+}
+
+.pillar-feature-proof svg {
+  color: var(--bullion-gold);
+  flex-shrink: 0;
+}
+
+/* Real Shop, Staff & Equipment Photography (#shop-gallery) */
+.shop-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.shop-photo-card {
+  margin: 0;
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--rule-light);
+  box-shadow: 0 20px 44px -22px rgba(5, 16, 36, 0.18);
+}
+
+.shop-photo-media {
+  position: relative;
+  height: 340px;
+  background: var(--vault-navy);
+}
+
+.shop-photo-media img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.shop-photo-caption {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--vault-navy);
+  background: #ffffff;
+}
+
+/* Why Trust Gold: Customer's Choice + 1% Fee Formula + Worked Calculation Ledgers (#why-trust-gold) */
+.fee-methodology-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 24px;
+}
+
+.choice-guarantee-card,
+.fee-formula-card {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(230, 185, 92, 0.28);
+  border-radius: 20px;
+  padding: 32px 30px;
+}
+
+.choice-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(200, 146, 42, 0.18);
+  border: 1px solid rgba(230, 185, 92, 0.38);
+  color: var(--bullion-gold-bright);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+}
+
+.choice-guarantee-card h3,
+.fee-formula-card h3 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.55rem, 2.3vw, 2.05rem);
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 10px;
+  line-height: 1.2;
+}
+
+.choice-telugu-quote {
+  margin: 0 0 14px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--bullion-gold-bright);
+}
+
+.choice-body-text,
+.fee-formula-lead {
+  margin: 0 0 22px;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.65;
+}
+
+.choice-options-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.choice-option-box {
+  background: rgba(3, 10, 23, 0.55);
+  border: 1px solid rgba(230, 185, 92, 0.22);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.choice-option-box strong {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.88rem;
+  color: var(--bullion-gold-bright);
+  margin-bottom: 6px;
+}
+
+.choice-option-box p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.74);
+  line-height: 1.55;
+}
+
+.fee-steps-list {
+  display: grid;
+  gap: 12px;
+}
+
+.fee-step-item {
+  background: rgba(3, 10, 23, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 13px 16px;
+}
+
+.fee-step-item strong {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--bullion-gold-bright);
+  margin-bottom: 3px;
+}
+
+.fee-step-item p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.76);
+  line-height: 1.5;
+}
+
+.worked-examples-header h3 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(1.65rem, 2.5vw, 2.2rem);
+  color: #ffffff;
+  margin: 0 0 10px;
+}
+
+.worked-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(200, 146, 42, 0.14);
+  border: 1px solid rgba(230, 185, 92, 0.34);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.84rem;
+  margin: 0 0 24px;
+}
+
+.worked-ledgers-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.worked-ledger-card {
+  background: var(--parchment);
+  color: var(--ink);
+  border-radius: 20px;
+  padding: 28px;
+  border: 1px solid rgba(230, 185, 92, 0.45);
+  box-shadow: 0 24px 54px -20px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+}
+
+.worked-ledger-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(200, 146, 42, 0.16);
+  color: var(--bullion-gold-deep);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  margin-bottom: 8px;
+}
+
+.worked-ledger-top h4 {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--vault-navy);
+  margin: 0 0 6px;
+}
+
+.worked-ledger-top p {
+  margin: 0 0 18px;
+  font-size: 0.86rem;
+  color: var(--ink-muted);
+}
+
+.worked-ledger-rows {
+  background: #ffffff;
+  border: 1px solid var(--rule-light);
+  border-radius: 14px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+}
+
+.worked-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--rule-light);
+}
+
+.worked-row:last-child {
+  border-bottom: 0;
+}
+
+.worked-row.highlight {
+  background: rgba(200, 146, 42, 0.08);
+  margin: 0 -16px;
+  padding: 10px 16px;
+}
+
+.worked-row-label {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.worked-row-note {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+
+.worked-row-val {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--vault-navy);
+  white-space: nowrap;
+}
+
+.worked-ledger-total {
+  margin-top: auto;
+  background: var(--vault-navy);
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.worked-ledger-total span {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--bullion-gold-bright);
+}
+
+.worked-ledger-total small {
+  display: block;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: 3px;
+}
+
+.worked-ledger-total strong {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Customer Reviews (#reviews) */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.review-card {
+  background: #ffffff;
+  border: 1px solid var(--rule-light);
+  border-radius: 18px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 18px 38px -22px rgba(5, 16, 36, 0.14);
+}
+
+.review-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.review-service-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--alabaster);
+  color: var(--bullion-gold-deep);
+}
+
+.review-quote {
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+  line-height: 1.68;
+  color: var(--ink);
+  font-style: italic;
+}
+
+.review-author {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule-light);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: var(--vault-navy);
+  color: var(--bullion-gold-bright);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.review-author strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--vault-navy);
+}
+
+.review-author span {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--ink-muted);
+}
+
+.reviews-footnote-bar {
+  margin-top: 28px;
+  padding: 18px 22px;
+  border-radius: 14px;
+  background: var(--alabaster);
+  border: 1px solid var(--rule-strong);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.reviews-footnote-bar p {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: var(--ink-muted);
+}
+
+/* Documents Reassurance & Form Reassurance */
+.docs-reassurance-banner {
+  margin-top: 28px;
+  padding: 22px 26px;
+  border-radius: 16px;
+  background: var(--vault-navy);
+  color: #ffffff;
+  border: 1px solid rgba(230, 185, 92, 0.35);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.docs-reassurance-banner strong {
+  display: block;
+  font-size: 1rem;
+  color: var(--bullion-gold-bright);
+  margin-bottom: 4px;
+}
+
+.docs-reassurance-banner p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 68ch;
+}
+
+.form-reassurance-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: var(--alabaster);
+  color: var(--vault-navy);
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.form-reassurance-strip svg {
+  color: var(--bullion-gold-deep);
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .three-pillars-grid,
+  .shop-gallery-grid,
+  .fee-methodology-grid,
+  .worked-ledgers-grid,
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .choice-options-split {
+    grid-template-columns: 1fr;
+  }
+  .site-footer {
+    padding-bottom: 104px;
+  }
+}
+
+
 

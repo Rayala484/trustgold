@@ -10,17 +10,56 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { BUSINESS_INFO, GOLD_TOUCHSTONE_MARKS } from '@/lib/gold-calculator'
+import { type Language, TRANSLATIONS } from '@/lib/i18n'
 import { Split } from '@/components/SiteMotion'
 
-export function GoldTouchstoneAssay() {
+const TELUGU_MARK_DETAILS: Record<
+  string,
+  { title: string; assayMethod: string; ornamentExamples: string }
+> = {
+  '24k-999': {
+    title: '24K అపరంజి / కాయిన్స్ & బిస్కెట్లు',
+    assayMethod:
+      'నల్ల గీటు రాయి (Basanite) పై ప్రకాశవంతమైన బంగారు గీత + డిజిటల్ స్కేల్‌పై 999.9 ఫైన్‌నెస్ నిర్ధారణ.',
+    ornamentExamples:
+      'బ్యాంకు గోల్డ్ కాయిన్స్, MMTC-PAMP బిస్కెట్లు, 24K అపరంజి బంగారం కడ్డీలు.',
+  },
+  '22k-916': {
+    title: '22K హాల్‌మార్క్ (916 HUID) ఆభరణాలు',
+    assayMethod:
+      'BIS 916 HUID లేజర్ ముద్ర పరిశీలన + మీ కళ్ళ ముందే గీటు రాయి పరీక్ష (డైరెక్ట్ కొనుగోలు లేదా మెల్టింగ్ మీ ఇష్టం).',
+    ornamentExamples:
+      'తాళిబొట్టు గొలుసులు, కాసుల పేరు, వడ్డాణాలు, గాజులు, నెక్లెస్‌లు మరియు 916 ఆభరణాలు.',
+  },
+  '20k-833': {
+    title: '20K / KDM & పాత తరపు ఆభరణాలు',
+    assayMethod:
+      'గీటు రాయి నాణ్యత పోలిక + రాళ్ళు తీసి మీకు తిరిగి ఇచ్చి నికర బంగారం తూకం లేదా మీ ముందే మెల్టింగ్.',
+    ornamentExamples:
+      'పాత తరపు ఆభరణాలు, KDM టంకం నగలు, 916 ముద్ర లేని కుటుంబ బంగారు నగలు.',
+  },
+  '18k-750': {
+    title: '18K (750) స్టోన్ & డిజైనర్ ఆభరణాలు',
+    assayMethod:
+      'రాళ్ళు, డైమండ్స్ లేదా పూసలను జాగ్రత్తగా తీసి మీ చేతికి తిరిగి ఇచ్చి, నికర 750 బంగారాన్ని మాత్రమే తూకం వేస్తాం.',
+    ornamentExamples:
+      'రాళ్ళ గాజులు, స్టడ్ ఇయర్ రింగ్స్, ఉంగరాలు, 750 ముద్ర గల ఆధునిక బంగారు నగలు.',
+  },
+}
+
+export function GoldTouchstoneAssay({ lang = 'en' }: { lang?: Language }) {
   const [selectedId, setSelectedId] = useState<string>(
     GOLD_TOUCHSTONE_MARKS[0].id
   )
   const [rubKey, setRubKey] = useState<number>(0)
 
+  const t = TRANSLATIONS[lang].touchstone
+
   const activeMark =
     GOLD_TOUCHSTONE_MARKS.find((m) => m.id === selectedId) ??
     GOLD_TOUCHSTONE_MARKS[0]
+
+  const activeTelugu = TELUGU_MARK_DETAILS[activeMark.id]
 
   function handleSelectStreak(id: string) {
     setSelectedId(id)
@@ -30,7 +69,9 @@ export function GoldTouchstoneAssay() {
   const whatsappAssayUrl = `https://wa.me/${
     BUSINESS_INFO.whatsappNumber
   }?text=${encodeURIComponent(
-    `Hi Trust Gold Services, I would like to check today's live Vijayawada gold rate for ${activeMark.title} (${activeMark.karat} / ${activeMark.fineness} Fineness).`
+    lang === 'te'
+      ? `నమస్కారం Trust Gold Services, ${activeMark.karat} (${activeMark.fineness} Fineness) బంగారానికి ఈరోజు విజయవాడ మార్కెట్ రేటు తెలుసుకోవాలనుకుంటున్నాను.`
+      : `Hi Trust Gold Services, I would like to check today's live Vijayawada gold rate for ${activeMark.title} (${activeMark.karat} / ${activeMark.fineness} Fineness).`
   )}`
 
   return (
@@ -70,21 +111,18 @@ export function GoldTouchstoneAssay() {
                   marginRight: 6,
                 }}
               />
-              The Craft of Honest Gold Valuation · గీటు రాయి &amp; 916 Assay
+              {t.tag}
             </span>
             <Split
+              key={`touchstone-head-${lang}`}
               id="touchstone-heading"
-              text="Every honest valuation begins with how gold reads on the stone and the scale."
-              goldWords={['gold', 'stone', 'scale']}
+              text={t.heading}
+              goldWords={t.goldWords}
               className="section-heading"
             />
           </div>
           <p data-reveal className="touchstone-lead">
-            Before a single rupee is quoted, we test your ornament’s exact
-            fineness in front of your eyes—from traditional Basanite touchstone
-            streaks (<em>గీటు రాయి</em>) and BIS 916 HUID inspection to digital
-            purity analysis or crucible melting at your choice. Tap any gold
-            streak below to see how we verify its purity.
+            {t.lead}
           </p>
         </div>
 
@@ -92,10 +130,8 @@ export function GoldTouchstoneAssay() {
           {/* Left Column: Interactive Black Basanite Touchstone Slab */}
           <div className="basanite-slab spotlight-card">
             <div className="basanite-top-bar">
-              <span className="basanite-badge">
-                BLACK BASANITE TOUCHSTONE · గీటు రాయి పరీక్ష
-              </span>
-              <span className="basanite-hint">Tap a gold streak to inspect</span>
+              <span className="basanite-badge">{t.slabBadge}</span>
+              <span className="basanite-hint">{t.slabHint}</span>
             </div>
 
             <div
@@ -153,7 +189,7 @@ export function GoldTouchstoneAssay() {
                       </span>
                     </div>
                     <p className="streak-pure tabular-nums">
-                      {mark.purePercent} Pure Gold · {mark.teluguLabel}
+                      {mark.purePercent} · {mark.teluguLabel}
                     </p>
                   </button>
                 )
@@ -162,13 +198,13 @@ export function GoldTouchstoneAssay() {
 
             <div className="basanite-footer-pills">
               <span>
-                <Scale size={14} /> 0.01g Calibrated Scale
+                <Scale size={14} /> {t.footerScale}
               </span>
               <span>
-                <ShieldCheck size={14} /> Zero Stone Weight Cuts on Gold
+                <ShieldCheck size={14} /> {t.footerStone}
               </span>
               <span>
-                <Flame size={14} /> Direct or Crucible Melt Choice
+                <Flame size={14} /> {t.footerChoice}
               </span>
             </div>
           </div>
@@ -178,36 +214,51 @@ export function GoldTouchstoneAssay() {
             <div className="assay-bench-top">
               <div>
                 <span className="assay-bench-tag">
-                  OPEN-COUNTER ASSAY BENCH · {activeMark.karat} (
-                  {activeMark.fineness} FINENESS)
+                  {t.benchPrefix} · {activeMark.karat} ({activeMark.fineness}{' '}
+                  FINENESS)
                 </span>
-                <h3>{activeMark.title}</h3>
+                <h3>
+                  {lang === 'te' && activeTelugu
+                    ? activeTelugu.title
+                    : activeMark.title}
+                </h3>
                 <p className="assay-bench-telugu">{activeMark.teluguLabel}</p>
               </div>
               <div className="assay-rate-badge tabular-nums">
-                <small>Pure Gold Content</small>
+                <small>{t.pureContentLabel}</small>
                 <strong>{activeMark.purePercent}</strong>
               </div>
             </div>
 
             <div className="assay-detail-boxes">
               <div className="assay-detail-item">
-                <strong>How We Verify This Gold in Your Presence</strong>
-                <p>{activeMark.assayMethod}</p>
+                <strong>{t.howWeVerifyLabel}</strong>
+                <p>
+                  {lang === 'te' && activeTelugu
+                    ? activeTelugu.assayMethod
+                    : activeMark.assayMethod}
+                </p>
               </div>
               <div className="assay-detail-item">
-                <strong>Common Ornaments in This Purity</strong>
-                <p>{activeMark.ornamentExamples}</p>
+                <strong>{t.commonOrnamentsLabel}</strong>
+                <p>
+                  {lang === 'te' && activeTelugu
+                    ? activeTelugu.ornamentExamples
+                    : activeMark.ornamentExamples}
+                </p>
               </div>
             </div>
 
             {/* Traditional Telugu & South Indian Gold Weight Standards */}
             <div className="weight-benchmarks-label">
-              <span>Traditional Telugu Weight Standards We Value</span>
-              <span className="tabular-nums">Flat 1% Processing Fee Only</span>
+              <span>{t.weightStandardsTitle}</span>
+              <span className="tabular-nums">{t.weightStandardsFee}</span>
             </div>
 
-            <div className="weight-benchmarks-grid" style={{ marginBottom: 16 }}>
+            <div
+              className="weight-benchmarks-grid"
+              style={{ marginBottom: 16 }}
+            >
               <div className="weight-benchmark-box">
                 <span className="wb-unit">1 Gram · 1 గ్రాము</span>
                 <strong className="wb-val tabular-nums">1.00 g Net</strong>
@@ -236,8 +287,8 @@ export function GoldTouchstoneAssay() {
               className="btn btn-gold"
               style={{ width: '100%' }}
             >
-              <MessageCircle size={17} /> Check Today’s Live {activeMark.karat}{' '}
-              Rate on WhatsApp <ArrowRight size={16} />
+              <MessageCircle size={17} /> {t.whatsappBtnPrefix}{' '}
+              {activeMark.karat} {t.whatsappBtnSuffix} <ArrowRight size={16} />
             </a>
           </div>
         </div>
@@ -245,4 +296,3 @@ export function GoldTouchstoneAssay() {
     </section>
   )
 }
-

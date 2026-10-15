@@ -1,312 +1,322 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import Link from 'next/link'
+import { useEffect, useState, type FormEvent } from 'react'
 import {
   ArrowRight,
   Award,
-  BadgePercent,
+  BadgeCheck,
   Banknote,
   Building2,
   CheckCircle2,
   ChevronDown,
   Clock,
+  Compass,
+  Eye,
   FileCheck2,
+  FileText,
   Flame,
+  Gem,
+  Globe,
+  HandCoins,
+  HelpCircle,
+  Home,
   Landmark,
+  LockOpen,
   Mail,
   MapPin,
   Menu,
   MessageCircle,
   Phone,
+  Quote,
   Scale,
   ShieldCheck,
   Sparkles,
+  Target,
   UserCheck,
   X,
 } from 'lucide-react'
 import {
   BUSINESS_INFO,
   GOLD_CATEGORIES,
-  type EstimateMode,
+  REQUIRED_DOCUMENTS,
+  validateLeadInput,
+  type GoldCategoryTier,
 } from '@/lib/gold-calculator'
-import { triggerTrustGoldIntro } from '@/components/GoldOpening'
+import { type Language, TRANSLATIONS } from '@/lib/i18n'
 import { GoldTouchstoneAssay } from '@/components/GoldTouchstoneAssay'
-import {
-  Magnetic,
-  PageMotion,
-  Split,
-} from '@/components/SiteMotion'
+import { SiteMotion, Split } from '@/components/SiteMotion'
+import { ImageReveal } from '@/components/animations/ImageReveal'
+import { Magnetic } from '@/components/animations/Magnetic'
+import { Parallax } from '@/components/animations/Parallax'
 
-const HERO_RAYS = Array.from({ length: 40 }, (_, i) => (i * 360) / 40)
+const TELUGU_CATEGORIES: Record<
+  GoldCategoryTier,
+  {
+    name: string
+    badge: string
+    purityDescription: string
+    valuationNote: string
+    examples: string[]
+  }
+> = {
+  'hallmark-22k': {
+    name: 'హాల్‌మార్క్ 22K బంగారం (BIS 916 HUID)',
+    badge: 'BIS 916 హాల్‌మార్క్ · అత్యధిక విలువ',
+    purityDescription: '91.6% స్వచ్ఛమైన బంగారం · అధికారిక BIS హాల్‌మార్క్ & HUID ముద్ర',
+    valuationNote:
+      'మీ ఆభరణాలపై ఉన్న హాల్‌మార్క్ ముద్రను మీ ముందే పరిశీలించి, కరిగించకుండానే నేరుగా 22K మార్కెట్ రేటు అందిస్తాం (లేదా మీ కోరిక మేరకు మెల్టింగ్ చేస్తాం).',
+    examples: [
+      'BIS 916 హాల్‌మార్క్ గల నెక్లెస్‌లు, హారాలు & గాజులు',
+      '6-అంకెల HUID లేజర్ కోడ్ గల ఆధునిక బంగారు నగలు',
+      'బిల్లు ఉన్న లేదా బిల్లు లేని 916 తాళిబొట్టు గొలుసులు & వడ్డాణాలు',
+    ],
+  },
+  'mark-916': {
+    name: 'ఓన్లీ 916 మార్క్ (KDM / పాత 916 ముద్ర)',
+    badge: '916 KDM ముద్ర · మీ సమక్షంలో పరీక్ష',
+    purityDescription: 'HUID లేకుండా 916 / KDM ముద్ర మాత్రమే ఉన్న బంగారు ఆభరణాలు',
+    valuationNote:
+      '2021 కి ముందు తయారైన 916 ఆభరణాలను మీ కళ్ళ ముందే గీటు రాయి (Touchstone) పై పరీక్షించి, రాళ్ళు తీసి మీకే తిరిగి ఇచ్చి నికర బంగారానికి పూర్తి విలువ ఇస్తాం.',
+    examples: [
+      'పాత 916 ముద్ర గల కుటుంబ ఆభరణాలు & KDM నగలు',
+      'స్థానిక జ్యువెలరీ షాపులలో చేయించిన 916 ముద్ర గల ఉంగరాలు, గొలుసులు',
+      'బ్యాంకు లోన్ నుండి విడిపించిన పాత 916 బంగారు ఆభరణాలు',
+    ],
+  },
+  'other-unmarked': {
+    name: 'ఇతర మార్కులు / అన్‌మార్క్డ్ బంగారం',
+    badge: 'అన్ని రకాల పాత & విరిగిన బంగారం కొంటాము',
+    purityDescription: 'హాల్‌మార్క్ ముద్ర లేని పాత తరపు, విరిగిన లేదా ఇతర క్యారెట్ ఆభరణాలు',
+    valuationNote:
+      'ముద్ర లేని లేదా పాత తరపు ఆభరణాలను మీ కళ్ళ ముందే పరీక్షించి (మీ కోరిక మేరకు డైరెక్ట్‌గా లేదా మెల్టింగ్ చేసి), ఉన్న కచ్చితమైన స్వచ్ఛత ఆధారంగా న్యాయమైన ధర చెల్లిస్తాం.',
+    examples: [
+      'ముద్ర లేని తాతముత్తాతల కాలం నాటి పాత బంగారు ఆభరణాలు',
+      'విరిగిన బంగారు ముక్కలు, సింగిల్ ఇయర్ రింగ్స్, పాత కాసులు',
+      '18K, 20K లేదా అరిగిపోయిన ముద్రలు గల బంగారు నగలు',
+    ],
+  },
+}
 
-const MARQUEE_ITEMS = [
-  'BIS 916 HUID Hallmarked Gold',
-  'SBI · HDFC · ICICI Bank Gold Loan Release',
-  'Muthoot · Manappuram · IIFL Pledge Release',
-  'Direct Purchase or Melt in Your Presence',
-  'Flat 1% Processing Fee · 99% Net Value',
-  '0.01g Calibrated Open-Counter Weighing',
-  'Instant Spot RTGS · IMPS · UPI · Cash Payout',
-  'Canara · Union · Federal Bank Loan Closure',
-] as const
+const TELUGU_DOCUMENTS: Record<
+  string,
+  { title: string; subtitle: string; description: string }
+> = {
+  aadhaar: {
+    title: 'ఆధార్ కార్డు (Aadhaar Card)',
+    subtitle: 'ప్రభుత్వ గుర్తింపు కార్డు (తప్పనిసరి)',
+    description:
+      'బంగారం యజమాని యొక్క ఒరిజినల్ ఆధార్ కార్డు వెరిఫికేషన్ కోసం తీసుకురావాలి.',
+  },
+  pan: {
+    title: 'పాన్ కార్డు (PAN Card)',
+    subtitle: 'ఆదాయపు పన్ను & బ్యాంక్ బదిలీ KYC (తప్పనిసరి)',
+    description:
+      'చట్టబద్ధమైన బిల్లింగ్ మరియు వేగవంతమైన IMPS / NEFT / RTGS బ్యాంక్ బదిలీ కోసం పాన్ కార్డు అవసరం.',
+  },
+  'purchase-bills': {
+    title: 'బంగారం కొన్న బిల్లులు (Purchase Bills)',
+    subtitle: 'అందుబాటులో ఉంటే తీసుకురండి',
+    description:
+      'ఆభరణాలు కొన్న అసలు జ్యువెలరీ బిల్లులు లేదా పాత రసీదులు ఉంటే వెరిఫికేషన్ మరింత వేగంగా పూర్తవుతుంది.',
+  },
+  'house-verification': {
+    title: 'హౌస్ వెరిఫికేషన్ (House Verification)',
+    subtitle: 'నివాస చిరునామా నిర్ధారణ',
+    description:
+      'ప్రతి లావాదేవీ 100% సురక్షితంగా మరియు పారదర్శకంగా ఉండేందుకు ప్రామాణిక నివాస చిరునామా నిర్ధారణ చేస్తాము.',
+  },
+  'security-cheques': {
+    title: '2 సెక్యూరిటీ చెక్కులు (2 Security Cheques)',
+    subtitle: 'తాకట్టు బంగారం విడిపింపుకు అవసరం',
+    description:
+      'బ్యాంకు లేదా ఫైనాన్స్ సంస్థలో మీ లోన్ బకాయిని మేము ముందుగా చెల్లించి బంగారం విడిపించే ప్రక్రియ కోసం 2 సెక్యూరిటీ చెక్కులు అవసరం.',
+  },
+}
 
-const KYC_DOCS = {
-  'direct-sale': [
-    {
-      title: 'Aadhaar Card & PAN Card',
-      desc: 'Mandatory government identity and tax verification for every legal gold transaction.',
-    },
-    {
-      title: 'Original Purchase Bills (If Available)',
-      desc: 'Bring jewellery purchase invoices if available to speed up ownership verification.',
-    },
-    {
-      title: 'Address / House Verification',
-      desc: 'Simple residence verification for high-value settlements to keep every sale 100% compliant.',
-    },
-    {
-      title: 'Bank Account / UPI Details',
-      desc: 'Your active bank account or UPI details for instant RTGS / IMPS / NEFT / spot transfer.',
-    },
-  ],
-  'pledged-release': [
-    {
-      title: 'Original Bank / NBFC Pledge Receipt',
-      desc: 'Bring your gold loan token, pledge card, or outstanding loan statement from the bank or NBFC.',
-    },
-    {
-      title: 'Aadhaar Card & PAN Card',
-      desc: 'Primary KYC documents of the loan holder so our executive can accompany and assist you.',
-    },
-    {
-      title: '2 Security Cheques (For Bank Release)',
-      desc: 'Required as security protocol while we advance the funds to close your bank or NBFC gold loan.',
-    },
-    {
-      title: 'House Verification, Bills & Bank Details',
-      desc: 'Residence verification, any available bills, and bank details to transfer your remaining net balance.',
-    },
-  ],
-} as const
-
-const COMPARISON_ROWS = [
-  {
-    feature: 'Processing / Service Charge',
-    trustGold: 'Flat 1% Only · Written Breakdown',
-    corporate: '3% to 5% Service Fee + GST',
-    pawnBroker: '8% to 15% Hidden Wastage Cuts',
-  },
-  {
-    feature: 'Valuation & Melting Policy',
-    trustGold: '100% Your Choice (Direct Buy or Melt in Presence)',
-    corporate: 'Mandatory Melting Required',
-    pawnBroker: 'Back-Room Acid Test / Rough Guess',
-  },
-  {
-    feature: 'Stones, Beads & Gems',
-    trustGold: 'Carefully Removed & Returned to You',
-    corporate: 'Often Crushed During Forced Melting',
-    pawnBroker: 'Heavy Arbitrary Weight Deductions',
-  },
-  {
-    feature: 'Unmarked / Ancestral Gold',
-    trustGold: 'Accepted at True Tested Purity Value',
-    corporate: 'Frequently Rejected or Heavily Penalized',
-    pawnBroker: 'Under-Valued by 15%–20%',
-  },
-  {
-    feature: 'Bank / NBFC Loan Release',
-    trustGold: 'Executive Escorts You & Advances Full Payoff',
-    corporate: 'Long Approval & High Margin Charges',
-    pawnBroker: 'High-Interest Bridge Loans',
-  },
-  {
-    feature: 'Payout Speed & Mode',
-    trustGold: '15-Min Instant Cash / RTGS / IMPS / UPI',
-    corporate: 'T+1 Bank Processing Delays',
-    pawnBroker: 'Delayed Partial Cash Notes',
-  },
-] as const
-
-const PROCESS_TRACKS = {
-  'direct-sale': [
-    {
-      step: 'STEP 01',
-      title: 'Walk In or WhatsApp Estimate',
-      desc: 'Visit Shop No. 5, Vasisth Enclave in Gandhinagar, or send ornament details on WhatsApp for an instant indicative quote.',
-    },
-    {
-      step: 'STEP 02',
-      title: 'Open-Counter Purity & Weighing',
-      desc: 'Watch calibrated 0.01g digital weighing and purity testing right in front of your eyes. Choose direct purchase or melting.',
-    },
-    {
-      step: 'STEP 03',
-      title: 'Written 1% Fee Breakdown',
-      desc: 'We write down today’s live gold rate, net weight after returning stones, and our flat 1% processing fee before you decide.',
-    },
-    {
-      step: 'STEP 04',
-      title: 'Instant Spot Settlement',
-      desc: 'Walk out in 15 minutes with immediate payment via Cash, UPI, IMPS, or RTGS directly into your bank account.',
-    },
-  ],
-  'pledged-release': [
-    {
-      step: 'STEP 01',
-      title: 'Share Bank / NBFC Pledge Token',
-      desc: 'Bring your original gold loan receipt from SBI, HDFC, ICICI, Muthoot, Manappuram, IIFL, or any bank/NBFC branch.',
-    },
-    {
-      step: 'STEP 02',
-      title: 'Quick KYC & Security Protocol',
-      desc: 'Complete Aadhaar/PAN verification, simple residence check, and 2 security cheques so our team can advance the payoff funds.',
-    },
-    {
-      step: 'STEP 03',
-      title: 'We Accompany You & Close Loan',
-      desc: 'Our executive travels with you to the bank or NBFC branch, pays off the full principal + interest, and releases your ornaments.',
-    },
-    {
-      step: 'STEP 04',
-      title: 'Open Assay & Net Balance Payout',
-      desc: 'We value the released gold at today’s live market rate in your presence, deduct only the loan payoff + 1% fee, and pay your balance.',
-    },
-  ],
-} as const
-
-const FAQS = [
-  {
-    q: 'What types of gold jewellery do you buy?',
-    a: 'We buy all 3 types of gold jewellery: (1) BIS Hallmarked 22K (916 HUID) jewellery, (2) Ornaments with only a 916 stamp, and (3) Other marked or unmarked old, ancestral, broken, or stone-studded gold jewellery.',
-  },
-  {
-    q: 'Do you melt the gold, or do you buy it directly without melting?',
-    a: 'It is 100% the customer’s choice ("Melting adithey melting chestam, ledu direct ga konamantey direct ga kontam"). If you want a direct purchase without melting, we test and buy directly. If you prefer melting for an exact net-purity assay, we melt it right in front of your eyes.',
-  },
-  {
-    q: 'What is your processing fee structure?',
-    a: 'We maintain complete clarity with a standard 1% processing fee on the total value. Before we proceed, we write down the day’s gold rate, purity reading, stone weight deduction (if any), and exact net payout so there are never hidden surprises.',
-  },
-  {
-    q: 'How does Bank / NBFC Pledged Gold Release work?',
-    a: 'If your gold is locked in a bank or NBFC loan, share your pledge receipt with us. After KYC, house verification, and 2 security cheques, our team settles the outstanding loan at the bank branch with you, releases the gold, evaluates it transparently in your presence, and pays you the remaining net value on the spot.',
-  },
-  {
-    q: 'What documents are required to sell or release gold?',
-    a: 'Please bring your Aadhaar Card, PAN Card, purchase bills (if available), and bank account details. For bank-pledged gold release, we also require your original loan pledge card, house verification, and 2 security cheques.',
-  },
-  {
-    q: 'Where is your shop located and what are your timings?',
-    a: 'We are located at First Floor, Shop No. 5, Vasisth Enclave, Gandhinagar, Vijayawada. We are open Monday to Saturday from 9:00 AM to 9:00 PM, serving families across Vijayawada, Andhra Pradesh, and Telangana.',
-  },
-] as const
-
-export default function TrustGoldRedesignedPage() {
+export default function TrustGoldHomePage() {
+  const [lang, setLang] = useState<Language>('en')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // KYC Document Checklist Tab State
-  const [kycTab, setKycTab] = useState<EstimateMode>('direct-sale')
-  const [kycSwitching, setKycSwitching] = useState(false)
+  // Process Track State: 'sell' vs 'release'
+  const [processTrack, setProcessTrack] = useState<'sell' | 'release'>('sell')
 
-  // Two-Track Process Switcher State
-  const [processTrack, setProcessTrack] = useState<EstimateMode>('direct-sale')
+  // Document Checklist Filter State
+  const [docFilter, setDocFilter] = useState<'all' | 'direct' | 'pledge'>('all')
 
   // FAQ Accordion State
-  const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const [openFaqIndex, setOpenFaqIndex] = useState<number>(0)
 
-  // Contact Form State
-  const [contactForm, setContactForm] = useState({
-    name: '',
-    phone: '',
-    service: 'Direct Old Gold Purchase',
-    jewelleryType: 'Hallmark 22K Jewellery',
-    message: '',
-  })
-  const [contactSubmitted, setContactSubmitted] = useState(false)
+  // Lead Enquiry Form State
+  const [leadName, setLeadName] = useState<string>('')
+  const [leadPhone, setLeadPhone] = useState<string>('')
+  const [leadService, setLeadService] = useState<
+    'sell_old_gold' | 'release_pledged_gold' | 'rate_check'
+  >('sell_old_gold')
+  const [leadCategory, setLeadCategory] =
+    useState<GoldCategoryTier>('hallmark-22k')
+  const [leadWeight, setLeadWeight] = useState<string>('')
+  const [leadMessage, setLeadMessage] = useState<string>('')
+  const [leadErrors, setLeadErrors] = useState<{
+    name?: string
+    phone?: string
+    weightGrams?: string
+  }>({})
+  const [leadSubmitted, setLeadSubmitted] = useState<boolean>(false)
 
-  const defaultWhatsAppUrl = `https://wa.me/${BUSINESS_INFO.whatsappNumber}?text=${encodeURIComponent(
-    'Hi Trust Gold Services, I visited your website and would like a transparent gold valuation / pledged gold release consultation.'
+  // Hydrate persisted language preference from localStorage
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem('trustgold_lang')
+      if (saved === 'te' || saved === 'en') {
+        setLang(saved)
+        document.documentElement.lang = saved
+      }
+    } catch {
+      // Ignore storage access errors
+    }
+  }, [])
+
+  function handleLanguageSwitch(nextLang: Language) {
+    setLang(nextLang)
+    try {
+      window.localStorage.setItem('trustgold_lang', nextLang)
+      document.documentElement.lang = nextLang
+    } catch {
+      // Ignore storage access errors
+    }
+  }
+
+  const t = TRANSLATIONS[lang]
+
+  const generalWhatsappUrl = `https://wa.me/${
+    BUSINESS_INFO.whatsappNumber
+  }?text=${encodeURIComponent(
+    lang === 'te'
+      ? 'నమస్కారం Trust Gold Services (విజయవాడ), పాత బంగారం అమ్మకం / తాకట్టు బంగారం విడిపింపు మరియు ఈరోజు గ్రాము రేటు వివరాలు తెలుసుకోవాలనుకుంటున్నాను.'
+      : 'Hi Trust Gold Services (Vijayawada), I would like a free valuation enquiry for my gold ornaments and today’s per-gram rate.'
   )}`
 
-  function switchKycTab(nextTab: EstimateMode) {
-    if (nextTab === kycTab) return
-    setKycSwitching(true)
-    setKycTab(nextTab)
-    setTimeout(() => setKycSwitching(false), 180)
-  }
+  const sellGoldWhatsappUrl = `https://wa.me/${
+    BUSINESS_INFO.whatsappNumber
+  }?text=${encodeURIComponent(t.services.sellGold.whatsappPrefill)}`
 
-  function handleContactSubmit(e: React.FormEvent) {
+  const releaseGoldWhatsappUrl = `https://wa.me/${
+    BUSINESS_INFO.whatsappNumber
+  }?text=${encodeURIComponent(t.services.releaseGold.whatsappPrefill)}`
+
+  const filteredDocuments = REQUIRED_DOCUMENTS.filter((doc) => {
+    if (docFilter === 'all') return true
+    if (docFilter === 'direct') return !doc.forPledgedReleaseOnly
+    return true
+  })
+
+  function handleLeadSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (!contactForm.name.trim() || !contactForm.phone.trim()) return
+    const validation = validateLeadInput({
+      name: leadName,
+      phone: leadPhone,
+      serviceType: leadService,
+      weightGrams: leadWeight,
+      message: leadMessage,
+    })
 
-    const text = [
-      `Hi Trust Gold Services! I would like to enquire from your website:`,
-      ``,
-      `• *Name:* ${contactForm.name.trim()}`,
-      `• *Phone:* ${contactForm.phone.trim()}`,
-      `• *Service Needed:* ${contactForm.service}`,
-      `• *Jewellery Type:* ${contactForm.jewelleryType}`,
-      contactForm.message.trim()
-        ? `• *Details:* ${contactForm.message.trim()}`
-        : '',
-    ]
-      .filter(Boolean)
-      .join('\n')
+    if (!validation.valid) {
+      setLeadErrors({
+        name: validation.errors.name ? t.contact.errors.name : undefined,
+        phone: validation.errors.phone ? t.contact.errors.phone : undefined,
+        weightGrams: validation.errors.weightGrams
+          ? t.contact.errors.weight
+          : undefined,
+      })
+      return
+    }
 
-    window.open(
-      `https://wa.me/${BUSINESS_INFO.whatsappNumber}?text=${encodeURIComponent(text)}`,
-      '_blank',
-      'noopener,noreferrer'
-    )
-    setContactSubmitted(true)
+    setLeadErrors({})
+    setLeadSubmitted(true)
   }
+
+  const selectedCategoryObj =
+    GOLD_CATEGORIES.find((c) => c.id === leadCategory) ?? GOLD_CATEGORIES[0]
+
+  const serviceLabelText =
+    leadService === 'sell_old_gold'
+      ? t.contact.serviceOptions.sell
+      : leadService === 'release_pledged_gold'
+        ? t.contact.serviceOptions.release
+        : t.contact.serviceOptions.rateCheck
+
+  const leadWhatsappUrl = `https://wa.me/${
+    BUSINESS_INFO.whatsappNumber
+  }?text=${encodeURIComponent(
+    `Hi Trust Gold Services (Gandhinagar, Vijayawada),\n` +
+      `• Name: ${leadName.trim()}\n` +
+      `• Phone: ${leadPhone.trim()}\n` +
+      `• Service: ${serviceLabelText}\n` +
+      `• Gold Category: ${selectedCategoryObj.shortName}\n` +
+      (leadWeight.trim() ? `• Approx Weight: ${leadWeight.trim()}g\n` : '') +
+      (leadMessage.trim() ? `• Note: ${leadMessage.trim()}` : '')
+  )}`
+
+  const activeSteps =
+    processTrack === 'sell'
+      ? t.howItWorks.sellSteps
+      : t.howItWorks.releaseSteps
 
   return (
-    <div id="top">
-      {/* Top Location & Hours Ribbon */}
+    <div className={lang === 'te' ? 'lang-te-root' : 'lang-en-root'}>
+      <SiteMotion />
+
+      {/* Top Credibility & Language Ribbon */}
       <div className="top-ribbon">
         <div className="top-ribbon-inner">
           <div className="ribbon-left">
             <span className="ribbon-badge">
-              <Sparkles size={13} /> {BUSINESS_INFO.teluguTagline} — We Buy Gold
-              at Live Market Rates
+              <ShieldCheck size={14} />
+              {t.meta.topRibbonChoice}
             </span>
-            <a
-              href={BUSINESS_INFO.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-            >
-              <MapPin size={13} /> {BUSINESS_INFO.addressShort}
-            </a>
+            <span>
+              <MapPin
+                size={13}
+                style={{
+                  display: 'inline',
+                  marginRight: 5,
+                  verticalAlign: '-2px',
+                }}
+              />
+              {t.meta.topRibbonLocation}
+            </span>
           </div>
           <div className="ribbon-right">
-            <button
-              type="button"
-              onClick={triggerTrustGoldIntro}
-              className="ribbon-replay-btn"
-              title="Replay the Trust Gold 916 Assay & Shield Forging Opening"
-            >
-              <Sparkles size={12} /> Replay Gold Intro
-            </button>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <Clock size={13} /> {BUSINESS_INFO.hours}
+            <span>
+              <Clock
+                size={13}
+                style={{
+                  display: 'inline',
+                  marginRight: 5,
+                  verticalAlign: '-2px',
+                }}
+              />
+              {t.meta.topRibbonHours}
             </span>
-            <a
-              href={`mailto:${BUSINESS_INFO.email}`}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            <Link
+              href="/vijayawada"
+              style={{
+                color: '#e6b95c',
+                fontWeight: 600,
+                textDecoration: 'underline',
+                textUnderlineOffset: '3px',
+              }}
             >
-              <Mail size={13} /> {BUSINESS_INFO.email}
-            </a>
+              {t.meta.branchPageLink} →
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Sticky Translucent Navigation Header */}
+      {/* 1. Compact Sticky Navigation (Services, How It Works, Why Trust Gold, Reviews, Contact + Language Toggle) */}
       <header className="site-header">
-        <span aria-hidden="true" className="scroll-progress" />
         <div className="nav-bar">
           <a
             href="#top"
@@ -315,1118 +325,1441 @@ export default function TrustGoldRedesignedPage() {
           >
             <Image
               src="/logo.png"
-              alt="Trust Gold Services emblem"
-              width={48}
-              height={48}
+              alt="Trust Gold Services Vijayawada Logo"
+              width={46}
+              height={46}
               className="brand-emblem"
               priority
             />
             <div className="brand-title">
-              <span className="brand-title-main">Trust Gold</span>
-              <span className="brand-title-sub">Services · Vijayawada</span>
+              <span className="brand-title-main">Trust Gold Services</span>
+              <span className="brand-title-sub">{t.nav.brandSub}</span>
             </div>
           </a>
 
-          <nav
-            className={mobileMenuOpen ? 'nav-links open' : 'nav-links'}
-            aria-label="Primary Navigation"
-          >
-            <a href="#gold-craft" onClick={() => setMobileMenuOpen(false)}>
-              916 Assay
-            </a>
-            <a href="#categories" onClick={() => setMobileMenuOpen(false)}>
-              3 Gold Tiers
-            </a>
-            <a href="#comparison" onClick={() => setMobileMenuOpen(false)}>
-              1% Fee vs Others
-            </a>
-            <a href="#services" onClick={() => setMobileMenuOpen(false)}>
-              Services
-            </a>
-            <a href="#founder" onClick={() => setMobileMenuOpen(false)}>
-              Our Story
-            </a>
-            <a href="#documents" onClick={() => setMobileMenuOpen(false)}>
-              Documents
-            </a>
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)}>
-              Contact
-            </a>
+          <nav className="nav-links" aria-label="Primary Navigation">
+            <a href="#services">{t.nav.services}</a>
+            <a href="#how-it-works">{t.nav.howItWorks}</a>
+            <a href="#why-trust-gold">{t.nav.whyTrustGold}</a>
+            <a href="#reviews">{t.nav.reviews}</a>
+            <a href="#contact">{t.nav.contact}</a>
           </nav>
 
           <div className="nav-cta-group">
+            {/* Bilingual English / Telugu Segmented Switcher */}
+            <div
+              className="lang-switcher"
+              role="group"
+              aria-label="Select Language / భాషను ఎంచుకోండి"
+            >
+              <button
+                type="button"
+                onClick={() => handleLanguageSwitch('en')}
+                aria-pressed={lang === 'en'}
+                className={
+                  lang === 'en' ? 'lang-pill-btn active' : 'lang-pill-btn'
+                }
+              >
+                EN
+              </button>
+              <button
+                type="button"
+                onClick={() => handleLanguageSwitch('te')}
+                aria-pressed={lang === 'te'}
+                className={
+                  lang === 'te' ? 'lang-pill-btn active' : 'lang-pill-btn'
+                }
+              >
+                తెలుగు
+              </button>
+            </div>
+
             <a
               href={`tel:${BUSINESS_INFO.phone}`}
               className="nav-phone-pill tabular-nums"
-              aria-label={`Call ${BUSINESS_INFO.phoneDisplay}`}
+              aria-label={`Call Trust Gold Services at ${BUSINESS_INFO.phoneDisplay}`}
             >
-              <Phone size={15} />
-              <span>{BUSINESS_INFO.phoneDisplay}</span>
+              <Phone size={15} style={{ color: '#e6b95c' }} />
+              {t.nav.callNow}
             </a>
-            <Magnetic>
+
+            <Magnetic strength={0.22}>
               <a
-                href={defaultWhatsAppUrl}
+                href={generalWhatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-gold btn-sm"
               >
-                WhatsApp Quote <ArrowRight size={15} />
+                <MessageCircle size={16} />
+                {t.nav.whatsappCta}
               </a>
             </Magnetic>
+
             <button
               type="button"
               className="menu-toggle"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-nav-drawer"
+              aria-label={
+                mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'
+              }
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        <div
+          id="mobile-nav-drawer"
+          className={mobileMenuOpen ? 'mobile-drawer open' : 'mobile-drawer'}
+        >
+          <div className="mobile-drawer-inner">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingBottom: 10,
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                marginBottom: 4,
+              }}
+            >
+              <span style={{ fontSize: '0.8rem', color: '#e6b95c' }}>
+                <Globe
+                  size={14}
+                  style={{
+                    display: 'inline',
+                    verticalAlign: '-2px',
+                    marginRight: 6,
+                  }}
+                />
+                Language / భాష:
+              </span>
+              <div className="lang-switcher">
+                <button
+                  type="button"
+                  onClick={() => handleLanguageSwitch('en')}
+                  className={
+                    lang === 'en' ? 'lang-pill-btn active' : 'lang-pill-btn'
+                  }
+                >
+                  English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleLanguageSwitch('te')}
+                  className={
+                    lang === 'te' ? 'lang-pill-btn active' : 'lang-pill-btn'
+                  }
+                >
+                  తెలుగు
+                </button>
+              </div>
+            </div>
+
+            <a href="#services" onClick={() => setMobileMenuOpen(false)}>
+              {t.nav.services}
+            </a>
+            <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)}>
+              {t.nav.howItWorks}
+            </a>
+            <a href="#why-trust-gold" onClick={() => setMobileMenuOpen(false)}>
+              {t.nav.whyTrustGold}
+            </a>
+            <a href="#reviews" onClick={() => setMobileMenuOpen(false)}>
+              {t.nav.reviews}
+            </a>
+            <a href="#documents" onClick={() => setMobileMenuOpen(false)}>
+              {t.documents.tag}
+            </a>
+            <a href="#faq" onClick={() => setMobileMenuOpen(false)}>
+              {t.faq.tag}
+            </a>
+            <a href="#contact" onClick={() => setMobileMenuOpen(false)}>
+              {t.nav.contact}
+            </a>
+            <Link href="/vijayawada" onClick={() => setMobileMenuOpen(false)}>
+              {t.meta.branchPageLink} →
+            </Link>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 10,
+                marginTop: 8,
+              }}
+            >
+              <a
+                href={`tel:${BUSINESS_INFO.phone}`}
+                className="btn btn-outline-light btn-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Phone size={15} /> {t.nav.callNow}
+              </a>
+              <a
+                href={generalWhatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-gold btn-sm"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <MessageCircle size={15} /> WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
       </header>
 
-      <PageMotion />
-
-      <main>
-        {/* ====================================================================
-            LUXURY EDITORIAL HERO SECTION (NO CALCULATOR FORM IN OPENING)
-            ==================================================================== */}
-        <section className="hero-vault">
-          {/* Slowly Rotating 40-Ray Sovereign Gold Sunburst Behind Hero */}
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 600 600"
-            className="hero-sunburst"
-          >
-            {HERO_RAYS.map((angle) => (
-              <line
-                key={angle}
-                x1="300"
-                y1={angle % 18 ? 138 : 118}
-                x2="300"
-                y2="36"
-                transform={`rotate(${angle} 300 300)`}
-                stroke="#e6b95c"
-                strokeOpacity={0.35}
-                strokeWidth={angle % 18 ? 1.2 : 2.1}
-                strokeLinecap="round"
-              />
-            ))}
-            <circle
-              cx="300"
-              cy="300"
-              r="148"
-              fill="none"
-              stroke="#e6b95c"
-              strokeOpacity={0.18}
-            />
-          </svg>
-
-          <div className="container-shell hero-grid">
-            {/* Left Editorial Column */}
-            <div className="hero-copy-col">
-              <div
-                className="telugu-pill rise"
-                style={{ '--d': '40ms' } as React.CSSProperties}
-              >
-                <span className="telugu-pill-dot" />
-                <span>
-                  {BUSINESS_INFO.teluguTagline} · Gandhinagar, Vijayawada
-                </span>
-              </div>
-
-              <Split
-                as="h1"
-                mode="load"
-                text="Where Your Gold Meets Honest, Open-Counter Value."
-                goldWords={['Gold', 'Open-Counter']}
-                className="hero-display"
-              />
-
-              <p
-                className="hero-lead rise"
-                style={{ '--d': '260ms' } as React.CSSProperties}
-              >
-                Sell old gold jewellery or release bank &amp; NBFC pledged gold
-                in Vijayawada with complete dignity. Watch every purity test on
-                our calibrated scale right in front of your eyes, choose between
-                direct purchase or melting, and keep{' '}
-                <strong style={{ color: '#e6b95c' }}>
-                  99% of your gold’s market value
-                </strong>{' '}
-                with our flat{' '}
-                <strong style={{ color: '#e6b95c' }}>1% processing fee</strong>.
-              </p>
-
-              <div
-                className="hero-actions rise"
-                style={{ '--d': '380ms' } as React.CSSProperties}
-              >
-                <Magnetic>
-                  <a
-                    href={defaultWhatsAppUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-gold"
-                  >
-                    <MessageCircle size={18} /> Get Free WhatsApp Valuation
-                  </a>
-                </Magnetic>
-                <Magnetic>
-                  <a
-                    href={`tel:${BUSINESS_INFO.phone}`}
-                    className="btn btn-outline-light tabular-nums"
-                  >
-                    <Phone size={17} /> Call {BUSINESS_INFO.phoneDisplay}
-                  </a>
-                </Magnetic>
-                <a href="#gold-craft" className="hero-estimator-link">
-                  <Sparkles size={15} /> Inspect 916 Touchstone Assay ↓
-                </a>
-              </div>
-
-              {/* 3 Institutional Bullion Trust Pillars */}
-              <div
-                className="hero-metrics rise"
-                style={{ '--d': '520ms' } as React.CSSProperties}
-              >
-                <div className="metric-item">
-                  <strong className="tabular-nums">99% Payout</strong>
-                  <span>Flat 1% processing fee, zero hidden cuts</span>
-                </div>
-                <div className="metric-item">
-                  <strong>Your Choice</strong>
-                  <span>Direct spot purchase or melt in your presence</span>
-                </div>
-                <div className="metric-item">
-                  <strong className="tabular-nums">15 Mins</strong>
-                  <span>Instant Cash · RTGS · IMPS · UPI settlement</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Cinematic Luxury Gold Assay & Bullion Showcase Stage */}
-            <div
-              className="hero-showcase-stage rise"
-              style={{ '--d': '200ms' } as React.CSSProperties}
-            >
-              {/* Floating Top-Left Card: 916 BIS & 3-Tier Purity Seal */}
-              <div className="hero-float-card hero-float-top spotlight-card">
-                <div className="hero-float-icon">
-                  <ShieldCheck size={20} />
-                </div>
-                <div>
-                  <span className="hero-float-eyebrow">
-                    3 PURITY TIERS ACCEPTED
-                  </span>
-                  <strong>BIS 916 · 916 Stamp · Unmarked</strong>
-                  <small>Stones carefully removed &amp; returned to you</small>
-                </div>
-              </div>
-
-              {/* Floating Top-Right Badge: Live Calibrated Scale Telemetry */}
-              <div className="hero-float-badge tabular-nums">
-                <span className="telugu-pill-dot" />
-                <span>OHAUS 0.01g Scale · 56.84g Live Assay</span>
-              </div>
-
-              {/* Main Architectural Gold-Bezel Showcase Frame */}
-              <div className="hero-stage-frame spotlight-card">
-                <div className="hero-stage-media">
-                  <Image
-                    src="/images/hero.png"
-                    alt="Open-counter 22K gold bangle valuation on a calibrated 56.84g digital scale beside a black Basanite touchstone at Trust Gold Services, Vijayawada"
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 580px"
-                    priority
-                  />
-                  <div className="hero-stage-vignette" aria-hidden="true" />
-                </div>
-
-                {/* Editorial Caption Overlay Inside Bottom of Frame */}
-                <div className="hero-stage-caption">
-                  <div className="hero-stage-caption-top">
-                    <span className="hero-stage-pill">
-                      <Sparkles size={12} /> OPEN-COUNTER VALUATION · GANDHINAGAR
-                    </span>
-                    <span className="hero-stage-rate tabular-nums">
-                      Flat 1% Fee Only
-                    </span>
-                  </div>
-                  <p className="hero-stage-telugu">
-                    “మెల్టింగ్ అడిగితే మెల్టింగ్ చేస్తాం, లేదు డైరెక్ట్‌గా
-                    కొనమంటే డైరెక్ట్‌గా కొంటాం.”
-                  </p>
-                  <p className="hero-stage-sub">
-                    Every digital weight reading, touchstone streak test, and
-                    payout sheet happens right in front of your eyes—never in a
-                    back room.
-                  </p>
-                </div>
-              </div>
-
-              {/* Floating Bottom-Right Card: Bank & NBFC Pledged Gold Release Escort */}
-              <div className="hero-float-card hero-float-bottom spotlight-card">
-                <div className="hero-float-icon">
-                  <Landmark size={20} />
-                </div>
-                <div>
-                  <span className="hero-float-eyebrow">
-                    BANK &amp; NBFC LOAN RELEASE
-                  </span>
-                  <strong>SBI · HDFC · Muthoot · Manappuram</strong>
-                  <small>
-                    We escort you, settle the loan &amp; pay your balance
-                  </small>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ====================================================================
-            INFINITE BULLION & BANK GOLD LOAN RELEASE MARQUEE STRIP
-            ==================================================================== */}
-        <section
-          aria-label="Supported banks, NBFCs and hallmark purities"
-          className="gold-marquee-bar"
-        >
-          <div className="gold-marquee">
-            <ul className="gold-marquee-track">
-              {[0, 1].map((copy) =>
-                MARQUEE_ITEMS.map((item) => (
-                  <li
-                    key={`${copy}-${item}`}
-                    aria-hidden={copy === 1 ? 'true' : undefined}
-                    className="gold-marquee-item"
-                  >
-                    <span>{item}</span>
-                    <svg
-                      aria-hidden="true"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      className="gold-marquee-star"
-                    >
-                      <path
-                        d="M7 0l1.6 5.4L14 7l-5.4 1.6L7 14l-1.6-5.4L0 7l5.4-1.6z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
-        </section>
-
-        {/* ====================================================================
-            THE CRAFT OF GOLD VALUATION: BASANITE TOUCHSTONE & 916 ASSAY BENCH
-            ==================================================================== */}
-        <GoldTouchstoneAssay />
-
-        {/* ====================================================================
-            3 TYPES OF GOLD JEWELLERY + CUSTOMER'S CHOICE BANNER
-            ==================================================================== */}
-        <section id="categories" className="section-pad">
+      <main id="top">
+        {/* =================================================================
+            2. HERO SECTION (Clear Benefit Headline, WhatsApp Valuation + Call Now)
+           ================================================================= */}
+        <section className="hero-vault" aria-labelledby="hero-heading">
+          <div className="hero-sunburst" aria-hidden="true" />
           <div className="container-shell">
-            <span className="section-tag">3 Gold Categories We Buy</span>
-            <Split
-              text="Clear valuation for every mark, purity, and ornament."
-              goldWords={['mark,', 'purity,']}
-              className="section-heading"
-            />
-            <p data-reveal className="section-sub">
-              Whether your ornaments carry a BIS 916 hallmark, a traditional 916
-              stamp, or no mark at all, we evaluate every piece openly in your
-              presence and explain the exact calculation before you decide.
-            </p>
+            <div className="hero-grid">
+              {/* Left Column: Customer-Benefit Headline, Supporting Copy & Direct CTAs */}
+              <div>
+                <div className="telugu-pill rise d1">
+                  <span className="telugu-pill-dot" aria-hidden="true" />
+                  <span>{t.hero.badge}</span>
+                </div>
 
-            <div data-reveal-group className="categories-grid">
-              {GOLD_CATEGORIES.map((cat) => (
-                <article key={cat.id} className="category-card spotlight-card">
-                  <div>
-                    <div className="category-card-top">
-                      <span className="category-num">
-                        CATEGORY {cat.number}
-                      </span>
-                      <span className="category-badge">{cat.badge}</span>
-                    </div>
-                    <h3>{cat.title}</h3>
-                    <p className="category-telugu">{cat.teluguHint}</p>
-                    <p className="category-desc">{cat.description}</p>
-                    <ul className="category-list">
-                      {cat.highlights.map((item) => (
-                        <li key={item}>
-                          <CheckCircle2 size={16} />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                <h1 id="hero-heading" className="hero-display">
+                  <span className="w-load d1">
+                    <i>{t.hero.headlineStart}</i>
+                  </span>{' '}
+                  <span className="w-load d2">
+                    <i className="hero-display-gold">{t.hero.headlineGold}</i>
+                  </span>{' '}
+                  <span className="w-load d3">
+                    <i>{t.hero.headlineEnd}</i>
+                  </span>
+                </h1>
 
-                  <a
-                    href={`https://wa.me/${
-                      BUSINESS_INFO.whatsappNumber
-                    }?text=${encodeURIComponent(
-                      `Hi Trust Gold Services, I want to check today's rate for ${cat.title}.`
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-navy"
-                    style={{ width: '100%' }}
+                <p className="hero-lead rise d4">{t.hero.lead}</p>
+
+                <div className="hero-actions rise d5">
+                  <Magnetic strength={0.25}>
+                    <a
+                      href={generalWhatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-gold"
+                    >
+                      <MessageCircle size={18} />
+                      {t.hero.whatsappCta}
+                      <ArrowRight size={16} />
+                    </a>
+                  </Magnetic>
+                  <Magnetic strength={0.2}>
+                    <a
+                      href={`tel:${BUSINESS_INFO.phone}`}
+                      className="btn btn-outline-light tabular-nums"
+                    >
+                      <Phone size={17} style={{ color: '#e6b95c' }} />
+                      {t.hero.callCta}
+                    </a>
+                  </Magnetic>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleLanguageSwitch(lang === 'en' ? 'te' : 'en')
+                    }
+                    className="btn btn-outline-light btn-sm"
+                    style={{ borderColor: 'rgba(230, 185, 92, 0.4)' }}
                   >
-                    Enquire for {cat.title.replace(' Jewellery', '')}{' '}
-                    <ArrowRight size={15} />
-                  </a>
+                    <Globe size={15} style={{ color: '#e6b95c' }} />
+                    {t.meta.switchLabel}
+                  </button>
+                </div>
+
+                <p className="hero-reassurance-line rise d5">
+                  <CheckCircle2
+                    size={15}
+                    style={{ color: '#e6b95c', flexShrink: 0 }}
+                  />
+                  <span>{t.hero.reassurance}</span>
+                </p>
+
+                {/* Founder Manohar Reddy Direct Assurance Strip */}
+                <div className="hero-founder-strip rise d6">
+                  <div className="hero-founder-avatar">
+                    <Image
+                      src="/images/owner-2.png"
+                      alt="Manohar Reddy — Founder of Trust Gold Services Vijayawada"
+                      fill
+                      sizes="64px"
+                    />
+                  </div>
+                  <div className="hero-founder-meta">
+                    <strong>{BUSINESS_INFO.founderName}</strong>
+                    <span>{t.hero.founderRole}</span>
+                    <p>{t.hero.founderQuote}</p>
+                  </div>
+                </div>
+
+                {/* Key Credibility Metrics */}
+                <div className="hero-metrics tabular-nums">
+                  {t.hero.metrics.map((m) => (
+                    <div key={m.value} className="metric-item">
+                      <strong>{m.value}</strong>
+                      <span>{m.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Column: Editorial Open-Counter Bullion Stage */}
+              <div className="hero-showcase-stage rise d3">
+                <ImageReveal
+                  direction="up"
+                  className="hero-stage-frame spotlight-card"
+                >
+                  <div className="hero-stage-media">
+                    <Parallax yPx={22} scale={1.08}>
+                      <Image
+                        src="/images/hero.png"
+                        alt="Trust Gold Services open-counter calibrated digital gold scale and traditional Basanite touchstone in Vijayawada"
+                        fill
+                        priority
+                        sizes="(max-width: 1024px) 100vw, 560px"
+                      />
+                    </Parallax>
+                    <div className="hero-stage-gradient" aria-hidden="true" />
+                  </div>
+                </ImageReveal>
+
+                {/* Top Floating Badge */}
+                <div className="hero-float-badge hero-float-top">
+                  <span className="hero-live-dot" aria-hidden="true" />
+                  <div>
+                    <small>{t.hero.stageTopBadge}</small>
+                    <strong>Hallmark 22K · 916 Mark · Unmarked Gold</strong>
+                  </div>
+                </div>
+
+                {/* Bottom Floating Customer's Choice Card */}
+                <div className="hero-float-card hero-float-bottom">
+                  <div className="hero-float-icon">
+                    <Scale size={20} />
+                  </div>
+                  <div>
+                    <strong>{t.hero.stageBottomTitle}</strong>
+                    <p>{t.hero.stageBottomText}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =================================================================
+            3. THREE TRUST PILLARS (#trust-pillars — Transparent Testing, Weighing & Pricing)
+           ================================================================= */}
+        <section
+          id="trust-pillars"
+          className="section-pad"
+          aria-labelledby="trust-pillars-heading"
+          style={{ paddingBottom: 48 }}
+        >
+          <div className="container-shell">
+            <div style={{ marginBottom: 40 }}>
+              <span className="section-tag">{t.trustPillars.tag}</span>
+              <Split
+                key={`pillars-head-${lang}`}
+                id="trust-pillars-heading"
+                text={t.trustPillars.heading}
+                goldWords={t.trustPillars.goldWords}
+                className="section-heading"
+              />
+              <p data-reveal className="section-sub">
+                {t.trustPillars.sub}
+              </p>
+            </div>
+
+            <div data-reveal-group className="three-pillars-grid">
+              {t.trustPillars.items.map((pillar, idx) => (
+                <article
+                  key={pillar.index}
+                  className="pillar-feature-card spotlight-card"
+                >
+                  <div className="pillar-feature-top">
+                    <span className="pillar-feature-num tabular-nums">
+                      {pillar.index}
+                    </span>
+                    <div className="pillar-feature-icon" aria-hidden="true">
+                      {idx === 0 ? (
+                        <Eye size={22} />
+                      ) : idx === 1 ? (
+                        <Scale size={22} />
+                      ) : (
+                        <HandCoins size={22} />
+                      )}
+                    </div>
+                  </div>
+                  <h3>{pillar.title}</h3>
+                  <span className="pillar-feature-sub">{pillar.subtitle}</span>
+                  <p>{pillar.description}</p>
+                  <div className="pillar-feature-proof">
+                    <BadgeCheck size={16} />
+                    <span>{pillar.proof}</span>
+                  </div>
                 </article>
               ))}
             </div>
+          </div>
+        </section>
 
-            {/* Customer's Choice Banner: Direct Purchase vs Melting in Presence */}
-            <div data-reveal className="choice-banner spotlight-card">
-              <div>
-                <span
-                  className="section-tag"
-                  style={{ color: 'var(--bullion-gold-bright)' }}
-                >
-                  Customer’s Choice Guarantee
-                </span>
+        {/* =================================================================
+            4. TWO PROMINENT SERVICES + 3 GOLD CATEGORIES (#services)
+           ================================================================= */}
+        <section
+          id="services"
+          className="section-pad section-alabaster"
+          aria-labelledby="services-heading"
+        >
+          <div className="container-shell">
+            <div style={{ marginBottom: 44 }}>
+              <span className="section-tag">{t.services.tag}</span>
+              <Split
+                key={`services-head-${lang}`}
+                id="services-heading"
+                text={t.services.heading}
+                goldWords={t.services.goldWords}
+                className="section-heading"
+              />
+              <p data-reveal className="section-sub">
+                {t.services.sub}
+              </p>
+            </div>
+
+            {/* Two Primary Service Cards: Sell Old Gold & Release Pledged Gold */}
+            <div data-reveal-group className="services-split">
+              {/* Service 1: Sell Old Gold */}
+              <article className="service-panel spotlight-card">
+                <div className="service-media">
+                  <Image
+                    src="/images/old-gold-purchase.png"
+                    alt="Sell Old Gold in Vijayawada — Open-counter purity testing and instant spot payment"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 580px"
+                  />
+                  <div className="service-media-overlay" />
+                  <div className="service-media-caption">
+                    <span>{t.services.sellGold.badge}</span>
+                    <h3>{t.services.sellGold.title}</h3>
+                  </div>
+                </div>
+
+                <div className="service-body">
+                  <p
+                    style={{
+                      margin: '0 0 8px',
+                      fontSize: '0.88rem',
+                      fontWeight: 700,
+                      color: 'var(--bullion-gold-deep)',
+                    }}
+                  >
+                    {t.services.sellGold.teluguSub}
+                  </p>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: '0.94rem',
+                      color: 'var(--ink-muted)',
+                    }}
+                  >
+                    {t.services.sellGold.lead}
+                  </p>
+
+                  <div className="service-bullet-list">
+                    {t.services.sellGold.points.map((pt) => (
+                      <div key={pt} className="service-bullet">
+                        <CheckCircle2 size={18} />
+                        <span>{pt}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop: 'auto',
+                      paddingTop: 12,
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 12,
+                    }}
+                  >
+                    <a
+                      href={sellGoldWhatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-navy"
+                    >
+                      <MessageCircle size={16} />
+                      {t.services.sellGold.whatsappCta}
+                      <ArrowRight size={15} />
+                    </a>
+                    <a
+                      href={`tel:${BUSINESS_INFO.phone}`}
+                      className="btn"
+                      style={{
+                        border: '1px solid var(--rule-strong)',
+                        background: '#ffffff',
+                      }}
+                    >
+                      <Phone size={16} />
+                      {t.services.sellGold.callCta}
+                    </a>
+                  </div>
+                </div>
+              </article>
+
+              {/* Service 2: Release Pledged Gold */}
+              <article className="service-panel spotlight-card">
+                <div className="service-media">
+                  <Image
+                    src="/images/pledged-gold-release.png"
+                    alt="Release Pledged Gold from Banks and Financiers in Vijayawada"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 580px"
+                  />
+                  <div className="service-media-overlay" />
+                  <div className="service-media-caption">
+                    <span>{t.services.releaseGold.badge}</span>
+                    <h3>{t.services.releaseGold.title}</h3>
+                  </div>
+                </div>
+
+                <div className="service-body">
+                  <p
+                    style={{
+                      margin: '0 0 8px',
+                      fontSize: '0.88rem',
+                      fontWeight: 700,
+                      color: 'var(--bullion-gold-deep)',
+                    }}
+                  >
+                    {t.services.releaseGold.teluguSub}
+                  </p>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: '0.94rem',
+                      color: 'var(--ink-muted)',
+                    }}
+                  >
+                    {t.services.releaseGold.lead}
+                  </p>
+
+                  <div className="service-bullet-list">
+                    {t.services.releaseGold.points.map((pt) => (
+                      <div key={pt} className="service-bullet">
+                        <Landmark size={18} />
+                        <span>{pt}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div
+                    style={{
+                      marginTop: 'auto',
+                      paddingTop: 12,
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 12,
+                    }}
+                  >
+                    <a
+                      href={releaseGoldWhatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-gold"
+                    >
+                      <LockOpen size={16} />
+                      {t.services.releaseGold.whatsappCta}
+                      <ArrowRight size={15} />
+                    </a>
+                    <a
+                      href={`tel:${BUSINESS_INFO.phone}`}
+                      className="btn"
+                      style={{
+                        border: '1px solid var(--rule-strong)',
+                        background: '#ffffff',
+                      }}
+                    >
+                      <Phone size={16} />
+                      {t.services.releaseGold.callCta}
+                    </a>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            {/* 3 Gold Jewellery Categories Accepted (Integrated inside #services) */}
+            <div style={{ marginTop: 64 }}>
+              <div style={{ marginBottom: 32 }}>
+                <span className="section-tag">{t.services.categoriesTag}</span>
                 <h3
                   style={{
                     fontFamily: 'var(--font-display), Georgia, serif',
-                    fontSize: 'clamp(1.75rem, 2.8vw, 2.35rem)',
-                    margin: '0 0 12px',
-                    lineHeight: 1.12,
-                  }}
-                >
-                  Direct Purchase or Melting in Your Presence—You Decide.
-                </h3>
-                <p
-                  style={{
-                    margin: '0 0 14px',
-                    color: 'rgba(255,255,255,0.82)',
-                    fontSize: '0.94rem',
-                  }}
-                >
-                  At Trust Gold Services, we never force a single method.
-                  Customers choose the valuation process they are most
-                  comfortable with—including purity testing, careful stone
-                  removal, or melting right in front of their eyes.
-                </p>
-                <p
-                  style={{
-                    margin: 0,
-                    color: 'var(--bullion-gold-bright)',
-                    fontSize: '0.86rem',
+                    fontSize: 'clamp(1.75rem, 2.8vw, 2.45rem)',
                     fontWeight: 600,
+                    margin: '0 0 10px',
+                    color: 'var(--vault-navy)',
                   }}
                 >
-                  “మెల్టింగ్ అడిగితే మెల్టింగ్ చేస్తాం, లేదు డైరెక్ట్‌గా
-                  కొనమంటే డైరెక్ట్‌గా కొంటాం.”
-                </p>
+                  {t.services.categoriesHeading}
+                </h3>
+                <p className="section-sub">{t.services.categoriesSub}</p>
               </div>
 
-              <div className="choice-cards">
-                <div className="choice-option">
-                  <Scale
-                    size={22}
-                    style={{
-                      color: 'var(--bullion-gold-bright)',
-                      marginBottom: 10,
-                    }}
-                  />
-                  <h4>Direct Valuation &amp; Spot Buy</h4>
-                  <small>No melting required</small>
-                  <p>
-                    We test purity and weigh your jewellery on our calibrated
-                    scale in front of you, deduct stone weight transparently,
-                    and pay you immediately.
-                  </p>
-                </div>
+              <div data-reveal-group className="categories-grid">
+                {GOLD_CATEGORIES.map((category, idx) => {
+                  const teCat = TELUGU_CATEGORIES[category.id]
+                  const displayName =
+                    lang === 'te' ? teCat.name : category.name
+                  const displayBadge =
+                    lang === 'te' ? teCat.badge : category.badge
+                  const displayPurity =
+                    lang === 'te'
+                      ? teCat.purityDescription
+                      : category.purityDescription
+                  const displayNote =
+                    lang === 'te' ? teCat.valuationNote : category.valuationNote
+                  const displayExamples =
+                    lang === 'te' ? teCat.examples : category.examples
 
-                <div className="choice-option">
-                  <Flame
-                    size={22}
-                    style={{
-                      color: 'var(--bullion-gold-bright)',
-                      marginBottom: 10,
-                    }}
-                  />
-                  <h4>Melting in Your Presence</h4>
-                  <small>100% homogeneous purity assay</small>
-                  <p>
-                    Prefer melting for complete certainty? We remove stones so
-                    you keep them, melt the gold in your presence, and settle
-                    on the exact net reading.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+                  const categoryWaUrl = `https://wa.me/${
+                    BUSINESS_INFO.whatsappNumber
+                  }?text=${encodeURIComponent(
+                    lang === 'te'
+                      ? `నమస్కారం Trust Gold Services, నా దగ్గర ${category.shortName} ఆభరణాలు ఉన్నాయి. ఈరోజు విజయవాడ గ్రాము రేటు తెలుపగలరు.`
+                      : `Hi Trust Gold Services, I have ${category.name} ornaments and want to check today's per-gram rate in Vijayawada.`
+                  )}`
 
-        {/* ====================================================================
-            WHY FAMILIES CHOOSE US + TRANSPARENT SIDE-BY-SIDE COMPARISON MATRIX
-            ==================================================================== */}
-        <section id="comparison" className="section-pad section-vault">
-          <div className="container-shell">
-            <div className="comparison-header">
-              <div>
-                <span className="section-tag">Why Families Choose Us</span>
-                <Split
-                  text="Fair, fast, and stress-free gold valuation in Vijayawada."
-                  goldWords={['Fair,', 'stress-free']}
-                  className="section-heading"
-                />
-              </div>
-              <p data-reveal className="section-sub">
-                From the first purity check to final settlement, every step at
-                our Gandhinagar counter is built around clarity, dignity, and
-                maximum value for your family’s ornaments.
-              </p>
-            </div>
+                  return (
+                    <article
+                      key={category.id}
+                      className="category-card spotlight-card"
+                    >
+                      <div className="category-top">
+                        <div className="category-icon-box" aria-hidden="true">
+                          {idx === 0 ? (
+                            <Award size={22} />
+                          ) : idx === 1 ? (
+                            <BadgeCheck size={22} />
+                          ) : (
+                            <Gem size={22} />
+                          )}
+                        </div>
+                        <span className="category-badge">{displayBadge}</span>
+                      </div>
 
-            {/* 4-Pillar Trust Bento Grid (Upgraded from trustgoldservices.com) */}
-            <div data-reveal-group className="trust-pillars-bento">
-              <article className="trust-pillar-card spotlight-card">
-                <div className="trust-pillar-top">
-                  <span className="trust-pillar-index">01</span>
-                  <div className="trust-pillar-icon">
-                    <Scale size={20} />
-                  </div>
-                </div>
-                <h3>Transparent Open-Counter Valuation</h3>
-                <p>
-                  Every purity check, weight reading on our calibrated 0.01g
-                  scale, and stone deduction is explained openly in your
-                  presence—never inside a closed room.
-                </p>
-              </article>
-
-              <article className="trust-pillar-card spotlight-card">
-                <div className="trust-pillar-top">
-                  <span className="trust-pillar-index">02</span>
-                  <div className="trust-pillar-icon">
-                    <Banknote size={20} />
-                  </div>
-                </div>
-                <h3>Instant Spot Payment</h3>
-                <p>
-                  Receive immediate settlement via spot cash, RTGS, NEFT, IMPS,
-                  or UPI at the counter the moment you approve the final written
-                  valuation sheet.
-                </p>
-              </article>
-
-              <article className="trust-pillar-card spotlight-card">
-                <div className="trust-pillar-top">
-                  <span className="trust-pillar-index">03</span>
-                  <div className="trust-pillar-icon">
-                    <Sparkles size={20} />
-                  </div>
-                </div>
-                <h3>Live Day’s Market Price</h3>
-                <p>
-                  Fair rates aligned directly to the live Vijayawada bullion
-                  market for BIS 916 hallmarked, 916-stamped, and unmarked
-                  family ornaments.
-                </p>
-              </article>
-
-              <article className="trust-pillar-card spotlight-card">
-                <div className="trust-pillar-top">
-                  <span className="trust-pillar-index">04</span>
-                  <div className="trust-pillar-icon">
-                    <BadgePercent size={20} />
-                  </div>
-                </div>
-                <h3>Flat 1% Processing Fee (99% Value)</h3>
-                <p>
-                  While corporate chains deduct 3%–5% and pawn brokers cut up to
-                  15%, we charge a flat 1% processing fee so you keep 99% of
-                  your gold’s value.
-                </p>
-              </article>
-            </div>
-
-            <div data-reveal className="comparison-table-shell spotlight-card">
-              <table className="comparison-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Valuation &amp; Settlement Factor</th>
-                    <th scope="col" className="col-trustgold">
-                      <span className="col-badge">RECOMMENDED · 99% VALUE</span>
-                      <strong>Trust Gold Services</strong>
-                      <small>Gandhinagar, Vijayawada</small>
-                    </th>
-                    <th scope="col">
-                      <strong>Corporate Gold Chains</strong>
-                      <small>Typical Franchise Buyers</small>
-                    </th>
-                    <th scope="col">
-                      <strong>Local Pawn Brokers</strong>
-                      <small>Unorganized Cash Buyers</small>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {COMPARISON_ROWS.map((row) => (
-                    <tr key={row.feature}>
-                      <th scope="row">{row.feature}</th>
-                      <td className="col-trustgold">
-                        <span className="cell-trustgold-inner">
-                          <CheckCircle2 size={16} />
-                          <strong>{row.trustGold}</strong>
+                      <div>
+                        <h4>{displayName}</h4>
+                        <span className="category-telugu">
+                          {category.teluguName} · {displayPurity}
                         </span>
-                      </td>
-                      <td>{row.corporate}</td>
-                      <td>{row.pawnBroker}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
+                      </div>
 
-        {/* ====================================================================
-            CORE SERVICES: OLD GOLD PURCHASE & PLEDGED GOLD RELEASE
-            ==================================================================== */}
-        <section id="services" className="section-pad section-alabaster">
-          <div className="container-shell">
-            <span className="section-tag">Our Core Services</span>
-            <Split
-              text="Practical gold solutions for Vijayawada families."
-              goldWords={['gold', 'solutions']}
-              className="section-heading"
-            />
-            <p data-reveal className="section-sub">
-              Whether you want to unlock cash from unused family ornaments or
-              close a rising gold loan at a bank or NBFC, our team handles
-              every step respectfully and quickly.
-            </p>
+                      <p>{displayNote}</p>
 
-            <div data-reveal-group className="services-showcase">
-              <article className="service-feature-card spotlight-card">
-                <div data-img-reveal className="service-media">
-                  <div data-parallax className="parallax-media-wrap">
-                    <Image
-                      src="/images/old-gold-purchase.png"
-                      alt="Old gold jewellery ready for transparent valuation at Trust Gold Services"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                  </div>
-                </div>
-                <div className="service-body">
-                  <span
-                    className="category-num"
-                    style={{ letterSpacing: '0.08em' }}
-                  >
-                    01 / DIRECT OLD GOLD PURCHASE
-                  </span>
-                  <h3>Sell Old, Unused or Broken Gold Jewellery</h3>
-                  <p>
-                    Turn old, broken, ancestral, or stone-studded jewellery into
-                    immediate funds at Vijayawada’s live market price. Every
-                    step—from purity testing and stone separation to the 1%
-                    processing fee and final payout—is explained before you
-                    commit.
-                  </p>
-                  <ul className="category-list" style={{ marginTop: 'auto' }}>
-                    <li>
-                      <CheckCircle2 size={16} />
-                      <span>
-                        We buy Hallmark 22K, 916 Mark &amp; unmarked ornaments
-                      </span>
-                    </li>
-                    <li>
-                      <CheckCircle2 size={16} />
-                      <span>
-                        Keep your stones/gems—only net gold weight is valued
-                      </span>
-                    </li>
-                    <li>
-                      <CheckCircle2 size={16} />
-                      <span>
-                        Instant spot payment via Cash / IMPS / RTGS / UPI
-                      </span>
-                    </li>
-                  </ul>
-                  <a
-                    href={`https://wa.me/${
-                      BUSINESS_INFO.whatsappNumber
-                    }?text=${encodeURIComponent(
-                      'Hi Trust Gold Services, I would like to enquire about selling old gold jewellery.'
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-gold"
-                  >
-                    Enquire About Selling Gold <ArrowRight size={16} />
-                  </a>
-                </div>
-              </article>
+                      <ul className="category-examples">
+                        {displayExamples.map((example) => (
+                          <li key={example}>
+                            <CheckCircle2
+                              size={15}
+                              style={{
+                                color: 'var(--bullion-gold)',
+                                flexShrink: 0,
+                                marginTop: 3,
+                              }}
+                            />
+                            <span>{example}</span>
+                          </li>
+                        ))}
+                      </ul>
 
-              <article className="service-feature-card spotlight-card">
-                <div data-img-reveal className="service-media">
-                  <div data-parallax className="parallax-media-wrap">
-                    <Image
-                      src="/images/pledged-gold-release.png"
-                      alt="Trust Gold Services executive assisting customer with bank pledged gold release"
-                      fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                  </div>
-                </div>
-                <div className="service-body">
-                  <span
-                    className="category-num"
-                    style={{ letterSpacing: '0.08em' }}
-                  >
-                    02 / BANK &amp; NBFC LOAN RELEASE
-                  </span>
-                  <h3>Release Pledged Gold &amp; Unlock Remaining Value</h3>
-                  <p>
-                    Is your jewellery locked in a gold loan at a bank or NBFC
-                    with mounting interest? Instead of losing your gold to
-                    auctions, we step in to settle the outstanding loan, release
-                    your ornaments, and pay you the remaining market value.
-                  </p>
-                  <ul className="category-list" style={{ marginTop: 'auto' }}>
-                    <li>
-                      <CheckCircle2 size={16} />
-                      <span>
-                        We accompany you to any Bank or NBFC across Vijayawada
-                      </span>
-                    </li>
-                    <li>
-                      <CheckCircle2 size={16} />
-                      <span>
-                        We pay off the principal + interest to release your
-                        jewellery
-                      </span>
-                    </li>
-                    <li>
-                      <CheckCircle2 size={16} />
-                      <span>
-                        Transparent 1% processing fee &amp; immediate balance
-                        settlement
-                      </span>
-                    </li>
-                  </ul>
-                  <a
-                    href={`https://wa.me/${
-                      BUSINESS_INFO.whatsappNumber
-                    }?text=${encodeURIComponent(
-                      'Hi Trust Gold Services, I need assistance releasing my pledged gold from a bank/NBFC.'
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-gold"
-                  >
-                    Ask About Pledged Gold Release <ArrowRight size={16} />
-                  </a>
-                </div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        {/* ====================================================================
-            FOUNDER SHOWCASE, STORY, VISION & MISSION (MANOHAR REDDY PORTRAITS)
-            ==================================================================== */}
-        <section id="founder" className="section-pad section-vault">
-          <div className="container-shell founder-grid">
-            {/* Left Column: Single Founder Portrait */}
-            <div className="portrait-stage">
-              <div data-img-reveal className="portrait-main-frame">
-                <div data-parallax className="parallax-media-wrap">
-                  <Image
-                    src="/images/owner-2.png"
-                    alt="Manohar Reddy — Founder, Trust Gold Services"
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 480px"
-                  />
-                </div>
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: 16,
-                    right: 16,
-                    bottom: 16,
-                    background: 'rgba(5, 16, 36, 0.86)',
-                    backdropFilter: 'blur(14px)',
-                    padding: '14px 16px',
-                    borderRadius: 12,
-                    border: '1px solid rgba(230, 185, 92, 0.35)',
-                  }}
-                >
-                  <strong
-                    style={{
-                      display: 'block',
-                      fontSize: '0.95rem',
-                      color: '#ffffff',
-                    }}
-                  >
-                    {BUSINESS_INFO.founderName} — Founder, Trust Gold Services
-                  </strong>
-                  <span
-                    style={{
-                      fontSize: '0.8rem',
-                      color: 'var(--bullion-gold-bright)',
-                    }}
-                  >
-                    Personal guidance at our Gandhinagar, Vijayawada branch
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Story, Vision & Mission from Client Brief */}
-            <div data-reveal>
-              <span className="section-tag">Our Story &amp; Leadership</span>
-              <Split
-                text="“Because gold carries value—but trust carries even more.”"
-                goldWords={['gold', 'trust']}
-                className="section-heading"
-              />
-
-              <p
-                style={{
-                  color: 'rgba(255,255,255,0.82)',
-                  fontSize: '0.98rem',
-                  marginBottom: 16,
-                }}
-              >
-                <strong>Trust Gold Services</strong> was born in Vijayawada from
-                a simple belief: selling gold should never feel confusing,
-                stressful, or unfair. We saw that many families who wanted to
-                sell old gold—or release gold pledged with banks and
-                NBFCs—often struggled to understand how their ornaments were
-                valued, what deductions were being made, and whether they were
-                receiving the right value.
-              </p>
-
-              <p
-                style={{
-                  color: 'rgba(255,255,255,0.78)',
-                  fontSize: '0.95rem',
-                  marginBottom: 20,
-                }}
-              >
-                Today, under the leadership of{' '}
-                <strong style={{ color: 'var(--bullion-gold-bright)' }}>
-                  {BUSINESS_INFO.founderName}
-                </strong>
-                , our approach remains simple: give customers clarity, choice,
-                speed, and confidence. Whether it is hallmarked jewellery,
-                non-hallmarked gold, jewellery with stones, or pledged gold, we
-                explain every step openly—and for us, the relationship does not
-                end after the transaction.
-              </p>
-
-              <div className="vision-mission-grid">
-                <div className="vm-box">
-                  <h4>Our Vision</h4>
-                  <p>
-                    To become the most trusted gold-buying and pledged-gold
-                    assistance brand, starting from Vijayawada and expanding
-                    across Andhra Pradesh and Telangana, by setting a new
-                    standard for transparency, fair valuation, and customer
-                    respect.
-                  </p>
-                </div>
-
-                <div className="vm-box">
-                  <h4>Our Mission</h4>
-                  <p>
-                    To help customers unlock the true value of their gold
-                    through honest valuation, clear guidance, quick and secure
-                    payment, and reliable assistance to release pledged gold
-                    from banks and NBFCs.
-                  </p>
-                </div>
+                      <div style={{ marginTop: 'auto', paddingTop: 12 }}>
+                        <a
+                          href={categoryWaUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-sm"
+                          style={{
+                            width: '100%',
+                            background: 'var(--alabaster)',
+                            color: 'var(--vault-navy)',
+                            borderColor: 'var(--rule-strong)',
+                          }}
+                        >
+                          <MessageCircle size={15} />
+                          {t.services.categoriesCta}
+                          <ArrowRight size={14} />
+                        </a>
+                      </div>
+                    </article>
+                  )
+                })}
               </div>
             </div>
           </div>
         </section>
 
-        {/* ====================================================================
-            INTERACTIVE KYC & REQUIRED DOCUMENTS CHECKLIST
-            ==================================================================== */}
-        <section id="documents" className="section-pad">
-          <div className="container-shell kyc-container">
-            <div data-reveal>
-              <span className="section-tag">Compliance &amp; Checklist</span>
-              <Split
-                text="Know the exact documents before you visit our shop."
-                goldWords={['exact', 'documents']}
-                className="section-heading"
-              />
-              <p className="section-sub" style={{ marginBottom: 24 }}>
-                To protect both you and our business, we follow a clean,
-                documented verification process. Select your service below to
-                see what to bring to our Gandhinagar office.
-              </p>
-
-              {/* Clip-Path Segmented Switcher for Documents */}
-              <div
-                className="segmented-control"
-                role="tablist"
-                aria-label="Document requirements by service"
-                style={{ maxWidth: 420 }}
-              >
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={kycTab === 'direct-sale'}
-                  className="segmented-btn"
-                  onClick={() => switchKycTab('direct-sale')}
-                >
-                  Direct Gold Sale
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={kycTab === 'pledged-release'}
-                  className="segmented-btn"
-                  onClick={() => switchKycTab('pledged-release')}
-                >
-                  Bank Loan Release
-                </button>
-                <div
-                  className="segmented-overlay"
-                  aria-hidden="true"
-                  style={{
-                    clipPath:
-                      kycTab === 'direct-sale'
-                        ? 'inset(0 50% 0 0 round 7px)'
-                        : 'inset(0 0% 0 50% round 7px)',
-                  }}
-                >
-                  <span>Direct Gold Sale</span>
-                  <span>Bank Loan Release</span>
-                </div>
-              </div>
-
-              <div
-                style={{
-                  marginTop: 18,
-                  padding: '14px 16px',
-                  borderRadius: 10,
-                  background: 'var(--alabaster)',
-                  border: '1px solid var(--rule-light)',
-                  fontSize: '0.84rem',
-                  color: 'var(--ink-muted)',
-                }}
-              >
-                <strong style={{ color: 'var(--vault-navy)' }}>
-                  Have a question about documents?
-                </strong>{' '}
-                Send us a photo of your pledge card or ornament on WhatsApp and
-                we will guide you in 2 minutes.
-              </div>
-            </div>
-
-            <div
-              data-reveal-group
-              className={
-                kycSwitching ? 'doc-cards-grid switching' : 'doc-cards-grid'
-              }
-            >
-              {KYC_DOCS[kycTab].map((doc, idx) => (
-                <div key={doc.title} className="doc-card spotlight-card">
-                  <div className="doc-icon">
-                    {idx === 0 ? (
-                      <UserCheck size={19} />
-                    ) : idx === 1 ? (
-                      <FileCheck2 size={19} />
-                    ) : idx === 2 ? (
-                      <Building2 size={19} />
-                    ) : (
-                      <Landmark size={19} />
-                    )}
-                  </div>
-                  <div>
-                    <h4>{doc.title}</h4>
-                    <p>{doc.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ====================================================================
-            INTERACTIVE 2-TRACK PROCESS + GANDHINAGAR BRANCH SHOWCASE
-            ==================================================================== */}
-        <section id="process" className="section-pad section-alabaster">
+        {/* =================================================================
+            5. FOUR-STEP VALUATION & SETTLEMENT PROCESS (#how-it-works)
+           ================================================================= */}
+        <section
+          id="how-it-works"
+          className="section-pad"
+          aria-labelledby="process-heading"
+        >
           <div className="container-shell">
             <div className="process-header-bar">
               <div>
-                <span className="section-tag">How It Works</span>
+                <span className="section-tag">{t.howItWorks.tag}</span>
                 <Split
-                  text="Four calm, visible steps from arrival to spot payout."
-                  goldWords={['visible', 'spot', 'payout.']}
+                  key={`process-head-${lang}`}
+                  id="process-heading"
+                  text={t.howItWorks.heading}
+                  goldWords={t.howItWorks.goldWords}
                   className="section-heading"
                 />
                 <p data-reveal className="section-sub">
-                  Switch between our Direct Gold Sale flow and our Bank / NBFC
-                  Pledged Gold Release flow below.
+                  {t.howItWorks.sub}
                 </p>
               </div>
 
-              {/* Interactive Two-Track Process Switcher */}
+              {/* 2-Track Process Switcher */}
               <div
                 className="segmented-control"
+                style={{ marginBottom: 0, minWidth: 330 }}
                 role="tablist"
-                aria-label="Select process workflow"
-                style={{ minWidth: 340, marginBottom: 0 }}
+                aria-label="Choose process track"
               >
                 <button
                   type="button"
                   role="tab"
-                  aria-selected={processTrack === 'direct-sale'}
+                  aria-selected={processTrack === 'sell'}
                   className="segmented-btn"
-                  onClick={() => setProcessTrack('direct-sale')}
+                  onClick={() => setProcessTrack('sell')}
                 >
-                  Track 1: Sell Old Gold
+                  {t.howItWorks.trackSellBtn}
                 </button>
                 <button
                   type="button"
                   role="tab"
-                  aria-selected={processTrack === 'pledged-release'}
+                  aria-selected={processTrack === 'release'}
                   className="segmented-btn"
-                  onClick={() => setProcessTrack('pledged-release')}
+                  onClick={() => setProcessTrack('release')}
                 >
-                  Track 2: Release Pledged Gold
+                  {t.howItWorks.trackReleaseBtn}
                 </button>
                 <div
                   className="segmented-overlay"
                   aria-hidden="true"
                   style={{
                     clipPath:
-                      processTrack === 'direct-sale'
-                        ? 'inset(0 50% 0 0 round 7px)'
-                        : 'inset(0 0% 0 50% round 7px)',
+                      processTrack === 'sell'
+                        ? 'inset(0 50% 0 0 round 6px)'
+                        : 'inset(0 0 0 50% round 6px)',
                   }}
                 >
-                  <span>Track 1: Sell Old Gold</span>
-                  <span>Track 2: Release Pledged Gold</span>
+                  <span>{t.howItWorks.trackSellBtn}</span>
+                  <span>{t.howItWorks.trackReleaseBtn}</span>
                 </div>
               </div>
             </div>
 
             <div className="steps-timeline-wrap">
-              <span
-                aria-hidden="true"
-                data-draw
+              <div
+                data-draw-line
                 className="steps-golden-line"
+                aria-hidden="true"
               />
-              <div data-reveal-group className="steps-grid">
-                {PROCESS_TRACKS[processTrack].map((item) => (
-                  <div key={item.title} className="step-card spotlight-card">
-                    <span className="step-num">{item.step}</span>
-                    <h3>{item.title}</h3>
-                    <p>{item.desc}</p>
+              <div
+                key={`steps-${processTrack}-${lang}`}
+                data-reveal-group
+                className="steps-grid"
+              >
+                {activeSteps.map((step) => (
+                  <div key={step.step} className="step-card spotlight-card">
+                    <span className="step-num tabular-nums">
+                      STEP {step.step}
+                    </span>
+                    <h3>{step.title}</h3>
+                    <span className="step-telugu">{step.telugu}</span>
+                    <p>{step.description}</p>
                   </div>
                 ))}
               </div>
             </div>
+          </div>
+        </section>
 
-            {/* Authentic Gandhinagar Branch Open-Counter Showcase (/images/about-shop.png) */}
-            <div data-reveal className="branch-counter-banner spotlight-card">
-              <div data-img-reveal className="branch-counter-media">
-                <div data-parallax className="parallax-media-wrap">
+        {/* =================================================================
+            6. REAL SHOP, STAFF & EQUIPMENT PHOTOGRAPHY + TOUCHSTONE ASSAY (#shop-gallery & #gold-craft)
+           ================================================================= */}
+        <section
+          id="shop-gallery"
+          className="section-pad section-alabaster"
+          aria-labelledby="shop-gallery-heading"
+          style={{ paddingTop: 72, paddingBottom: 72 }}
+        >
+          <div className="container-shell">
+            <div style={{ marginBottom: 32 }}>
+              <span className="section-tag">{t.shopGallery.tag}</span>
+              <h2 id="shop-gallery-heading" className="section-heading">
+                {t.shopGallery.heading}
+              </h2>
+              <p className="section-sub">{t.shopGallery.lead}</p>
+            </div>
+
+            <div data-reveal-group className="shop-gallery-grid">
+              <figure className="shop-photo-card spotlight-card">
+                <div className="shop-photo-media">
                   <Image
                     src="/images/about-shop.png"
-                    alt="Trust Gold Services Gandhinagar Vijayawada branch consultation counter and digital gold weighing scale"
+                    alt="Trust Gold Services Gandhinagar Vijayawada Branch Consultation Counter"
                     fill
-                    sizes="(max-width: 900px) 100vw, 460px"
+                    sizes="(max-width: 1024px) 100vw, 600px"
                   />
                 </div>
-              </div>
-              <div className="branch-counter-copy">
+                <figcaption className="shop-photo-caption">
+                  <Building2 size={16} style={{ color: 'var(--bullion-gold)' }} />
+                  <span>{t.shopGallery.counterPhotoCaption}</span>
+                </figcaption>
+              </figure>
+
+              <figure className="shop-photo-card spotlight-card">
+                <div className="shop-photo-media">
+                  <Image
+                    src="/images/hero.png"
+                    alt="Calibrated 0.01g digital gold weighing scale and black Basanite touchstone at Trust Gold Services"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 600px"
+                  />
+                </div>
+                <figcaption className="shop-photo-caption">
+                  <Scale size={16} style={{ color: 'var(--bullion-gold)' }} />
+                  <span>{t.shopGallery.scalePhotoCaption}</span>
+                </figcaption>
+              </figure>
+            </div>
+
+            <div
+              className="branch-counter-badges"
+              style={{ marginTop: 22 }}
+            >
+              {t.shopGallery.badges.map((b) => (
                 <span
-                  className="section-tag"
-                  style={{ color: 'var(--bullion-gold-bright)' }}
+                  key={b}
+                  style={{
+                    background: 'var(--vault-navy)',
+                    color: '#e6b95c',
+                  }}
                 >
-                  Inside Our Gandhinagar Branch
+                  <ShieldCheck size={14} /> {b}
                 </span>
-                <h3>
-                  A Private, Respectful Consultation Counter Built for Families
-                </h3>
-                <p>
-                  Unlike crowded street-side pawn shops, our First Floor office
-                  at Shop No. 5, Vasisth Enclave in Gandhinagar offers air-conditioned
-                  privacy, calibrated digital scales, and complete transparency
-                  for women, senior citizens, and families across Vijayawada.
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Interactive Black Basanite Touchstone & 916 Purity Assay Bench */}
+        <GoldTouchstoneAssay lang={lang} />
+
+        {/* =================================================================
+            7. TRANSPARENT 1% FEE EXPLANATION, CUSTOMER'S CHOICE & WORKED CALCULATIONS (#why-trust-gold)
+           ================================================================= */}
+        <section
+          id="why-trust-gold"
+          className="section-pad section-vault"
+          aria-labelledby="why-trust-heading"
+        >
+          <div className="container-shell">
+            <div style={{ marginBottom: 44 }}>
+              <span className="section-tag">{t.whyTrustGold.tag}</span>
+              <Split
+                key={`why-head-${lang}`}
+                id="why-trust-heading"
+                text={t.whyTrustGold.heading}
+                goldWords={t.whyTrustGold.goldWords}
+                className="section-heading"
+              />
+              <p data-reveal className="section-sub">
+                {t.whyTrustGold.sub}
+              </p>
+            </div>
+
+            {/* Part A: Customer's Choice Guarantee + What the 1% Fee is Calculated Against */}
+            <div data-reveal-group className="fee-methodology-grid">
+              {/* Customer's Choice Card */}
+              <div className="choice-guarantee-card spotlight-card">
+                <span className="choice-badge-pill">
+                  <Flame size={14} />
+                  {t.whyTrustGold.choiceBadge}
+                </span>
+                <h3>{t.whyTrustGold.choiceTitle}</h3>
+                <p className="choice-telugu-quote">
+                  {t.whyTrustGold.choiceTelugu}
                 </p>
-                <div className="branch-counter-badges">
-                  <span>
-                    <ShieldCheck size={15} /> 100% Open-Counter Testing
-                  </span>
-                  <span>
-                    <Award size={15} /> Stones Returned Intact
-                  </span>
-                  <span>
-                    <Clock size={15} /> 15-Minute Spot Settlement
-                  </span>
+                <p className="choice-body-text">{t.whyTrustGold.choiceBody}</p>
+
+                <div className="choice-options-split">
+                  <div className="choice-option-box">
+                    <strong>
+                      <ShieldCheck size={16} />
+                      {t.whyTrustGold.choiceDirectTitle}
+                    </strong>
+                    <p>{t.whyTrustGold.choiceDirectDesc}</p>
+                  </div>
+                  <div className="choice-option-box">
+                    <strong>
+                      <Flame size={16} />
+                      {t.whyTrustGold.choiceMeltTitle}
+                    </strong>
+                    <p>{t.whyTrustGold.choiceMeltDesc}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 1% Fee Formula Card */}
+              <div className="fee-formula-card spotlight-card">
+                <h3>{t.whyTrustGold.feeExplainTitle}</h3>
+                <p className="fee-formula-lead">
+                  {t.whyTrustGold.feeExplainLead}
+                </p>
+                <div className="fee-steps-list">
+                  {t.whyTrustGold.feeFormulaSteps.map((step) => (
+                    <div key={step.label} className="fee-step-item">
+                      <strong>{step.label}</strong>
+                      <p>{step.detail}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Part B: Two Worked Calculation Ledgers (Direct Gold Sale & Bank Pledged Gold Release) */}
+            <div style={{ marginTop: 48 }}>
+              <div className="worked-examples-header">
+                <h3>{t.whyTrustGold.workedExamplesTitle}</h3>
+                <p className="worked-disclaimer">
+                  <Sparkles
+                    size={15}
+                    style={{ color: '#e6b95c', flexShrink: 0, marginTop: 2 }}
+                  />
+                  <span>{t.whyTrustGold.workedExamplesDisclaimer}</span>
+                </p>
+              </div>
+
+              <div data-reveal-group className="worked-ledgers-grid">
+                {t.whyTrustGold.examples.map((ex) => (
+                  <article
+                    key={ex.id}
+                    className="worked-ledger-card spotlight-card"
+                  >
+                    <div className="worked-ledger-top">
+                      <span className="worked-ledger-badge">{ex.badge}</span>
+                      <h4>{ex.title}</h4>
+                      <p>{ex.scenario}</p>
+                    </div>
+
+                    <div className="worked-ledger-rows tabular-nums">
+                      {ex.rows.map((row) => (
+                        <div
+                          key={row.label}
+                          className={
+                            row.highlight
+                              ? 'worked-row highlight'
+                              : 'worked-row'
+                          }
+                        >
+                          <div>
+                            <span className="worked-row-label">
+                              {row.label}
+                            </span>
+                            {row.note && (
+                              <small className="worked-row-note">
+                                {row.note}
+                              </small>
+                            )}
+                          </div>
+                          <strong className="worked-row-val">
+                            {row.value}
+                          </strong>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="worked-ledger-total tabular-nums">
+                      <div>
+                        <span>{ex.finalLabel}</span>
+                        <small>{ex.footnote}</small>
+                      </div>
+                      <strong>{ex.finalValue}</strong>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            {/* Part C: 4 Factual Customer Commitments Table */}
+            <div style={{ marginTop: 48 }}>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-display), Georgia, serif',
+                  fontSize: '1.65rem',
+                  color: '#ffffff',
+                  marginBottom: 18,
+                }}
+              >
+                {t.whyTrustGold.comparisonTitle}
+              </h3>
+              <div data-reveal className="comparison-table-shell">
+                <table className="comparison-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Evaluation Stage</th>
+                      <th scope="col" className="col-trustgold">
+                        <span className="col-badge">OUR COMMITMENT</span>
+                        <strong>Trust Gold Services (Vijayawada)</strong>
+                      </th>
+                      <th scope="col">
+                        <strong>Why It Protects You</strong>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {t.whyTrustGold.comparisonRows.map((row) => (
+                      <tr key={row.feature}>
+                        <th scope="row">{row.feature}</th>
+                        <td className="col-trustgold">
+                          <div className="cell-trustgold-inner">
+                            <CheckCircle2 size={17} />
+                            <span>{row.trustGold}</span>
+                          </div>
+                        </td>
+                        <td>{row.whyItMatters}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =================================================================
+            8. CUSTOMER REVIEWS (#reviews — Verified Feedback from trustgoldservices.com)
+           ================================================================= */}
+        <section
+          id="reviews"
+          className="section-pad"
+          aria-labelledby="reviews-heading"
+        >
+          <div className="container-shell">
+            <div style={{ marginBottom: 36 }}>
+              <span className="section-tag">{t.reviews.tag}</span>
+              <Split
+                key={`reviews-head-${lang}`}
+                id="reviews-heading"
+                text={t.reviews.heading}
+                goldWords={t.reviews.goldWords}
+                className="section-heading"
+              />
+              <p data-reveal className="section-sub">
+                {t.reviews.sub}
+              </p>
+            </div>
+
+            <div data-reveal-group className="reviews-grid">
+              {t.reviews.items.map((rev) => (
+                <article
+                  key={rev.name}
+                  className="review-card spotlight-card"
+                >
+                  <div className="review-card-top">
+                    <Quote
+                      size={24}
+                      style={{ color: 'var(--bullion-gold)' }}
+                      aria-hidden="true"
+                    />
+                    <span className="review-service-tag">{rev.serviceTag}</span>
+                  </div>
+                  <blockquote className="review-quote">{rev.quote}</blockquote>
+                  <footer className="review-author">
+                    <div className="review-avatar" aria-hidden="true">
+                      {rev.name.charAt(0)}
+                    </div>
+                    <div>
+                      <strong>{rev.name}</strong>
+                      <span>{rev.location}</span>
+                    </div>
+                  </footer>
+                </article>
+              ))}
+            </div>
+
+            <div className="reviews-footnote-bar">
+              <p>
+                <ShieldCheck
+                  size={16}
+                  style={{ color: 'var(--bullion-gold-deep)', flexShrink: 0 }}
+                />
+                <span>{t.reviews.transparencyNote}</span>
+              </p>
+              <a
+                href={generalWhatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-navy btn-sm"
+              >
+                <MessageCircle size={15} />
+                {t.reviews.ctaButton}
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* =================================================================
+            9. FOUNDER, LOCATION, BUSINESS HOURS & MAP (#founder)
+           ================================================================= */}
+        <section
+          id="founder"
+          className="section-pad section-alabaster"
+          aria-labelledby="founder-heading"
+        >
+          <div className="container-shell">
+            <div className="founder-grid">
+              {/* Single Curated Portrait of Founder Manohar Reddy */}
+              <ImageReveal
+                direction="up"
+                className="founder-portrait-stage"
+              >
+                <div className="founder-main-frame">
+                  <Parallax yPx={18} scale={1.06}>
+                    <Image
+                      src="/images/owner-2.png"
+                      alt="Manohar Reddy — Founder of Trust Gold Services, Gandhinagar, Vijayawada"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 480px"
+                    />
+                  </Parallax>
+                  <div className="founder-caption-bar">
+                    <span className="founder-verified-pill">
+                      <UserCheck size={13} />
+                      {t.founder.portraitBadge}
+                    </span>
+                    <strong>{BUSINESS_INFO.founderName}</strong>
+                    <span>{t.founder.portraitRole}</span>
+                  </div>
+                </div>
+              </ImageReveal>
+
+              {/* Right Column: Story, Vision, Mission & Branch Details */}
+              <div className="founder-story-content">
+                <span className="section-tag">{t.founder.tag}</span>
+                <Split
+                  key={`founder-head-${lang}`}
+                  id="founder-heading"
+                  text={t.founder.heading}
+                  goldWords={t.founder.goldWords}
+                  className="section-heading"
+                />
+
+                <blockquote className="founder-quote">
+                  {t.founder.quote}
+                </blockquote>
+
+                <p className="founder-paragraph">{t.founder.storyP1}</p>
+                <p className="founder-paragraph">{t.founder.storyP2}</p>
+
+                <div className="vision-mission-grid">
+                  <div className="vm-card">
+                    <span className="vm-label">
+                      <Compass
+                        size={14}
+                        style={{
+                          display: 'inline',
+                          marginRight: 5,
+                          verticalAlign: '-2px',
+                        }}
+                      />
+                      {t.founder.visionLabel}
+                    </span>
+                    <h3>{t.founder.visionTitle}</h3>
+                    <p>{t.founder.visionText}</p>
+                  </div>
+
+                  <div className="vm-card">
+                    <span className="vm-label">
+                      <Target
+                        size={14}
+                        style={{
+                          display: 'inline',
+                          marginRight: 5,
+                          verticalAlign: '-2px',
+                        }}
+                      />
+                      {t.founder.missionLabel}
+                    </span>
+                    <h3>{t.founder.missionTitle}</h3>
+                    <ul className="mission-list">
+                      {t.founder.missionPoints.map((point) => (
+                        <li key={point}>
+                          <CheckCircle2
+                            size={15}
+                            style={{
+                              color: 'var(--bullion-gold)',
+                              flexShrink: 0,
+                              marginTop: 3,
+                            }}
+                          />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ====================================================================
-            FREQUENTLY ASKED QUESTIONS
-            ==================================================================== */}
-        <section id="faq" className="section-pad">
-          <div className="container-shell faq-layout">
-            <div data-reveal>
-              <span className="section-tag">Questions, Answered</span>
-              <Split
-                text="Clarity before commitment."
-                goldWords={['Clarity']}
-                className="section-heading"
-              />
-              <p className="section-sub" style={{ marginBottom: 24 }}>
-                We believe every customer should understand exactly how their
-                gold is valued before stepping into our shop.
-              </p>
-              <Magnetic>
-                <a
-                  href={defaultWhatsAppUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-navy"
+        {/* =================================================================
+            10. REQUIRED DOCUMENTS CHECKLIST & FAQs (#documents & #faq)
+           ================================================================= */}
+        <section
+          id="documents"
+          className="section-pad"
+          aria-labelledby="documents-heading"
+        >
+          <div className="container-shell">
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                gap: 20,
+                marginBottom: 32,
+              }}
+            >
+              <div>
+                <span className="section-tag">{t.documents.tag}</span>
+                <Split
+                  key={`docs-head-${lang}`}
+                  id="documents-heading"
+                  text={t.documents.heading}
+                  goldWords={t.documents.goldWords}
+                  className="section-heading"
+                />
+                <p data-reveal className="section-sub">
+                  {t.documents.sub}
+                </p>
+              </div>
+
+              <div
+                className="docs-filter-bar"
+                role="tablist"
+                aria-label="Filter required documents by service"
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={docFilter === 'all'}
+                  className={
+                    docFilter === 'all'
+                      ? 'doc-filter-btn active'
+                      : 'doc-filter-btn'
+                  }
+                  onClick={() => setDocFilter('all')}
                 >
-                  <MessageCircle size={17} /> Ask Us Directly on WhatsApp
-                </a>
-              </Magnetic>
+                  {t.documents.filterAll}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={docFilter === 'direct'}
+                  className={
+                    docFilter === 'direct'
+                      ? 'doc-filter-btn active'
+                      : 'doc-filter-btn'
+                  }
+                  onClick={() => setDocFilter('direct')}
+                >
+                  {t.documents.filterDirect}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={docFilter === 'pledge'}
+                  className={
+                    docFilter === 'pledge'
+                      ? 'doc-filter-btn active'
+                      : 'doc-filter-btn'
+                  }
+                  onClick={() => setDocFilter('pledge')}
+                >
+                  {t.documents.filterPledge}
+                </button>
+              </div>
             </div>
 
-            <div data-reveal-group className="faq-accordion">
-              {FAQS.map((item, idx) => {
-                const isOpen = openFaq === idx
+            <div data-reveal-group className="docs-grid">
+              {filteredDocuments.map((doc) => {
+                const teDoc = TELUGU_DOCUMENTS[doc.id]
                 return (
-                  <div
-                    key={item.q}
-                    className={isOpen ? 'faq-row open' : 'faq-row'}
-                  >
+                  <article key={doc.id} className="doc-card spotlight-card">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 8,
+                      }}
+                    >
+                      <div className="category-icon-box" aria-hidden="true">
+                        {doc.id === 'aadhaar' || doc.id === 'pan' ? (
+                          <FileCheck2 size={20} />
+                        ) : doc.id === 'house-verification' ? (
+                          <Home size={20} />
+                        ) : (
+                          <FileText size={20} />
+                        )}
+                      </div>
+                      <span
+                        className={
+                          doc.forPledgedReleaseOnly
+                            ? 'doc-badge pledge-only'
+                            : 'doc-badge'
+                        }
+                      >
+                        {doc.forPledgedReleaseOnly
+                          ? t.documents.pledgeOnlyBadge
+                          : doc.required
+                            ? t.documents.requiredBadge
+                            : t.documents.recommendedBadge}
+                      </span>
+                    </div>
+                    <h3>
+                      {lang === 'te' && teDoc ? teDoc.title : doc.title}
+                    </h3>
+                    <small
+                      style={{
+                        fontWeight: 600,
+                        color: 'var(--bullion-gold-deep)',
+                      }}
+                    >
+                      {lang === 'te' && teDoc ? teDoc.subtitle : doc.subtitle}
+                    </small>
+                    <p>
+                      {lang === 'te' && teDoc
+                        ? teDoc.description
+                        : doc.description}
+                    </p>
+                  </article>
+                )
+              })}
+            </div>
+
+            {/* Reassurance Banner for Customers Without Original Bills */}
+            <div className="docs-reassurance-banner">
+              <div>
+                <strong>{t.documents.ReassuranceTitle}</strong>
+                <p>{t.documents.ReassuranceBody}</p>
+              </div>
+              <a
+                href={generalWhatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-gold btn-sm"
+              >
+                <MessageCircle size={16} />
+                {t.documents.ReassuranceCta}
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Frequently Asked Questions (#faq) */}
+        <section
+          id="faq"
+          className="section-pad section-alabaster"
+          aria-labelledby="faq-heading"
+        >
+          <div className="container-shell">
+            <div style={{ marginBottom: 36 }}>
+              <span className="section-tag">{t.faq.tag}</span>
+              <Split
+                key={`faq-head-${lang}`}
+                id="faq-heading"
+                text={t.faq.heading}
+                goldWords={t.faq.goldWords}
+                className="section-heading"
+              />
+              <p data-reveal className="section-sub">
+                {t.faq.sub}
+              </p>
+            </div>
+
+            <div data-reveal-group className="faq-list">
+              {t.faq.items.map((item, idx) => {
+                const isOpen = openFaqIndex === idx
+                const panelId = `faq-panel-${idx}`
+                const btnId = `faq-btn-${idx}`
+
+                return (
+                  <div key={item.question} className="faq-item">
                     <button
+                      id={btnId}
                       type="button"
                       className="faq-trigger"
-                      onClick={() => setOpenFaq(isOpen ? null : idx)}
                       aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      onClick={() => setOpenFaqIndex(isOpen ? -1 : idx)}
                     >
-                      <span>{item.q}</span>
-                      <ChevronDown size={19} className="faq-chevron" />
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 10,
+                        }}
+                      >
+                        <HelpCircle
+                          size={18}
+                          style={{
+                            color: 'var(--bullion-gold)',
+                            flexShrink: 0,
+                          }}
+                        />
+                        {item.question}
+                      </span>
+                      <ChevronDown
+                        size={18}
+                        className="faq-chevron"
+                        aria-hidden="true"
+                      />
                     </button>
-                    {isOpen && <p className="faq-answer">{item.a}</p>}
+                    <div
+                      id={panelId}
+                      role="region"
+                      aria-labelledby={btnId}
+                      className={
+                        isOpen ? 'faq-answer-shell open' : 'faq-answer-shell'
+                      }
+                    >
+                      <div className="faq-answer-inner">
+                        <div className="faq-answer">{item.answer}</div>
+                      </div>
+                    </div>
                   </div>
                 )
               })}
@@ -1434,260 +1767,397 @@ export default function TrustGoldRedesignedPage() {
           </div>
         </section>
 
-        {/* ====================================================================
-            CONTACT & WHATSAPP ENQUIRY SECTION
-            ==================================================================== */}
-        <section id="contact" className="section-pad section-vault">
-          <div className="container-shell contact-layout">
-            <div data-reveal>
-              <span className="section-tag">Visit or Contact Us</span>
-              <Split
-                text="Ready for a transparent gold valuation in Vijayawada?"
-                goldWords={['transparent', 'gold']}
-                className="section-heading"
-              />
-              <p className="section-sub">
-                Call us directly, message us on WhatsApp, or visit our
-                Gandhinagar office. You will always receive honest guidance with
-                zero obligation.
-              </p>
-
-              <div data-reveal-group className="contact-info-list">
-                <a
-                  href={`tel:${BUSINESS_INFO.phone}`}
-                  className="contact-info-card pressable spotlight-card"
+        {/* =================================================================
+            11. CONTACT, SHORT ENQUIRY FORM, LOCATION & EMBEDDED MAP (#contact)
+           ================================================================= */}
+        <section
+          id="contact"
+          className="section-pad"
+          aria-labelledby="contact-heading"
+        >
+          <div className="container-shell">
+            <div data-reveal className="contact-shell">
+              {/* Left Column: Branch Address, Working Hours, Direct Call/WhatsApp & Live Map */}
+              <div className="contact-info-pane">
+                <span className="section-tag" style={{ color: '#e6b95c' }}>
+                  {t.contact.tag}
+                </span>
+                <Split
+                  key={`contact-head-${lang}`}
+                  id="contact-heading"
+                  text={t.contact.heading}
+                  goldWords={t.contact.goldWords}
+                  className="section-heading"
+                />
+                <p
+                  style={{
+                    color: 'rgba(255,255,255,0.78)',
+                    margin: '0 0 8px',
+                    fontSize: '0.95rem',
+                  }}
                 >
-                  <Phone size={20} />
-                  <div>
-                    <small>Direct Phone &amp; WhatsApp</small>
-                    <strong className="tabular-nums">
-                      {BUSINESS_INFO.phoneFormatted}
-                    </strong>
-                  </div>
-                </a>
+                  {t.contact.lead}
+                </p>
 
-                <a
-                  href={BUSINESS_INFO.mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="contact-info-card pressable spotlight-card"
-                >
-                  <MapPin size={20} />
-                  <div>
-                    <small>Vijayawada Branch Address (Tap for Google Maps)</small>
-                    <strong>{BUSINESS_INFO.addressFull}</strong>
+                <div className="contact-detail-list">
+                  <div className="contact-detail-item">
+                    <div className="contact-icon-circle" aria-hidden="true">
+                      <MapPin size={19} />
+                    </div>
+                    <div className="contact-detail-text">
+                      <strong>{t.contact.addressTitle}</strong>
+                      <span>
+                        {BUSINESS_INFO.address.line1}
+                        <br />
+                        {BUSINESS_INFO.address.line2},{' '}
+                        {BUSINESS_INFO.address.city} –{' '}
+                        {BUSINESS_INFO.address.pin}
+                      </span>
+                    </div>
                   </div>
-                </a>
 
-                <a
-                  href={`mailto:${BUSINESS_INFO.email}`}
-                  className="contact-info-card pressable spotlight-card"
-                >
-                  <Mail size={20} />
-                  <div>
-                    <small>Official Email</small>
-                    <strong>{BUSINESS_INFO.email}</strong>
+                  <div className="contact-detail-item">
+                    <div className="contact-icon-circle" aria-hidden="true">
+                      <Phone size={19} />
+                    </div>
+                    <div className="contact-detail-text tabular-nums">
+                      <strong>{t.contact.phoneTitle}</strong>
+                      <span>
+                        <a
+                          href={`tel:${BUSINESS_INFO.phone}`}
+                          style={{
+                            color: '#e6b95c',
+                            fontWeight: 700,
+                            fontSize: '1.08rem',
+                          }}
+                        >
+                          +91 {BUSINESS_INFO.phoneDisplay}
+                        </a>
+                      </span>
+                    </div>
                   </div>
-                </a>
 
-                <div className="contact-info-card spotlight-card">
-                  <Clock size={20} />
-                  <div>
-                    <small>Working Hours</small>
-                    <strong>{BUSINESS_INFO.hours}</strong>
+                  <div className="contact-detail-item">
+                    <div className="contact-icon-circle" aria-hidden="true">
+                      <Clock size={19} />
+                    </div>
+                    <div className="contact-detail-text">
+                      <strong>{t.contact.hoursTitle}</strong>
+                      <span>{t.meta.topRibbonHours}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Embedded Live Google Map for Gandhinagar, Vijayawada */}
-              <div className="contact-map-frame">
-                <iframe
-                  title="Trust Gold Services — Shop No. 5, Vasisth Enclave, Gandhinagar, Vijayawada Map"
-                  src="https://www.google.com/maps?q=Vasisth+Enclave,+Gandhinagar,+Vijayawada,+Andhra+Pradesh+520003&output=embed"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
-              </div>
-            </div>
-
-            <div data-reveal className="contact-form-card spotlight-card">
-              {contactSubmitted ? (
-                <div style={{ textAlign: 'center', padding: '28px 12px' }}>
-                  <ShieldCheck
-                    size={44}
-                    style={{
-                      color: 'var(--bullion-gold-deep)',
-                      margin: '0 auto 14px',
-                    }}
-                  />
-                  <h3
-                    style={{
-                      fontFamily: 'var(--font-display), Georgia, serif',
-                      fontSize: '1.8rem',
-                      margin: '0 0 8px',
-                      color: 'var(--vault-navy)',
-                    }}
-                  >
-                    WhatsApp Enquiry Ready
-                  </h3>
-                  <p
-                    style={{
-                      color: 'var(--ink-muted)',
-                      fontSize: '0.92rem',
-                      marginBottom: 20,
-                    }}
-                  >
-                    We opened WhatsApp with your details. If it didn’t open
-                    automatically, tap below to chat with us directly.
-                  </p>
+                <div
+                  style={{
+                    marginTop: 22,
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 12,
+                  }}
+                >
                   <a
-                    href={defaultWhatsAppUrl}
+                    href={generalWhatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn btn-gold"
-                    style={{ width: '100%', marginBottom: 12 }}
                   >
-                    Open WhatsApp Now <ArrowRight size={16} />
+                    <MessageCircle size={17} />
+                    {t.contact.whatsappDirectBtn}
                   </a>
-                  <button
-                    type="button"
-                    onClick={() => setContactSubmitted(false)}
-                    style={{
-                      background: 'none',
-                      border: 0,
-                      textDecoration: 'underline',
-                      fontSize: '0.84rem',
-                      color: 'var(--vault-navy)',
-                    }}
+                  <a
+                    href={`tel:${BUSINESS_INFO.phone}`}
+                    className="btn btn-outline-light tabular-nums"
                   >
-                    Send another enquiry
-                  </button>
+                    <Phone size={16} />
+                    {t.contact.callDirectBtn}
+                  </a>
                 </div>
-              ) : (
-                <form onSubmit={handleContactSubmit}>
-                  <h3
+
+                {/* Live Embedded Google Map */}
+                <div className="contact-map-frame">
+                  <iframe
+                    title="Trust Gold Services Gandhinagar Vijayawada Location Map"
+                    src="https://www.google.com/maps?q=Vasisth+Enclave+Gandhinagar+Vijayawada+520003&output=embed"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+              </div>
+
+              {/* Right Column: Short, Explicit Service Enquiry Form */}
+              <div className="contact-form-pane">
+                <h3>{t.contact.formTitle}</h3>
+                <p>{t.contact.formSub}</p>
+
+                <div className="form-reassurance-strip">
+                  <ShieldCheck size={16} />
+                  <span>{t.contact.noObligationNote}</span>
+                </div>
+
+                {leadSubmitted ? (
+                  <div
+                    role="status"
+                    aria-live="polite"
                     style={{
-                      fontFamily: 'var(--font-display), Georgia, serif',
-                      fontSize: '1.65rem',
-                      margin: '0 0 6px',
-                      color: 'var(--vault-navy)',
+                      padding: 24,
+                      borderRadius: 14,
+                      background: 'var(--alabaster)',
+                      border: '1px solid var(--bullion-gold)',
                     }}
                   >
-                    Request a Callback or WhatsApp Estimate
-                  </h3>
-                  <p
-                    style={{
-                      margin: '0 0 20px',
-                      fontSize: '0.84rem',
-                      color: 'var(--ink-muted)',
-                    }}
-                  >
-                    Your details go straight to our official WhatsApp (
-                    {BUSINESS_INFO.phoneDisplay}).
-                  </p>
-
-                  <div className="form-field-grid">
-                    <label className="form-field">
-                      <span>Your Name *</span>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Enter your name"
-                        value={contactForm.name}
-                        onChange={(e) =>
-                          setContactForm({
-                            ...contactForm,
-                            name: e.target.value,
-                          })
-                        }
-                      />
-                    </label>
-
-                    <label className="form-field">
-                      <span>Phone Number *</span>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="10-digit mobile number"
-                        value={contactForm.phone}
-                        onChange={(e) =>
-                          setContactForm({
-                            ...contactForm,
-                            phone: e.target.value,
-                          })
-                        }
-                      />
-                    </label>
-                  </div>
-
-                  <div className="form-field-grid">
-                    <label className="form-field">
-                      <span>Service Needed</span>
-                      <select
-                        value={contactForm.service}
-                        onChange={(e) =>
-                          setContactForm({
-                            ...contactForm,
-                            service: e.target.value,
-                          })
-                        }
+                    <div
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        color: 'var(--bullion-gold-deep)',
+                        fontWeight: 700,
+                        marginBottom: 8,
+                      }}
+                    >
+                      <CheckCircle2 size={20} />
+                      {t.contact.successTitle}
+                    </div>
+                    <p
+                      style={{
+                        margin: '0 0 18px',
+                        fontSize: '0.9rem',
+                        color: 'var(--ink-muted)',
+                      }}
+                    >
+                      {t.contact.successBody}
+                    </p>
+                    <div
+                      style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}
+                    >
+                      <a
+                        href={leadWhatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-gold"
                       >
-                        <option>Direct Old Gold Purchase</option>
-                        <option>Bank / NBFC Pledged Gold Release</option>
-                        <option>Free Gold Purity &amp; Value Check</option>
-                      </select>
-                    </label>
-
-                    <label className="form-field">
-                      <span>Jewellery Category</span>
-                      <select
-                        value={contactForm.jewelleryType}
-                        onChange={(e) =>
-                          setContactForm({
-                            ...contactForm,
-                            jewelleryType: e.target.value,
-                          })
-                        }
+                        <MessageCircle size={17} />
+                        {t.contact.openWhatsappBtn}
+                        <ArrowRight size={16} />
+                      </a>
+                      <button
+                        type="button"
+                        className="btn btn-sm"
+                        style={{
+                          background: '#ffffff',
+                          borderColor: 'var(--rule-strong)',
+                        }}
+                        onClick={() => setLeadSubmitted(false)}
                       >
-                        <option>Hallmark 22K Jewellery (916 BIS)</option>
-                        <option>Only 916 Mark Jewellery</option>
-                        <option>Other Marks / Unmarked Gold</option>
-                      </select>
-                    </label>
+                        {t.contact.resetBtn}
+                      </button>
+                    </div>
                   </div>
+                ) : (
+                  <form onSubmit={handleLeadSubmit} noValidate>
+                    <div className="form-grid-2">
+                      <div className="form-field">
+                        <label htmlFor="lead-name">{t.contact.nameLabel}</label>
+                        <input
+                          id="lead-name"
+                          type="text"
+                          className="form-input"
+                          placeholder={t.contact.namePlaceholder}
+                          value={leadName}
+                          aria-invalid={Boolean(leadErrors.name)}
+                          aria-describedby={
+                            leadErrors.name ? 'lead-name-error' : undefined
+                          }
+                          onChange={(e) => setLeadName(e.target.value)}
+                          required
+                        />
+                        {leadErrors.name && (
+                          <span
+                            id="lead-name-error"
+                            role="alert"
+                            className="field-error"
+                          >
+                            {leadErrors.name}
+                          </span>
+                        )}
+                      </div>
 
-                  <label className="form-field">
-                    <span>Approx. Weight or Bank Loan Details (Optional)</span>
-                    <textarea
-                      rows={3}
-                      placeholder="E.g., 35g 916 necklace, or ₹1.8L gold loan at SBI Gandhinagar…"
-                      value={contactForm.message}
-                      onChange={(e) =>
-                        setContactForm({
-                          ...contactForm,
-                          message: e.target.value,
-                        })
-                      }
-                    />
-                  </label>
+                      <div className="form-field">
+                        <label htmlFor="lead-phone">
+                          {t.contact.phoneLabel}
+                        </label>
+                        <input
+                          id="lead-phone"
+                          type="tel"
+                          inputMode="numeric"
+                          className="form-input tabular-nums"
+                          placeholder={t.contact.phonePlaceholder}
+                          value={leadPhone}
+                          aria-invalid={Boolean(leadErrors.phone)}
+                          aria-describedby={
+                            leadErrors.phone ? 'lead-phone-error' : undefined
+                          }
+                          onChange={(e) => setLeadPhone(e.target.value)}
+                          required
+                        />
+                        {leadErrors.phone && (
+                          <span
+                            id="lead-phone-error"
+                            role="alert"
+                            className="field-error"
+                          >
+                            {leadErrors.phone}
+                          </span>
+                        )}
+                      </div>
+                    </div>
 
-                  <button
-                    type="submit"
-                    className="btn btn-gold"
-                    style={{ width: '100%' }}
-                  >
-                    Send Enquiry on WhatsApp <ArrowRight size={16} />
-                  </button>
-                </form>
-              )}
+                    <div className="form-grid-2">
+                      <div className="form-field">
+                        <label htmlFor="lead-service">
+                          {t.contact.serviceLabel}
+                        </label>
+                        <select
+                          id="lead-service"
+                          className="form-select"
+                          value={leadService}
+                          onChange={(e) =>
+                            setLeadService(
+                              e.target.value as
+                                | 'sell_old_gold'
+                                | 'release_pledged_gold'
+                                | 'rate_check'
+                            )
+                          }
+                        >
+                          <option value="sell_old_gold">
+                            {t.contact.serviceOptions.sell}
+                          </option>
+                          <option value="release_pledged_gold">
+                            {t.contact.serviceOptions.release}
+                          </option>
+                          <option value="rate_check">
+                            {t.contact.serviceOptions.rateCheck}
+                          </option>
+                        </select>
+                      </div>
+
+                      <div className="form-field">
+                        <label htmlFor="lead-category">
+                          {t.contact.goldTypeLabel}
+                        </label>
+                        <select
+                          id="lead-category"
+                          className="form-select"
+                          value={leadCategory}
+                          onChange={(e) =>
+                            setLeadCategory(e.target.value as GoldCategoryTier)
+                          }
+                        >
+                          {GOLD_CATEGORIES.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                              {cat.shortName} ({cat.teluguName})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="form-grid-2">
+                      <div className="form-field">
+                        <label htmlFor="lead-weight">
+                          {t.contact.weightLabel}
+                        </label>
+                        <input
+                          id="lead-weight"
+                          type="number"
+                          min={0.5}
+                          max={10000}
+                          step={0.5}
+                          className="form-input tabular-nums"
+                          placeholder={t.contact.weightPlaceholder}
+                          value={leadWeight}
+                          aria-invalid={Boolean(leadErrors.weightGrams)}
+                          aria-describedby={
+                            leadErrors.weightGrams
+                              ? 'lead-weight-error'
+                              : undefined
+                          }
+                          onChange={(e) => setLeadWeight(e.target.value)}
+                        />
+                        {leadErrors.weightGrams && (
+                          <span
+                            id="lead-weight-error"
+                            role="alert"
+                            className="field-error"
+                          >
+                            {leadErrors.weightGrams}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="form-field">
+                        <label htmlFor="lead-message">
+                          {t.contact.messageLabel}
+                        </label>
+                        <input
+                          id="lead-message"
+                          type="text"
+                          className="form-input"
+                          placeholder={t.contact.messagePlaceholder}
+                          value={leadMessage}
+                          onChange={(e) => setLeadMessage(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 12,
+                        marginTop: 10,
+                      }}
+                    >
+                      <button type="submit" className="btn btn-gold">
+                        <MessageCircle size={17} />
+                        {t.contact.submitBtn}
+                        <ArrowRight size={16} />
+                      </button>
+
+                      <span
+                        style={{
+                          fontSize: '0.78rem',
+                          color: 'var(--ink-muted)',
+                        }}
+                      >
+                        {t.contact.orCallText}{' '}
+                        <a
+                          href={`tel:${BUSINESS_INFO.phone}`}
+                          className="tabular-nums"
+                          style={{
+                            fontWeight: 700,
+                            color: 'var(--vault-navy)',
+                          }}
+                        >
+                          93934 94455
+                        </a>
+                      </span>
+                    </div>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      {/* ====================================================================
-          FOOTER WITH AUTHENTIC SOCIAL ICONS, MAPS & CONTACT LINKS
-          ==================================================================== */}
+      {/* =================================================================
+          FOOTER (SVG Social Icons + Local Vijayawada Branch SEO Link)
+         ================================================================= */}
       <footer className="site-footer">
         <div className="container-shell">
           <div className="footer-grid">
@@ -1695,186 +2165,232 @@ export default function TrustGoldRedesignedPage() {
               <div className="brand-lockup" style={{ marginBottom: 14 }}>
                 <Image
                   src="/logo.png"
-                  alt="Trust Gold Services logo"
-                  width={48}
-                  height={48}
+                  alt="Trust Gold Services Logo"
+                  width={44}
+                  height={44}
                   className="brand-emblem"
                 />
                 <div className="brand-title">
-                  <span className="brand-title-main">Trust Gold</span>
-                  <span className="brand-title-sub">Services · Vijayawada</span>
+                  <span className="brand-title-main">Trust Gold Services</span>
+                  <span className="brand-title-sub">{t.nav.brandSub}</span>
                 </div>
               </div>
               <p
                 style={{
-                  margin: '0 0 10px',
                   fontSize: '0.88rem',
-                  maxWidth: '38ch',
-                  color: 'rgba(255,255,255,0.72)',
+                  maxWidth: '46ch',
+                  margin: '0 0 18px',
+                  lineHeight: 1.65,
                 }}
               >
-                {BUSINESS_INFO.uspHeadline} Serving families across Vijayawada,
-                Andhra Pradesh, and Telangana.
+                {t.footer.description}
               </p>
-              <p
+
+              <span
                 style={{
-                  margin: 0,
-                  fontSize: '0.82rem',
-                  color: 'var(--bullion-gold-bright)',
-                  fontWeight: 600,
+                  display: 'block',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: 'rgba(255,255,255,0.55)',
+                  marginBottom: 10,
                 }}
               >
-                {BUSINESS_INFO.teluguTagline}
-              </p>
-            </div>
-
-            <div>
-              <h4 className="footer-heading">Quick Links</h4>
-              <div className="footer-links">
-                <a href="#gold-craft">916 Touchstone Assay</a>
-                <a href="#categories">3 Jewellery Categories</a>
-                <a href="#comparison">Why Families Choose Us</a>
-                <a href="#services">Pledged Gold Release</a>
-                <a href="#founder">Founder &amp; Vision</a>
-                <a href="#documents">Required Documents</a>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="footer-heading">Direct Contact</h4>
-              <div className="footer-links">
-                <a href={`tel:${BUSINESS_INFO.phone}`} className="tabular-nums">
-                  {BUSINESS_INFO.phoneFormatted}
-                </a>
-                <a href={`mailto:${BUSINESS_INFO.email}`}>
-                  {BUSINESS_INFO.email}
-                </a>
+                {t.footer.followLabel}
+              </span>
+              <div className="social-pills">
                 <a
-                  href={BUSINESS_INFO.mapsUrl}
+                  href={BUSINESS_INFO.socials.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="social-icon-btn pressable"
+                  aria-label="Follow Trust Gold Services on Instagram"
+                  title="Instagram (@trustgoldservices)"
                 >
-                  Shop No. 5, Vasisth Enclave, Gandhinagar, Vijayawada
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                  </svg>
+                </a>
+                <a
+                  href={BUSINESS_INFO.socials.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-icon-btn pressable"
+                  aria-label="Follow Trust Gold Services on Facebook"
+                  title="Facebook (Trust Gold Services)"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                  </svg>
+                </a>
+                <a
+                  href={BUSINESS_INFO.socials.youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-icon-btn pressable"
+                  aria-label="Subscribe to Trust Gold Services on YouTube"
+                  title="YouTube (@TrustGoldservices)"
+                >
+                  <svg
+                    width="19"
+                    height="19"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17" />
+                    <path d="m10 15 5-3-5-3v6Z" />
+                  </svg>
+                </a>
+                <a
+                  href={generalWhatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="social-icon-btn pressable"
+                  aria-label="Chat with Trust Gold Services on WhatsApp"
+                  title="WhatsApp (+91 93934 94455)"
+                >
+                  <MessageCircle size={18} aria-hidden="true" />
                 </a>
               </div>
             </div>
 
-            <div>
-              <h4 className="footer-heading">Follow Trust Gold</h4>
-              <div className="social-pills">
-                <Magnetic>
-                  <a
-                    href={BUSINESS_INFO.socials.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="social-icon-btn pressable"
-                    aria-label="Follow Trust Gold Services on Instagram"
-                    title="Instagram"
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.9"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                    </svg>
-                  </a>
-                </Magnetic>
+            <div className="footer-col">
+              <h4>{t.footer.navHeading}</h4>
+              <ul>
+                <li>
+                  <a href="#services">{t.nav.services}</a>
+                </li>
+                <li>
+                  <a href="#how-it-works">{t.nav.howItWorks}</a>
+                </li>
+                <li>
+                  <a href="#why-trust-gold">{t.nav.whyTrustGold}</a>
+                </li>
+                <li>
+                  <a href="#reviews">{t.nav.reviews}</a>
+                </li>
+                <li>
+                  <a href="#documents">{t.documents.tag}</a>
+                </li>
+                <li>
+                  <a href="#faq">{t.faq.tag}</a>
+                </li>
+              </ul>
+            </div>
 
-                <Magnetic>
-                  <a
-                    href={BUSINESS_INFO.socials.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="social-icon-btn pressable"
-                    aria-label="Follow Trust Gold Services on Facebook"
-                    title="Facebook"
+            <div className="footer-col">
+              <h4>{t.footer.servicesHeading}</h4>
+              <ul>
+                <li>
+                  <a href="#services">{t.services.sellGold.title}</a>
+                </li>
+                <li>
+                  <a href="#services">{t.services.releaseGold.title}</a>
+                </li>
+                <li>
+                  <a href="#gold-craft">Hallmark 22K (916 HUID)</a>
+                </li>
+                <li>
+                  <a href="#gold-craft">Only 916 Mark &amp; Unmarked Gold</a>
+                </li>
+                <li>
+                  <Link
+                    href="/vijayawada"
+                    style={{ color: '#e6b95c', fontWeight: 600 }}
                   >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path d="M13.5 21v-7.5h2.55l.38-2.95H13.5V8.67c0-.85.24-1.43 1.46-1.43h1.56V4.6c-.27-.04-1.2-.12-2.28-.12-2.26 0-3.8 1.38-3.8 3.91v2.16H8v2.95h2.44V21h3.06z" />
-                    </svg>
-                  </a>
-                </Magnetic>
+                    {t.footer.vijayawadaBranchLink}
+                  </Link>
+                </li>
+              </ul>
+            </div>
 
-                <Magnetic>
+            <div className="footer-col">
+              <h4>{t.footer.officeHeading}</h4>
+              <ul>
+                <li>{BUSINESS_INFO.address.line1}</li>
+                <li>
+                  {BUSINESS_INFO.address.line2}, {BUSINESS_INFO.address.city} –{' '}
+                  {BUSINESS_INFO.address.pin}
+                </li>
+                <li className="tabular-nums">
                   <a
-                    href={BUSINESS_INFO.socials.youtube}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="social-icon-btn pressable"
-                    aria-label="Subscribe to Trust Gold Services on YouTube"
-                    title="YouTube"
+                    href={`tel:${BUSINESS_INFO.phone}`}
+                    style={{ color: '#e6b95c', fontWeight: 700 }}
                   >
-                    <svg
-                      width="21"
-                      height="21"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path d="M21.58 7.19a2.75 2.75 0 0 0-1.94-1.95C17.92 4.78 12 4.78 12 4.78s-5.92 0-7.64.46A2.75 2.75 0 0 0 2.42 7.2C1.96 8.9 1.96 12 1.96 12s0 3.1.46 4.81a2.75 2.75 0 0 0 1.94 1.95c1.72.46 7.64.46 7.64.46s5.92 0 7.64-.46a2.75 2.75 0 0 0 1.94-1.95c.46-1.71.46-4.81.46-4.81s0-3.1-.46-4.81zM9.95 15.02V8.98L15.2 12l-5.25 3.02z" />
-                    </svg>
+                    +91 {BUSINESS_INFO.phoneDisplay}
                   </a>
-                </Magnetic>
-
-                <Magnetic>
-                  <a
-                    href={defaultWhatsAppUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="social-icon-btn pressable"
-                    aria-label="Chat with Trust Gold Services on WhatsApp"
-                    title="WhatsApp"
-                  >
-                    <MessageCircle size={19} />
+                </li>
+                <li>
+                  <a href={`mailto:${BUSINESS_INFO.email}`}>
+                    {BUSINESS_INFO.email}
                   </a>
-                </Magnetic>
-              </div>
+                </li>
+                <li>{t.meta.topRibbonHours}</li>
+              </ul>
             </div>
           </div>
 
           <div className="footer-bottom">
             <span>
-              © {new Date().getFullYear()} {BUSINESS_INFO.name}. All rights
-              reserved.
+              © {new Date().getFullYear()} {t.footer.copyright}
             </span>
-            <span>
-              Founded by {BUSINESS_INFO.founderName} · Gandhinagar, Vijayawada
-            </span>
+            <span>{t.footer.tagline}</span>
           </div>
         </div>
       </footer>
 
-      {/* Mobile Translucent Action Dock */}
-      <div className="mobile-dock">
-        <a
-          href={`tel:${BUSINESS_INFO.phone}`}
-          className="btn btn-outline-light btn-sm tabular-nums"
-        >
-          <Phone size={15} /> Call Now
-        </a>
-        <a
-          href={defaultWhatsAppUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn btn-gold btn-sm"
-        >
-          <MessageCircle size={15} /> WhatsApp Quote
-        </a>
+      {/* Non-Obscuring Sticky Mobile Conversion Bar */}
+      <div
+        className="mobile-dock"
+        role="region"
+        aria-label="Quick Call and WhatsApp Actions"
+      >
+        <div className="mobile-dock-inner">
+          <a
+            href={`tel:${BUSINESS_INFO.phone}`}
+            className="btn btn-outline-light btn-sm tabular-nums"
+          >
+            <Phone size={16} style={{ color: '#e6b95c' }} />
+            {t.mobileBar.callLabel}
+          </a>
+          <a
+            href={generalWhatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-gold btn-sm"
+          >
+            <MessageCircle size={16} />
+            {t.mobileBar.whatsappLabel}
+          </a>
+        </div>
       </div>
     </div>
   )

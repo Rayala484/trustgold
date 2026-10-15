@@ -1,16 +1,23 @@
 export type EstimateMode = 'direct-sale' | 'pledged-release'
 export type GoldCategoryId = 'hallmark-22k' | 'mark-916' | 'other-unmarked'
+export type GoldCategoryTier = GoldCategoryId
 export type ValuationMethodId = 'direct' | 'melting'
 
 export interface GoldCategory {
   id: GoldCategoryId
   number: string
   title: string
+  name: string
+  shortName: string
   teluguHint: string
+  teluguName: string
   badge: string
   purityFactor: number
+  purityDescription: string
   description: string
+  valuationNote: string
   highlights: string[]
+  examples: string[]
 }
 
 export const BUSINESS_INFO = {
@@ -28,6 +35,13 @@ export const BUSINESS_INFO = {
   addressShort: 'First Floor, Shop No. 5, Vasisth Enclave, Gandhinagar, Vijayawada',
   addressFull:
     'First Floor, Shop No. 5, Vasisth Enclave, Gandhinagar, Vijayawada, Andhra Pradesh 520003',
+  address: {
+    line1: 'First Floor, Shop No. 5, Vasisth Enclave',
+    line2: 'Gandhinagar',
+    city: 'Vijayawada',
+    state: 'Andhra Pradesh',
+    pin: '520003',
+  },
   mapsUrl: 'https://maps.app.goo.gl/hkybjegfg9zumDPx6',
   hours: 'Monday – Saturday · 9:00 AM – 9:00 PM',
   regionServed: 'Vijayawada, Andhra Pradesh & Telangana',
@@ -44,45 +58,78 @@ export const GOLD_CATEGORIES: GoldCategory[] = [
     id: 'hallmark-22k',
     number: '01',
     title: 'Hallmark 22K Jewellery',
+    name: 'Hallmark 22K Jewellery (BIS 916 HUID)',
+    shortName: 'Hallmark 22K',
     teluguHint: 'BIS 916 హాల్‌మార్క్ ఆభరణాలు',
+    teluguName: 'హాల్‌మార్క్ 22K',
     badge: 'BIS 916 Certified',
     purityFactor: 1.0,
+    purityDescription: '91.6% Fine Gold · Official BIS 916 & HUID Stamp',
     description:
       'Government BIS Hallmarked 22-Karat (916 HUID) ornaments. Verified in front of you for maximum benchmark rate.',
+    valuationNote:
+      'Government BIS Hallmarked 22-Karat (916 HUID) ornaments are verified on our open counter for the day’s Vijayawada 22K benchmark rate.',
     highlights: [
       'Instant BIS 916 hallmark & purity verification in your presence',
       '100% of live 22K market rate applied to net gold weight',
       'Zero hidden weight cuts — digital scale reading visible to you',
+    ],
+    examples: [
+      'BIS 916 Hallmarked bridal necklaces, harams & bangles',
+      'Modern 6-digit HUID laser-stamped 22K ornaments',
+      '22K mangalsutra chains, rings & vaddanams (with or without bill)',
     ],
   },
   {
     id: 'mark-916',
     number: '02',
     title: 'Only 916 Mark Jewellery',
+    name: 'Only 916 Mark Jewellery (KDM / Pre-HUID)',
+    shortName: 'Only 916 Mark',
     teluguHint: '916 మార్క్ ఉన్న బంగారు ఆభరణాలు',
+    teluguName: 'ఓన్లీ 916 మార్క్',
     badge: '916 Stamped',
     purityFactor: 1.0,
+    purityDescription: 'Traditional 916 / KDM Stamp Without Modern HUID',
     description:
       'Jewellery carrying the traditional 916 stamp without HUID. Tested transparently on our precision analyzer right before your eyes.',
+    valuationNote:
+      'Pre-2021 ornaments carrying a 916 or KDM stamp are tested openly on our black Basanite touchstone and weighed after returning stones to you.',
     highlights: [
       'Open-counter purity verification with full calculation sheet',
       'Choose direct purchase or melting assay based on your comfort',
       'Stone or wax weight separated fairly with your approval',
+    ],
+    examples: [
+      'Pre-HUID 916 stamped family jewellery & KDM ornaments',
+      '916 rings, chains & earrings crafted by local jewellers',
+      'Bank-pledged 916 ornaments released from gold loans',
     ],
   },
   {
     id: 'other-unmarked',
     number: '03',
     title: 'Other Marks or Unmarked Gold',
+    name: 'Other Marks / Unmarked & Antique Gold',
+    shortName: 'Other / Unmarked Gold',
     teluguHint: 'ఇతర మార్కులు / మార్క్ లేని పాత బంగారం',
+    teluguName: 'అన్‌మార్క్డ్ / పాత బంగారం',
     badge: 'Custom Assay',
     purityFactor: 0.94,
+    purityDescription: 'Ancestral, KDM, Broken, 18K–20K or Unmarked Gold',
     description:
       'Ancestral, KDM, broken, stone-studded, or unmarked gold ornaments. We test exact karat purity openly so you never guess its true worth.',
+    valuationNote:
+      'Unmarked or older family gold is tested in front of you (direct valuation or crucible melting at your choice) so you receive full value for its exact purity.',
     highlights: [
       'Exact karat reading explained in plain language before you decide',
       'Careful stone removal so you keep your stones and get full gold value',
       'Option to melt in your presence for 100% exact purity settlement',
+    ],
+    examples: [
+      'Unmarked ancestral & heirloom family gold ornaments',
+      'Broken gold pieces, single earrings & old sovereign kasulu',
+      '18K, 20K, or worn-stamp gold jewellery',
     ],
   },
 ]
@@ -322,4 +369,107 @@ export function calculateTouchstoneBenchmarks(
     threeSovereigns24gNet: Math.round(effectiveRatePerGram * 24 * feeFactor),
   }
 }
+
+export interface RequiredDocumentItem {
+  id: string
+  title: string
+  teluguTitle: string
+  subtitle: string
+  description: string
+  required: boolean
+  forPledgedReleaseOnly: boolean
+}
+
+export const REQUIRED_DOCUMENTS: RequiredDocumentItem[] = [
+  {
+    id: 'aadhaar',
+    title: 'Aadhaar Card',
+    teluguTitle: 'ఆధార్ కార్డు',
+    subtitle: 'Government Identity Proof (Mandatory)',
+    description:
+      'Original Aadhaar card of the ornament owner for transparent identity verification at our Gandhinagar counter.',
+    required: true,
+    forPledgedReleaseOnly: false,
+  },
+  {
+    id: 'pan',
+    title: 'PAN Card',
+    teluguTitle: 'పాన్ కార్డు',
+    subtitle: 'Tax & Bank Transfer KYC (Mandatory)',
+    description:
+      'Required for compliant billing and instant IMPS / NEFT / RTGS settlement directly to your bank account.',
+    required: true,
+    forPledgedReleaseOnly: false,
+  },
+  {
+    id: 'purchase-bills',
+    title: 'Purchase Bills (If Available)',
+    teluguTitle: 'బంగారం కొన్న బిల్లులు (అందుబాటులో ఉంటే)',
+    subtitle: 'Original Jewellery Invoices or Receipts',
+    description:
+      'Bring original jewellery shop bills if available. If your ornaments are ancestral or gifted without bills, we can still proceed after KYC and house verification.',
+    required: false,
+    forPledgedReleaseOnly: false,
+  },
+  {
+    id: 'house-verification',
+    title: 'House Verification',
+    teluguTitle: 'హౌస్ వెరిఫికేషన్',
+    subtitle: 'Standard Residence Confirmation',
+    description:
+      'Standard residence verification ensures every transaction is 100% genuine, legal, and safe for both you and our branch.',
+    required: true,
+    forPledgedReleaseOnly: false,
+  },
+  {
+    id: 'security-cheques',
+    title: '2 Security Cheques',
+    teluguTitle: '2 సెక్యూరిటీ చెక్కులు',
+    subtitle: 'For Bank / NBFC Pledged Gold Release',
+    description:
+      'Required when our team advances the loan closure funds at your bank or finance branch to release your pledged ornaments.',
+    required: true,
+    forPledgedReleaseOnly: true,
+  },
+]
+
+export function validateLeadInput(input: {
+  name: string
+  phone: string
+  serviceType: string
+  weightGrams?: string
+  message?: string
+}): {
+  valid: boolean
+  errors: { name?: string; phone?: string; weightGrams?: string }
+} {
+  const errors: { name?: string; phone?: string; weightGrams?: string } = {}
+
+  if (!input.name || input.name.trim().length < 2) {
+    errors.name = 'Please enter your name (minimum 2 characters).'
+  }
+
+  const cleanPhone = (input.phone || '').replace(/\D/g, '')
+  const normalizedPhone =
+    cleanPhone.length === 12 && cleanPhone.startsWith('91')
+      ? cleanPhone.slice(2)
+      : cleanPhone
+
+  if (!/^[6-9]\d{9}$/.test(normalizedPhone)) {
+    errors.phone = 'Please enter a valid 10-digit Indian mobile number.'
+  }
+
+  if (input.weightGrams && input.weightGrams.trim() !== '') {
+    const w = Number(input.weightGrams)
+    if (!Number.isFinite(w) || w < 0.5 || w > 10000) {
+      errors.weightGrams = 'Please enter a weight between 0.5g and 10,000g.'
+    }
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  }
+}
+
 

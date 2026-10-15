@@ -1,6 +1,11 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Cormorant_Garamond, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
+import {
+  Cormorant_Garamond,
+  JetBrains_Mono,
+  Noto_Sans_Telugu,
+  Plus_Jakarta_Sans,
+} from 'next/font/google'
 import { GoldOpening } from '@/components/GoldOpening'
 import { BUSINESS_INFO } from '@/lib/gold-calculator'
 import './globals.css'
@@ -20,6 +25,13 @@ const jakarta = Plus_Jakarta_Sans({
   display: 'swap',
 })
 
+const notoTelugu = Noto_Sans_Telugu({
+  subsets: ['telugu'],
+  variable: '--font-telugu',
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+})
+
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
@@ -34,7 +46,7 @@ const introBootScript = `try{if(!matchMedia("(prefers-reduced-motion: reduce)").
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://trustgold.vercel.app'
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://trustgold-iota.vercel.app'
   ),
   title: {
     default:
@@ -87,7 +99,7 @@ export default function RootLayout({
     name: BUSINESS_INFO.name,
     AlternateName: BUSINESS_INFO.teluguTagline,
     description: BUSINESS_INFO.uspHeadline,
-    url: 'https://trustgold.vercel.app',
+    url: 'https://trustgold-iota.vercel.app',
     telephone: `+91-${BUSINESS_INFO.phone}`,
     email: BUSINESS_INFO.email,
     founder: {
@@ -127,7 +139,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${jakarta.variable} ${jetbrainsMono.variable}`}
+      className={`${cormorant.variable} ${jakarta.variable} ${notoTelugu.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <head>

@@ -146,3 +146,6 @@ export function PageMotion() {
 
   return null
 }
+
+export { PageMotion as SiteMotion }
+

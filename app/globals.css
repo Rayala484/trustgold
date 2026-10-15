@@ -492,57 +492,55 @@ button {
   white-space: nowrap;
 }
 
-/* Emil Kowalski Clip-Path Dual-Layer Segmented Control */
+/* Single-Layer Accessible Segmented Tab Control (Zero Text Clipping or Wrapping) */
 .segmented-control {
   position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
   background: var(--alabaster);
-  border: 1px solid var(--rule-light);
-  border-radius: 10px;
-  padding: 4px;
-  margin-bottom: 18px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 12px;
+  padding: 5px;
+  margin-bottom: 0;
   user-select: none;
 }
 
 .segmented-btn {
   position: relative;
-  z-index: 1;
-  background: transparent;
-  border: 0;
-  padding: 10px 12px;
-  font-size: 0.82rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 8px 18px;
+  font-size: 0.84rem;
   font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
   color: var(--ink-muted);
-  border-radius: 7px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
   text-align: center;
-  transition: transform 120ms var(--ease-out);
+  transition: transform 120ms var(--ease-out),
+    background-color 180ms var(--ease-out), color 180ms var(--ease-out),
+    border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+}
+
+.segmented-btn:hover {
+  color: var(--vault-navy);
+}
+
+.segmented-btn[aria-selected='true'] {
+  background: var(--vault-navy);
+  color: var(--bullion-gold-bright);
+  border-color: rgba(230, 185, 92, 0.55);
+  box-shadow: 0 6px 16px -6px rgba(5, 16, 36, 0.35);
 }
 
 .segmented-btn:active {
   transform: scale(0.98);
-}
-
-.segmented-overlay {
-  position: absolute;
-  inset: 4px;
-  z-index: 2;
-  pointer-events: none;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: var(--vault-navy);
-  border-radius: 7px;
-  transition: clip-path 220ms var(--ease-out);
-}
-
-.segmented-overlay span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 12px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--bullion-gold-bright);
 }
 
 .calc-field-group {
@@ -1534,67 +1532,19 @@ button {
   pointer-events: none;
 }
 
-html.intro .tg-intro-overlay,
-.tg-intro-overlay[data-fading='true'] {
-  position: fixed;
-  inset: 0;
-  z-index: 120;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  pointer-events: auto;
-  /* Studio cyclorama background matched to frame 0 of trust-gold-opening.mp4 */
-  background-color: #ded9ce;
-  background-image: radial-gradient(
-    circle at 50% 56%,
-    #ece8df 0%,
-    #ded9ce 58%,
-    #cfc9bc 100%
-  );
-  isolation: isolate;
-}
-
-.tg-intro-overlay[data-fading='true'] {
-  pointer-events: none;
-}
-
-.tg-intro-video-stage {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.tg-intro-video {
-  width: 100%;
-  height: 100%;
-  max-width: 100vw;
-  max-height: 100dvh;
-  aspect-ratio: 16 / 9;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  pointer-events: none;
-  user-select: none;
-}
-
 .tg-intro-skip {
   position: absolute;
   right: clamp(16px, 3vw, 28px);
   bottom: max(20px, env(safe-area-inset-bottom));
-  z-index: 3;
+  z-index: 140;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-height: 44px;
   padding: 0 18px;
   border-radius: 999px;
-  border: 1px solid rgba(230, 185, 92, 0.48);
-  background: rgba(5, 16, 36, 0.84);
+  border: 1px solid rgba(230, 185, 92, 0.55);
+  background: rgba(5, 16, 36, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: #ffffff;
@@ -1608,7 +1558,7 @@ html.intro .tg-intro-overlay,
 
 .tg-intro-skip:hover,
 .tg-intro-skip:focus-visible {
-  background: rgba(5, 16, 36, 0.94);
+  background: rgba(5, 16, 36, 0.96);
   border-color: var(--bullion-gold-bright);
   color: var(--bullion-gold-bright);
 }
@@ -1626,6 +1576,450 @@ html.intro .tg-intro-overlay,
 .tg-intro-skip:hover .tg-intro-skip-arrow,
 .tg-intro-skip:focus-visible .tg-intro-skip-arrow {
   transform: translateX(3px);
+}
+
+/* ==========================================================================
+   13B. Coded 3D Extruded Gold Medallion, Shield & Wave Stage (TrustGold3DStage)
+   ========================================================================== */
+.hero-vault:has(.tg-3d-hero-card[data-intro-active='true']) {
+  overflow: visible;
+  z-index: 60;
+}
+
+.tg-3d-hero-card {
+  position: relative;
+  border-radius: 22px;
+  background: radial-gradient(
+    circle at 50% 42%,
+    #fbf9f3 0%,
+    #efe9dc 58%,
+    #ded6c6 100%
+  );
+  border: 1.5px solid rgba(230, 185, 92, 0.52);
+  box-shadow: 0 32px 68px -18px rgba(2, 8, 20, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 490px;
+  overflow: hidden;
+}
+
+.tg-3d-hero-card[data-intro-active='true'] {
+  overflow: visible;
+}
+
+/* Full-Viewport Warm Champagne Studio Curtain during Opening 3D Spin-and-Dock */
+.tg-studio-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 115;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 54%,
+    #f5f1e7 0%,
+    #e5dfd2 55%,
+    #d2cbbd 100%
+  );
+  overflow: hidden;
+}
+
+.tg-studio-cyclorama-arcs {
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  background: radial-gradient(
+      circle at 18% 18%,
+      rgba(255, 255, 255, 0.68) 0%,
+      transparent 48%
+    ),
+    radial-gradient(
+      circle at 82% 80%,
+      rgba(200, 146, 42, 0.14) 0%,
+      transparent 52%
+    );
+}
+
+/* Top Bar Inside the Hero 3D Stage */
+.tg-3d-stage-topbar {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 20px 0;
+  flex-wrap: wrap;
+}
+
+.tg-3d-stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(5, 16, 36, 0.9);
+  border: 1px solid rgba(230, 185, 92, 0.48);
+  color: #ffffff;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 20px -8px rgba(5, 16, 36, 0.35);
+}
+
+.tg-3d-stage-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  flex-shrink: 0;
+}
+
+.tg-3d-stage-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tg-3d-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(10, 21, 38, 0.16);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(8px);
+  color: var(--vault-navy);
+  font-size: 0.73rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: transform 140ms var(--ease-out),
+    background-color 160ms var(--ease-out), border-color 160ms var(--ease-out);
+}
+
+.tg-3d-action-btn:hover,
+.tg-3d-action-btn:focus-visible {
+  background: var(--vault-navy);
+  color: var(--bullion-gold-bright);
+  border-color: rgba(230, 185, 92, 0.55);
+}
+
+.tg-3d-action-btn:active {
+  transform: scale(0.96);
+}
+
+/* Main 3D Viewport & Flowing Wave Ribbons */
+.tg-3d-stage-viewport {
+  position: relative;
+  flex: 1;
+  min-height: 330px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px 18px;
+}
+
+.tg-3d-wave-ribbons {
+  position: absolute;
+  inset: auto -6% 4% -6%;
+  width: 112%;
+  height: 78%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tg-wave-filament {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tg-wave-sway 6.5s ease-in-out infinite alternate;
+}
+
+@keyframes tg-wave-sway {
+  0% {
+    transform: translateY(-4px) scaleY(0.97);
+  }
+  100% {
+    transform: translateY(5px) scaleY(1.03);
+  }
+}
+
+.tg-3d-medallion-anchor {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(232px, 26vw, 292px);
+  aspect-ratio: 1 / 1;
+}
+
+.tg-3d-medallion-rig {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 1200px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.tg-3d-medallion-rig:focus-visible {
+  outline: 2px solid var(--bullion-gold);
+  outline-offset: 8px;
+  border-radius: 999px;
+}
+
+.tg-3d-medallion-rotor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* 20 Stacked Z-Depth Metallic Gold Ring Slices -> Forms a solid 3D cylinder rim when viewed edge-on */
+.tg-3d-rim-slice {
+  position: absolute;
+  inset: 3.4%;
+  border-radius: 999px;
+  pointer-events: none;
+  border: 13px solid transparent;
+  background: linear-gradient(
+      135deg,
+      #fff6c7 0%,
+      #e5b752 20%,
+      #9b670e 48%,
+      #f6d67e 74%,
+      #6a4303 100%
+    )
+    border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  box-shadow: 0 0 2px rgba(122, 79, 6, 0.45);
+}
+
+/* Front Medallion Face (translateZ(16px)) */
+.tg-3d-medallion-front {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  transform: translateZ(16px);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Back Bullion Hallmark Face (translateZ(-16px) rotateY(180deg)) */
+.tg-3d-medallion-back {
+  position: absolute;
+  inset: 3.4%;
+  border-radius: 999px;
+  transform: translateZ(-16px) rotateY(180deg);
+  backface-visibility: hidden;
+  background: radial-gradient(
+    circle at 38% 32%,
+    #fff4c2 0%,
+    #dfae46 45%,
+    #9c680e 85%,
+    #704804 100%
+  );
+  border: 10px solid #c8922a;
+  box-shadow: inset 0 0 24px rgba(70, 42, 2, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.tg-3d-back-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 20px;
+  border-radius: 999px;
+  border: 1.5px dashed rgba(90, 56, 4, 0.45);
+}
+
+.tg-3d-back-karat {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #4f3102;
+}
+
+.tg-3d-back-title {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #2b1900;
+}
+
+.tg-3d-back-sub {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #5c3a04;
+}
+
+.tg-3d-emblem-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 14px 28px rgba(10, 21, 38, 0.16));
+}
+
+/* 3D Extruded Brand Lockup Inside Medallion (translateZ(12px) for true 3D depth) */
+.tg-3d-brand-lockup {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: 24%;
+  transform: translateZ(12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.tg-3d-brand-main {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: clamp(1.18rem, 2.1vw, 1.52rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.05;
+  white-space: nowrap;
+  text-shadow: 0 2px 6px rgba(255, 255, 255, 0.75);
+}
+
+.tg-3d-word-trust {
+  color: #071936;
+}
+
+.tg-3d-word-gold {
+  background: linear-gradient(180deg, #e5b247 0%, #b87f17 55%, #845707 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tg-3d-brand-sub {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.tg-3d-sub-line {
+  width: 24px;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, #8b6518, transparent);
+}
+
+.tg-3d-sub-text {
+  font-size: clamp(0.56rem, 0.95vw, 0.68rem);
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  color: #1e2d42;
+}
+
+/* Studio Floor Contact Shadow Underneath the 3D Medallion */
+.tg-3d-floor-shadow {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: -16px;
+  height: 22px;
+  border-radius: 999px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(32, 24, 10, 0.34) 0%,
+    rgba(32, 24, 10, 0.12) 52%,
+    transparent 76%
+  );
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+/* Authentic Shop & Open-Counter Verification Strip at the Base of the Hero Stage */
+.tg-3d-verification-bar {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 14px;
+  margin: 0 14px 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(5, 16, 36, 0.94);
+  border: 1px solid rgba(230, 185, 92, 0.42);
+  color: #ffffff;
+  box-shadow: 0 14px 30px -12px rgba(5, 16, 36, 0.5);
+}
+
+.tg-3d-verif-thumb {
+  width: 64px;
+  height: 52px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid rgba(230, 185, 92, 0.55);
+  flex-shrink: 0;
+}
+
+.tg-3d-verif-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tg-3d-verif-copy {
+  min-width: 0;
+}
+
+.tg-3d-verif-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.tg-3d-verif-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--bullion-gold-bright);
+}
+
+.tg-3d-verif-copy strong {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.25;
+}
+
+.tg-3d-verif-copy p {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.76);
+  line-height: 1.35;
 }
 
 /* ==========================================================================

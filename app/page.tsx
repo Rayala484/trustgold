@@ -48,6 +48,7 @@ import { type Language, TRANSLATIONS } from '@/lib/i18n'
 import { FloatingWhatsApp } from '@/components/FloatingWhatsApp'
 import { GoldTouchstoneAssay } from '@/components/GoldTouchstoneAssay'
 import { SiteMotion, Split } from '@/components/SiteMotion'
+import { TrustGold3DStage } from '@/components/TrustGold3DStage'
 import { ImageReveal } from '@/components/animations/ImageReveal'
 import { Magnetic } from '@/components/animations/Magnetic'
 import { Parallax } from '@/components/animations/Parallax'
@@ -614,45 +615,14 @@ export default function TrustGoldHomePage() {
                 </div>
               </div>
 
-              {/* Right Column: Editorial Open-Counter Bullion Stage */}
-              <div className="hero-showcase-stage rise d3">
-                <ImageReveal
-                  direction="up"
-                  className="hero-stage-frame spotlight-card"
-                >
-                  <div className="hero-stage-media">
-                    <Parallax yPx={22} scale={1.08}>
-                      <Image
-                        src="/images/hero.png"
-                        alt="Trust Gold Services open-counter calibrated digital gold scale and traditional Basanite touchstone in Vijayawada"
-                        fill
-                        priority
-                        sizes="(max-width: 1024px) 100vw, 560px"
-                      />
-                    </Parallax>
-                    <div className="hero-stage-gradient" aria-hidden="true" />
-                  </div>
-                </ImageReveal>
-
-                {/* Top Floating Badge */}
-                <div className="hero-float-badge hero-float-top">
-                  <span className="hero-live-dot" aria-hidden="true" />
-                  <div>
-                    <small>{t.hero.stageTopBadge}</small>
-                    <strong>Hallmark 22K · 916 Mark · Unmarked Gold</strong>
-                  </div>
-                </div>
-
-                {/* Bottom Floating Customer's Choice Card */}
-                <div className="hero-float-card hero-float-bottom">
-                  <div className="hero-float-icon">
-                    <Scale size={20} />
-                  </div>
-                  <div>
-                    <strong>{t.hero.stageBottomTitle}</strong>
-                    <p>{t.hero.stageBottomText}</p>
-                  </div>
-                </div>
+              {/* Right Column: Coded 3D Extruded Gold Medallion, Shield & Wave Stage */}
+              <div className="hero-showcase-stage">
+                <TrustGold3DStage
+                  captionTitle={t.hero.stageBottomTitle}
+                  captionSub={t.hero.stageBottomText}
+                  purityBadge={t.hero.stageTopBadge}
+                  choiceBadge="Hallmark 22K · 916 Mark · Unmarked Gold"
+                />
               </div>
             </div>
           </div>
@@ -1039,7 +1009,6 @@ export default function TrustGoldHomePage() {
               {/* 2-Track Process Switcher */}
               <div
                 className="segmented-control"
-                style={{ marginBottom: 0, minWidth: 330 }}
                 role="tablist"
                 aria-label="Choose process track"
               >
@@ -1061,19 +1030,6 @@ export default function TrustGoldHomePage() {
                 >
                   {t.howItWorks.trackReleaseBtn}
                 </button>
-                <div
-                  className="segmented-overlay"
-                  aria-hidden="true"
-                  style={{
-                    clipPath:
-                      processTrack === 'sell'
-                        ? 'inset(0 50% 0 0 round 6px)'
-                        : 'inset(0 0 0 50% round 6px)',
-                  }}
-                >
-                  <span>{t.howItWorks.trackSellBtn}</span>
-                  <span>{t.howItWorks.trackReleaseBtn}</span>
-                </div>
               </div>
             </div>
 

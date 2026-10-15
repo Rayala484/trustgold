@@ -6,7 +6,6 @@ import {
   Noto_Sans_Telugu,
   Plus_Jakarta_Sans,
 } from 'next/font/google'
-import { GoldOpening } from '@/components/GoldOpening'
 import { BUSINESS_INFO } from '@/lib/gold-calculator'
 import './globals.css'
 
@@ -38,10 +37,6 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['500', '600'],
   display: 'swap',
 })
-
-// Runs before first paint: activates the full-screen Trust Gold opening video overlay
-// once per browser session on the homepage unless prefers-reduced-motion or ?nointro is set.
-const introBootScript = `try{if(location.pathname==="/"&&!sessionStorage.getItem("trustgold_intro_seen")&&!matchMedia("(prefers-reduced-motion: reduce)").matches&&!/[?&]nointro/.test(location.search)){var d=document.documentElement;d.classList.add("intro");setTimeout(function(){d.classList.remove("intro")},5600)}}catch(e){}`
 
 
 export const metadata: Metadata = {
@@ -142,11 +137,7 @@ export default function RootLayout({
       className={`${cormorant.variable} ${jakarta.variable} ${notoTelugu.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: introBootScript }} />
-      </head>
       <body>
-        <GoldOpening />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

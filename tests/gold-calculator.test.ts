@@ -291,7 +291,7 @@ test('homepage implements the 11-step Competitor-Informed Conversion Hierarchy, 
     '../app/vijayawada/page.tsx',
     '../components/GoldTouchstoneAssay.tsx',
     '../components/FloatingWhatsApp.tsx',
-    '../components/GoldOpening.tsx',
+    '../components/TrustGold3DStage.tsx',
   ]
   const utilityExempt = new Set([
     'sr-only',
@@ -324,23 +324,14 @@ test('homepage implements the 11-step Competitor-Informed Conversion Hierarchy, 
   }
 })
 
-test('Opening Animation Video Integration: asset, playback, sessionStorage, Skip Intro & fallbacks', async () => {
+test('Coded 3D Trust Gold Medallion Stage & Single-Layer Segmented Control Verification', async () => {
   const fs = await import('node:fs/promises')
-  const videoStat = await fs.stat(
-    new URL('../public/videos/trust-gold-opening.mp4', import.meta.url)
-  )
-  assert.equal(
-    videoStat.size,
-    963661,
-    'public/videos/trust-gold-opening.mp4 must match the exact 963,661-byte user video'
-  )
-
-  const goldOpening = await fs.readFile(
-    new URL('../components/GoldOpening.tsx', import.meta.url),
+  const stageSource = await fs.readFile(
+    new URL('../components/TrustGold3DStage.tsx', import.meta.url),
     'utf8'
   )
-  const layoutSource = await fs.readFile(
-    new URL('../app/layout.tsx', import.meta.url),
+  const pageSource = await fs.readFile(
+    new URL('../app/page.tsx', import.meta.url),
     'utf8'
   )
   const css = await fs.readFile(
@@ -349,38 +340,34 @@ test('Opening Animation Video Integration: asset, playback, sessionStorage, Skip
   )
 
   assert.ok(
-    goldOpening.includes('/videos/trust-gold-opening.mp4'),
-    'GoldOpening must reference /videos/trust-gold-opening.mp4'
+    pageSource.includes('<TrustGold3DStage') &&
+      !pageSource.includes('<video'),
+    'Homepage Hero must render the coded <TrustGold3DStage /> rather than a raw <video> tag'
   )
   assert.ok(
-    goldOpening.includes('autoPlay') &&
-      goldOpening.includes('muted') &&
-      goldOpening.includes('playsInline') &&
-      goldOpening.includes('preload="auto"'),
-    'GoldOpening <video> must include autoPlay, muted, playsInline, and preload="auto"'
+    stageSource.includes('EXTRUSION_SLICES') &&
+      stageSource.includes('WAVE_RIBBON_PATHS') &&
+      stageSource.includes('rotationY: 86') &&
+      stageSource.includes('dockToHero'),
+    'TrustGold3DStage must implement the 3D extruded gold ring spin (rotationY: 86 -> 0), wave ribbons, and dockToHero FLIP timeline'
   )
   assert.ok(
-    goldOpening.includes('onEnded=') && goldOpening.includes('onError='),
-    'GoldOpening <video> must handle onEnded and onError'
+    stageSource.includes('Skip Intro') &&
+      stageSource.includes('Spin 3D') &&
+      stageSource.includes('Replay Intro'),
+    'TrustGold3DStage must provide Skip Intro, Spin 3D, and Replay Intro interactive controls'
   )
   assert.ok(
-    goldOpening.includes('sessionStorage') &&
-      goldOpening.includes('trustgold_intro_seen'),
-    'GoldOpening must record session state in sessionStorage (trustgold_intro_seen)'
+    css.includes('.tg-3d-medallion-rotor') &&
+      css.includes('transform-style: preserve-3d'),
+    'globals.css must style .tg-3d-medallion-rotor with transform-style: preserve-3d'
   )
   assert.ok(
-    goldOpening.includes('Skip Intro') && goldOpening.includes("e.key === 'Escape'"),
-    'GoldOpening must provide a visible Skip Intro button and Escape key support'
-  )
-  assert.ok(
-    layoutSource.includes('sessionStorage.getItem("trustgold_intro_seen")') &&
-      layoutSource.includes('location.pathname==="/"'),
-    'app/layout.tsx introBootScript must check sessionStorage and homepage pathname'
-  )
-  assert.ok(
-    css.includes('.tg-intro-video') && css.includes('object-fit: contain'),
-    'globals.css must preserve the video aspect ratio via object-fit: contain'
+    !pageSource.includes('segmented-overlay') &&
+      css.includes(".segmented-btn[aria-selected='true']"),
+    'Segmented control must use single-layer .segmented-btn[aria-selected="true"] without clipping .segmented-overlay'
   )
 })
+
 
 

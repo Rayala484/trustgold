@@ -125,6 +125,8 @@ test('footer Follow Trust Gold section renders accessible SVG icon buttons and c
   assert.ok(pageSource.includes('/images/about-shop.png'), 'Process section must showcase /images/about-shop.png branch interior')
   assert.ok(pageSource.includes('contact-map-frame'), 'Contact section must include embedded Google Map')
 
+  const siteMotion = await fs.readFile(new URL('../components/SiteMotion.tsx', import.meta.url), 'utf8')
+
   assert.ok(css.includes('.social-icon-btn'), 'globals.css must style .social-icon-btn')
   assert.ok(css.includes('.scroll-progress'), 'globals.css must style .scroll-progress')
   assert.ok(css.includes('.gold-marquee-bar'), 'globals.css must style .gold-marquee-bar')
@@ -133,7 +135,15 @@ test('footer Follow Trust Gold section renders accessible SVG icon buttons and c
   assert.ok(css.includes('.comparison-table'), 'globals.css must style .comparison-table')
   assert.ok(css.includes('.trust-pillars-bento'), 'globals.css must style .trust-pillars-bento')
   assert.ok(css.includes('.hero-showcase-stage'), 'globals.css must style .hero-showcase-stage')
-  assert.ok(!css.includes('html.motion-ok [data-reveal]'), 'globals.css must not hide sections at opacity:0 waiting for scroll')
+
+  // Verify scrolling animations choreography is active:
+  assert.ok(css.includes('html.motion-ok [data-reveal]'), 'globals.css must animate [data-reveal] on scroll')
+  assert.ok(css.includes('html.motion-ok [data-reveal-group] > *'), 'globals.css must stagger-animate [data-reveal-group] > * on scroll')
+  assert.ok(css.includes('html.motion-ok [data-img-reveal]'), 'globals.css must curtain-wipe [data-img-reveal] on scroll')
+  assert.ok(css.includes('html.motion-ok [data-split-scroll] .w-scroll > i'), 'globals.css must reveal Split heading words on scroll')
+  assert.ok(css.includes('html.motion-ok [data-draw]'), 'globals.css must draw golden timeline beam on scroll')
+  assert.ok(siteMotion.includes('IntersectionObserver'), 'SiteMotion.tsx must observe scroll-animated elements')
+  assert.ok(siteMotion.includes('[data-parallax]'), 'SiteMotion.tsx must update 60fps scroll parallax')
 })
 
 

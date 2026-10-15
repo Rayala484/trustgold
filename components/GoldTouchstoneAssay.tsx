@@ -79,7 +79,7 @@ export function GoldTouchstoneAssay() {
               className="section-heading"
             />
           </div>
-          <p className="touchstone-lead">
+          <p data-reveal className="touchstone-lead">
             Before a single rupee is quoted, we test your ornament’s exact
             fineness in front of your eyes—from traditional Basanite touchstone
             streaks (<em>గీటు రాయి</em>) and BIS 916 HUID inspection to digital
@@ -88,7 +88,7 @@ export function GoldTouchstoneAssay() {
           </p>
         </div>
 
-        <div className="touchstone-grid">
+        <div data-reveal-group className="touchstone-grid">
           {/* Left Column: Interactive Black Basanite Touchstone Slab */}
           <div className="basanite-slab spotlight-card">
             <div className="basanite-top-bar">

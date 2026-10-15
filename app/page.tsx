@@ -781,7 +781,7 @@ export default function TrustGoldRedesignedPage() {
                   className="section-heading"
                 />
               </div>
-              <p className="section-sub">
+              <p data-reveal className="section-sub">
                 From the first purity check to final settlement, every step at
                 our Gandhinagar counter is built around clarity, dignity, and
                 maximum value for your family’s ornaments.
@@ -851,7 +851,7 @@ export default function TrustGoldRedesignedPage() {
               </article>
             </div>
 
-            <div className="comparison-table-shell spotlight-card">
+            <div data-reveal className="comparison-table-shell spotlight-card">
               <table className="comparison-table">
                 <thead>
                   <tr>
@@ -1338,14 +1338,16 @@ export default function TrustGoldRedesignedPage() {
             </div>
 
             {/* Authentic Gandhinagar Branch Open-Counter Showcase (/images/about-shop.png) */}
-            <div className="branch-counter-banner spotlight-card">
-              <div className="branch-counter-media">
-                <Image
-                  src="/images/about-shop.png"
-                  alt="Trust Gold Services Gandhinagar Vijayawada branch consultation counter and digital gold weighing scale"
-                  fill
-                  sizes="(max-width: 900px) 100vw, 460px"
-                />
+            <div data-reveal className="branch-counter-banner spotlight-card">
+              <div data-img-reveal className="branch-counter-media">
+                <div data-parallax className="parallax-media-wrap">
+                  <Image
+                    src="/images/about-shop.png"
+                    alt="Trust Gold Services Gandhinagar Vijayawada branch consultation counter and digital gold weighing scale"
+                    fill
+                    sizes="(max-width: 900px) 100vw, 460px"
+                  />
+                </div>
               </div>
               <div className="branch-counter-copy">
                 <span

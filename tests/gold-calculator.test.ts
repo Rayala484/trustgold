@@ -113,13 +113,14 @@ test('footer Follow Trust Gold section renders accessible SVG icon buttons and c
   assert.ok(pageSource.includes('aria-label="Subscribe to Trust Gold Services on YouTube"'), 'YouTube icon button must have accessible aria-label')
   assert.ok(pageSource.includes('aria-label="Chat with Trust Gold Services on WhatsApp"'), 'WhatsApp icon button must have accessible aria-label')
 
-  // Competitive web design upgrades & Hero no-calculator rule:
-  assert.ok(pageSource.includes('hero-showcase-stage'), 'Hero must feature the luxury .hero-showcase-stage centerpiece instead of a calculator form')
+  // Competitive web design upgrades & complete calculator removal rule:
+  assert.ok(pageSource.includes('hero-showcase-stage'), 'Hero must feature the luxury .hero-showcase-stage centerpiece')
+  assert.ok(!pageSource.includes('calculator-shell'), 'Page must NOT contain .calculator-shell anywhere')
+  assert.ok(!pageSource.includes('id="calculator"'), 'Page must NOT contain #calculator section anywhere')
   const heroSectionBlock = pageSource.split('<section className="hero-vault">')[1]?.split('</section>')[0] ?? ''
-  assert.ok(!heroSectionBlock.includes('calculator-shell'), 'Hero opening section must NOT contain .calculator-shell')
   assert.ok(heroSectionBlock.includes('/images/hero.png'), 'Hero must showcase authentic /images/hero.png scale & touchstone photo')
-  assert.ok(pageSource.includes('<section id="calculator"'), 'Calculator must be in its own dedicated section lower on the page')
-  assert.ok(pageSource.includes('id="comparison"'), 'Page must include the 3-column #comparison matrix')
+  assert.ok(pageSource.includes('id="comparison"'), 'Page must include the #comparison section')
+  assert.ok(pageSource.includes('trust-pillars-bento'), 'Page must include the 4-pillar .trust-pillars-bento grid in #comparison')
   assert.ok(pageSource.includes('PROCESS_TRACKS'), 'Process section must support 2-track switching (Direct Sale vs Pledged Release)')
   assert.ok(pageSource.includes('/images/about-shop.png'), 'Process section must showcase /images/about-shop.png branch interior')
   assert.ok(pageSource.includes('contact-map-frame'), 'Contact section must include embedded Google Map')
@@ -130,6 +131,7 @@ test('footer Follow Trust Gold section renders accessible SVG icon buttons and c
   assert.ok(css.includes('.spotlight-card'), 'globals.css must style .spotlight-card')
   assert.ok(css.includes('.parallax-media-wrap'), 'globals.css must style .parallax-media-wrap with absolute inset:0')
   assert.ok(css.includes('.comparison-table'), 'globals.css must style .comparison-table')
+  assert.ok(css.includes('.trust-pillars-bento'), 'globals.css must style .trust-pillars-bento')
   assert.ok(css.includes('.hero-showcase-stage'), 'globals.css must style .hero-showcase-stage')
   assert.ok(!css.includes('html.motion-ok [data-reveal]'), 'globals.css must not hide sections at opacity:0 waiting for scroll')
 })

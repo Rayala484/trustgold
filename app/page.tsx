@@ -5,6 +5,8 @@ import { useState } from 'react'
 import {
   ArrowRight,
   Award,
+  BadgePercent,
+  Banknote,
   Building2,
   CheckCircle2,
   ChevronDown,
@@ -26,18 +28,11 @@ import {
 import {
   BUSINESS_INFO,
   GOLD_CATEGORIES,
-  VALUATION_METHODS,
-  buildEstimateWhatsAppUrl,
-  calculateGoldEstimate,
-  formatINR,
   type EstimateMode,
-  type GoldCategoryId,
-  type ValuationMethodId,
 } from '@/lib/gold-calculator'
 import { triggerTrustGoldIntro } from '@/components/GoldOpening'
 import { GoldTouchstoneAssay } from '@/components/GoldTouchstoneAssay'
 import {
-  AnimatedINR,
   Magnetic,
   PageMotion,
   Split,
@@ -211,17 +206,6 @@ const FAQS = [
 export default function TrustGoldRedesignedPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  // Interactive Calculator State
-  const [mode, setMode] = useState<EstimateMode>('direct-sale')
-  const [categoryId, setCategoryId] = useState<GoldCategoryId>('hallmark-22k')
-  const [valuationMethod, setValuationMethod] =
-    useState<ValuationMethodId>('direct')
-  const [weightGrams, setWeightGrams] = useState<number>(24)
-  const [stoneWeightGrams, setStoneWeightGrams] = useState<number>(1)
-  const [ratePerGram22k, setRatePerGram22k] = useState<number>(7350)
-  const [loanPayoffAmount, setLoanPayoffAmount] = useState<number>(110000)
-  const [receiptTransitioning, setReceiptTransitioning] = useState(false)
-
   // KYC Document Checklist Tab State
   const [kycTab, setKycTab] = useState<EstimateMode>('direct-sale')
   const [kycSwitching, setKycSwitching] = useState(false)
@@ -242,48 +226,15 @@ export default function TrustGoldRedesignedPage() {
   })
   const [contactSubmitted, setContactSubmitted] = useState(false)
 
-  const estimate = calculateGoldEstimate({
-    mode,
-    categoryId,
-    valuationMethod,
-    weightGrams,
-    stoneWeightGrams,
-    ratePerGram22k,
-    loanPayoffAmount,
-  })
-
-  const estimateWhatsAppUrl = buildEstimateWhatsAppUrl(estimate)
   const defaultWhatsAppUrl = `https://wa.me/${BUSINESS_INFO.whatsappNumber}?text=${encodeURIComponent(
     'Hi Trust Gold Services, I visited your website and would like a transparent gold valuation / pledged gold release consultation.'
   )}`
-
-  function switchCalculatorMode(nextMode: EstimateMode) {
-    if (nextMode === mode) return
-    setReceiptTransitioning(true)
-    setMode(nextMode)
-    setTimeout(() => setReceiptTransitioning(false), 180)
-  }
 
   function switchKycTab(nextTab: EstimateMode) {
     if (nextTab === kycTab) return
     setKycSwitching(true)
     setKycTab(nextTab)
     setTimeout(() => setKycSwitching(false), 180)
-  }
-
-  function handleSelectFromTouchstone(
-    nextCategory: GoldCategoryId,
-    nextWeight: number
-  ) {
-    setReceiptTransitioning(true)
-    setCategoryId(nextCategory)
-    setWeightGrams(nextWeight)
-    setStoneWeightGrams(0)
-    setTimeout(() => setReceiptTransitioning(false), 180)
-    const calcEl = document.getElementById('calculator')
-    if (calcEl) {
-      calcEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
   }
 
   function handleContactSubmit(e: React.FormEvent) {
@@ -380,8 +331,8 @@ export default function TrustGoldRedesignedPage() {
             className={mobileMenuOpen ? 'nav-links open' : 'nav-links'}
             aria-label="Primary Navigation"
           >
-            <a href="#calculator" onClick={() => setMobileMenuOpen(false)}>
-              Live Estimator
+            <a href="#gold-craft" onClick={() => setMobileMenuOpen(false)}>
+              916 Assay
             </a>
             <a href="#categories" onClick={() => setMobileMenuOpen(false)}>
               3 Gold Tiers
@@ -530,8 +481,8 @@ export default function TrustGoldRedesignedPage() {
                     <Phone size={17} /> Call {BUSINESS_INFO.phoneDisplay}
                   </a>
                 </Magnetic>
-                <a href="#calculator" className="hero-estimator-link">
-                  <Scale size={15} /> Try Live Gold Estimator ↓
+                <a href="#gold-craft" className="hero-estimator-link">
+                  <Sparkles size={15} /> Inspect 916 Touchstone Assay ↓
                 </a>
               </div>
 
@@ -673,10 +624,7 @@ export default function TrustGoldRedesignedPage() {
         {/* ====================================================================
             THE CRAFT OF GOLD VALUATION: BASANITE TOUCHSTONE & 916 ASSAY BENCH
             ==================================================================== */}
-        <GoldTouchstoneAssay
-          ratePerGram22k={ratePerGram22k}
-          onSelectForCalculator={handleSelectFromTouchstone}
-        />
+        <GoldTouchstoneAssay />
 
         {/* ====================================================================
             3 TYPES OF GOLD JEWELLERY + CUSTOMER'S CHOICE BANNER
@@ -820,24 +768,87 @@ export default function TrustGoldRedesignedPage() {
         </section>
 
         {/* ====================================================================
-            TRANSPARENT SIDE-BY-SIDE COMPARISON MATRIX (TRUST GOLD VS OTHERS)
+            WHY FAMILIES CHOOSE US + TRANSPARENT SIDE-BY-SIDE COMPARISON MATRIX
             ==================================================================== */}
         <section id="comparison" className="section-pad section-vault">
           <div className="container-shell">
             <div className="comparison-header">
               <div>
-                <span className="section-tag">Why Vijayawada Chooses Us</span>
+                <span className="section-tag">Why Families Choose Us</span>
                 <Split
-                  text="See how much more you keep with our flat 1% fee."
-                  goldWords={['1%', 'fee.']}
+                  text="Fair, fast, and stress-free gold valuation in Vijayawada."
+                  goldWords={['Fair,', 'stress-free']}
                   className="section-heading"
                 />
               </div>
               <p className="section-sub">
-                Most corporate gold buyers deduct 3%–5% in service charges and
-                force melting, while local pawn brokers cut 8%–15% as hidden
-                wastage. Compare our open-counter terms side by side.
+                From the first purity check to final settlement, every step at
+                our Gandhinagar counter is built around clarity, dignity, and
+                maximum value for your family’s ornaments.
               </p>
+            </div>
+
+            {/* 4-Pillar Trust Bento Grid (Upgraded from trustgoldservices.com) */}
+            <div data-reveal-group className="trust-pillars-bento">
+              <article className="trust-pillar-card spotlight-card">
+                <div className="trust-pillar-top">
+                  <span className="trust-pillar-index">01</span>
+                  <div className="trust-pillar-icon">
+                    <Scale size={20} />
+                  </div>
+                </div>
+                <h3>Transparent Open-Counter Valuation</h3>
+                <p>
+                  Every purity check, weight reading on our calibrated 0.01g
+                  scale, and stone deduction is explained openly in your
+                  presence—never inside a closed room.
+                </p>
+              </article>
+
+              <article className="trust-pillar-card spotlight-card">
+                <div className="trust-pillar-top">
+                  <span className="trust-pillar-index">02</span>
+                  <div className="trust-pillar-icon">
+                    <Banknote size={20} />
+                  </div>
+                </div>
+                <h3>Instant Spot Payment</h3>
+                <p>
+                  Receive immediate settlement via spot cash, RTGS, NEFT, IMPS,
+                  or UPI at the counter the moment you approve the final written
+                  valuation sheet.
+                </p>
+              </article>
+
+              <article className="trust-pillar-card spotlight-card">
+                <div className="trust-pillar-top">
+                  <span className="trust-pillar-index">03</span>
+                  <div className="trust-pillar-icon">
+                    <Sparkles size={20} />
+                  </div>
+                </div>
+                <h3>Live Day’s Market Price</h3>
+                <p>
+                  Fair rates aligned directly to the live Vijayawada bullion
+                  market for BIS 916 hallmarked, 916-stamped, and unmarked
+                  family ornaments.
+                </p>
+              </article>
+
+              <article className="trust-pillar-card spotlight-card">
+                <div className="trust-pillar-top">
+                  <span className="trust-pillar-index">04</span>
+                  <div className="trust-pillar-icon">
+                    <BadgePercent size={20} />
+                  </div>
+                </div>
+                <h3>Flat 1% Processing Fee (99% Value)</h3>
+                <p>
+                  While corporate chains deduct 3%–5% and pawn brokers cut up to
+                  15%, we charge a flat 1% processing fee so you keep 99% of
+                  your gold’s value.
+                </p>
+              </article>
             </div>
 
             <div className="comparison-table-shell spotlight-card">
@@ -876,381 +887,6 @@ export default function TrustGoldRedesignedPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
-          </div>
-        </section>
-
-        {/* ====================================================================
-            DEDICATED INTERACTIVE GOLD & PLEDGED LOAN RELEASE ESTIMATOR SECTION
-            ==================================================================== */}
-        <section id="calculator" className="section-pad">
-          <div className="container-shell estimator-section-grid">
-            {/* Left Column: Clear Explanation & 1-Click Scenario Presets */}
-            <div className="estimator-intro-col">
-              <span className="section-tag">Interactive Valuation Desk</span>
-              <Split
-                text="Calculate your indicative payout before visiting our shop."
-                goldWords={['indicative', 'payout']}
-                className="section-heading"
-              />
-              <p className="section-sub" style={{ marginBottom: 24 }}>
-                We believe you should know every number before you step into our
-                Gandhinagar branch. Test a Direct Old Gold Sale or calculate
-                how much net cash remains after we close your Bank / NBFC gold
-                loan.
-              </p>
-
-              <div className="estimator-preset-box">
-                <span className="estimator-preset-label">
-                  Try a Common Vijayawada Ornament Scenario:
-                </span>
-                <div className="estimator-preset-pills">
-                  <button
-                    type="button"
-                    className="preset-pill pressable"
-                    onClick={() => {
-                      setMode('direct-sale')
-                      setCategoryId('hallmark-22k')
-                      setWeightGrams(8)
-                      setStoneWeightGrams(0)
-                    }}
-                  >
-                    1 Kasu (8g) 916 Coin / Chain
-                  </button>
-                  <button
-                    type="button"
-                    className="preset-pill pressable"
-                    onClick={() => {
-                      setMode('direct-sale')
-                      setCategoryId('hallmark-22k')
-                      setWeightGrams(24)
-                      setStoneWeightGrams(1)
-                    }}
-                  >
-                    3 Kasulu (24g) Bangles
-                  </button>
-                  <button
-                    type="button"
-                    className="preset-pill pressable"
-                    onClick={() => {
-                      setMode('pledged-release')
-                      setCategoryId('mark-916')
-                      setWeightGrams(50)
-                      setStoneWeightGrams(0)
-                      setLoanPayoffAmount(240000)
-                    }}
-                  >
-                    50g Bank Gold Loan Release
-                  </button>
-                </div>
-              </div>
-
-              <div className="estimator-formula-card spotlight-card">
-                <h4>How Our Written Receipt Works</h4>
-                <ul>
-                  <li>
-                    <CheckCircle2 size={16} />
-                    <span>
-                      <strong>Step 1 — Net Gold Weight:</strong> We weigh your
-                      ornament on our 0.01g scale and subtract stone/bead weight
-                      (stones are returned to you).
-                    </span>
-                  </li>
-                  <li>
-                    <CheckCircle2 size={16} />
-                    <span>
-                      <strong>Step 2 — Live Purity Rate:</strong> Multiplied by
-                      today’s Vijayawada gold rate for your tested purity.
-                    </span>
-                  </li>
-                  <li>
-                    <CheckCircle2 size={16} />
-                    <span>
-                      <strong>Step 3 — Flat 1% Fee Only:</strong> We deduct only
-                      our standard 1% processing fee (plus bank payoff if
-                      releasing a pledged loan).
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Right Column: Interactive Live Value & Release Estimator Card */}
-            <div className="calculator-shell spotlight-card">
-              <div className="calc-header">
-                <div className="calc-title-block">
-                  <h2>Live Value &amp; Release Estimator</h2>
-                  <p>
-                    Check your indicative payout or pledged loan release balance
-                  </p>
-                </div>
-                <span className="live-assay-pill">
-                  <Scale size={13} /> 1% Fee Applied
-                </span>
-              </div>
-
-              {/* Emil Kowalski Clip-Path Segmented Control */}
-              <div
-                className="segmented-control"
-                role="tablist"
-                aria-label="Select estimation type"
-              >
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={mode === 'direct-sale'}
-                  className="segmented-btn"
-                  onClick={() => switchCalculatorMode('direct-sale')}
-                >
-                  Direct Old Gold Sale
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={mode === 'pledged-release'}
-                  className="segmented-btn"
-                  onClick={() => switchCalculatorMode('pledged-release')}
-                >
-                  Pledged Gold Release
-                </button>
-                <div
-                  className="segmented-overlay"
-                  aria-hidden="true"
-                  style={{
-                    clipPath:
-                      mode === 'direct-sale'
-                        ? 'inset(0 50% 0 0 round 7px)'
-                        : 'inset(0 0% 0 50% round 7px)',
-                  }}
-                >
-                  <span>Direct Old Gold Sale</span>
-                  <span>Pledged Gold Release</span>
-                </div>
-              </div>
-
-              {/* 1. Select Jewellery Category (3 Types from Client Brief) */}
-              <div className="calc-field-group">
-                <div className="calc-label-row">
-                  <span>1. Select Gold Jewellery Type</span>
-                  <span style={{ color: 'var(--bullion-gold-deep)' }}>
-                    {estimate.category.badge}
-                  </span>
-                </div>
-                <div className="tier-selector-grid">
-                  {GOLD_CATEGORIES.map((cat) => (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      className={
-                        categoryId === cat.id
-                          ? 'tier-chip pressable active'
-                          : 'tier-chip pressable'
-                      }
-                      onClick={() => setCategoryId(cat.id)}
-                    >
-                      <strong>{cat.title.replace(' Jewellery', '')}</strong>
-                      <small>{cat.badge}</small>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 2. Customer's Choice of Valuation Method */}
-              <div className="calc-field-group">
-                <div className="calc-label-row">
-                  <span>2. Preferred Valuation Method (Your Choice)</span>
-                </div>
-                <div className="method-toggle-grid">
-                  {VALUATION_METHODS.map((m) => (
-                    <button
-                      key={m.id}
-                      type="button"
-                      className={
-                        valuationMethod === m.id
-                          ? 'method-chip pressable active'
-                          : 'method-chip pressable'
-                      }
-                      onClick={() => setValuationMethod(m.id)}
-                    >
-                      <span>{m.title}</span>
-                      <CheckCircle2 size={15} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 3. Weight & Stone Weight Sliders */}
-              <div className="calc-field-group">
-                <div className="calc-label-row">
-                  <label htmlFor="gross-weight-slider">
-                    3. Gross Ornament Weight
-                  </label>
-                  <span className="tabular-nums">{weightGrams} grams</span>
-                </div>
-                <input
-                  id="gross-weight-slider"
-                  type="range"
-                  min={1}
-                  max={250}
-                  step={1}
-                  value={weightGrams}
-                  onChange={(e) => {
-                    const nextW = Number(e.target.value)
-                    setWeightGrams(nextW)
-                    if (stoneWeightGrams > nextW) setStoneWeightGrams(nextW)
-                  }}
-                  className="range-slider"
-                />
-              </div>
-
-              <div className="calc-inline-inputs">
-                <div>
-                  <div className="calc-label-row">
-                    <label htmlFor="stone-weight-input">
-                      Stone / Beads Weight
-                    </label>
-                  </div>
-                  <div className="number-input-box">
-                    <input
-                      id="stone-weight-input"
-                      type="number"
-                      min={0}
-                      max={weightGrams}
-                      step={0.5}
-                      value={stoneWeightGrams}
-                      onChange={(e) =>
-                        setStoneWeightGrams(
-                          Math.min(
-                            weightGrams,
-                            Math.max(0, Number(e.target.value) || 0)
-                          )
-                        )
-                      }
-                      className="tabular-nums"
-                    />
-                    <span>g</span>
-                  </div>
-                </div>
-
-                <div>
-                  <div className="calc-label-row">
-                    <label htmlFor="gold-rate-input">
-                      22K Market Rate / Gram
-                    </label>
-                  </div>
-                  <div className="number-input-box">
-                    <input
-                      id="gold-rate-input"
-                      type="number"
-                      min={4000}
-                      max={15000}
-                      step={50}
-                      value={ratePerGram22k}
-                      onChange={(e) =>
-                        setRatePerGram22k(
-                          Math.max(0, Number(e.target.value) || 0)
-                        )
-                      }
-                      className="tabular-nums"
-                    />
-                    <span>₹/g</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Conditional Loan Payoff Slider when in Pledged Release Mode */}
-              {mode === 'pledged-release' && (
-                <div className="calc-field-group">
-                  <div className="calc-label-row">
-                    <label htmlFor="loan-payoff-slider">
-                      4. Bank / NBFC Loan Closure Amount
-                    </label>
-                    <span className="tabular-nums">
-                      {formatINR(loanPayoffAmount)}
-                    </span>
-                  </div>
-                  <input
-                    id="loan-payoff-slider"
-                    type="range"
-                    min={10000}
-                    max={1500000}
-                    step={5000}
-                    value={loanPayoffAmount}
-                    onChange={(e) =>
-                      setLoanPayoffAmount(Number(e.target.value))
-                    }
-                    className="range-slider"
-                  />
-                </div>
-              )}
-
-              {/* Live Assay Receipt Card */}
-              <div
-                className={
-                  receiptTransitioning
-                    ? 'assay-receipt transitioning'
-                    : 'assay-receipt'
-                }
-                aria-live="polite"
-              >
-                <div className="receipt-row">
-                  <span>
-                    Net Gold Weight ({estimate.grossWeightGrams}g −{' '}
-                    {estimate.stoneWeightGrams}g stone)
-                  </span>
-                  <strong className="tabular-nums">
-                    {estimate.netWeightGrams} g
-                  </strong>
-                </div>
-                <div className="receipt-row">
-                  <span>
-                    Indicative Gross Value (@{' '}
-                    <AnimatedINR value={estimate.effectiveRatePerGram} />
-                    /g)
-                  </span>
-                  <strong className="tabular-nums">
-                    <AnimatedINR value={estimate.grossValue} />
-                  </strong>
-                </div>
-                <div className="receipt-row">
-                  <span>
-                    Processing Fee ({estimate.processingFeePercent}% of total
-                    value)
-                  </span>
-                  <strong className="tabular-nums">
-                    − <AnimatedINR value={estimate.processingFee} />
-                  </strong>
-                </div>
-                {mode === 'pledged-release' && (
-                  <div className="receipt-row">
-                    <span>Less: Bank / NBFC Loan Closure Settlement</span>
-                    <strong className="tabular-nums">
-                      − <AnimatedINR value={estimate.loanPayoffAmount} />
-                    </strong>
-                  </div>
-                )}
-                <div className="receipt-divider" />
-                <div className="receipt-total">
-                  <span className="receipt-total-label">
-                    {mode === 'pledged-release'
-                      ? 'Estimated Net Balance Paid to You'
-                      : 'Estimated Spot Payout to You'}
-                  </span>
-                  <span className="receipt-total-value tabular-nums">
-                    <AnimatedINR value={estimate.netCustomerPayout} />
-                  </span>
-                </div>
-              </div>
-
-              <a
-                href={estimateWhatsAppUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-gold"
-                style={{ width: '100%' }}
-              >
-                Send This Estimate to WhatsApp <ArrowRight size={17} />
-              </a>
             </div>
           </div>
         </section>
@@ -2093,8 +1729,9 @@ export default function TrustGoldRedesignedPage() {
             <div>
               <h4 className="footer-heading">Quick Links</h4>
               <div className="footer-links">
-                <a href="#calculator">Live Gold Estimator</a>
+                <a href="#gold-craft">916 Touchstone Assay</a>
                 <a href="#categories">3 Jewellery Categories</a>
+                <a href="#comparison">Why Families Choose Us</a>
                 <a href="#services">Pledged Gold Release</a>
                 <a href="#founder">Founder &amp; Vision</a>
                 <a href="#documents">Required Documents</a>

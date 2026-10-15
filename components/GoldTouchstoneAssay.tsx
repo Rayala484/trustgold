@@ -1,23 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowUpRight, Flame, Scale, ShieldCheck, Sparkles } from 'lucide-react'
 import {
-  GOLD_TOUCHSTONE_MARKS,
-  calculateTouchstoneBenchmarks,
-  type GoldCategoryId,
-} from '@/lib/gold-calculator'
-import { AnimatedINR, Split } from '@/components/SiteMotion'
+  ArrowRight,
+  Flame,
+  MessageCircle,
+  Scale,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react'
+import { BUSINESS_INFO, GOLD_TOUCHSTONE_MARKS } from '@/lib/gold-calculator'
+import { Split } from '@/components/SiteMotion'
 
-interface GoldTouchstoneAssayProps {
-  ratePerGram22k: number
-  onSelectForCalculator: (categoryId: GoldCategoryId, weightGrams: number) => void
-}
-
-export function GoldTouchstoneAssay({
-  ratePerGram22k,
-  onSelectForCalculator,
-}: GoldTouchstoneAssayProps) {
+export function GoldTouchstoneAssay() {
   const [selectedId, setSelectedId] = useState<string>(
     GOLD_TOUCHSTONE_MARKS[0].id
   )
@@ -27,15 +22,16 @@ export function GoldTouchstoneAssay({
     GOLD_TOUCHSTONE_MARKS.find((m) => m.id === selectedId) ??
     GOLD_TOUCHSTONE_MARKS[0]
 
-  const benchmarks = calculateTouchstoneBenchmarks(
-    ratePerGram22k,
-    activeMark.fineness
-  )
-
   function handleSelectStreak(id: string) {
     setSelectedId(id)
     setRubKey((prev) => prev + 1)
   }
+
+  const whatsappAssayUrl = `https://wa.me/${
+    BUSINESS_INFO.whatsappNumber
+  }?text=${encodeURIComponent(
+    `Hi Trust Gold Services, I would like to check today's live Vijayawada gold rate for ${activeMark.title} (${activeMark.karat} / ${activeMark.fineness} Fineness).`
+  )}`
 
   return (
     <section
@@ -83,24 +79,23 @@ export function GoldTouchstoneAssay({
               className="section-heading"
             />
           </div>
-          <p data-reveal className="touchstone-lead">
+          <p className="touchstone-lead">
             Before a single rupee is quoted, we test your ornament’s exact
             fineness in front of your eyes—from traditional Basanite touchstone
             streaks (<em>గీటు రాయి</em>) and BIS 916 HUID inspection to digital
-            purity analysis or crucible melting at your choice. Tap any purity
-            streak below to inspect its live payout in{' '}
-            <strong>Grams, Kasu (8g), and Tulam (10g)</strong>.
+            purity analysis or crucible melting at your choice. Tap any gold
+            streak below to see how we verify its purity.
           </p>
         </div>
 
-        <div data-reveal-group className="touchstone-grid">
+        <div className="touchstone-grid">
           {/* Left Column: Interactive Black Basanite Touchstone Slab */}
           <div className="basanite-slab spotlight-card">
             <div className="basanite-top-bar">
               <span className="basanite-badge">
                 BLACK BASANITE TOUCHSTONE · గీటు రాయి పరీక్ష
               </span>
-              <span className="basanite-hint">Tap a gold streak to test</span>
+              <span className="basanite-hint">Tap a gold streak to inspect</span>
             </div>
 
             <div
@@ -178,23 +173,20 @@ export function GoldTouchstoneAssay({
             </div>
           </div>
 
-          {/* Right Column: Live Open-Counter Assay Bench & Kasu/Tulam Payouts */}
+          {/* Right Column: Live Open-Counter Assay Bench & Traditional Weight Standards */}
           <div className="assay-bench-card spotlight-card" aria-live="polite">
             <div className="assay-bench-top">
               <div>
                 <span className="assay-bench-tag">
-                  LIVE ASSAY BENCH · {activeMark.karat} ({activeMark.fineness}{' '}
-                  FINENESS)
+                  OPEN-COUNTER ASSAY BENCH · {activeMark.karat} (
+                  {activeMark.fineness} FINENESS)
                 </span>
                 <h3>{activeMark.title}</h3>
                 <p className="assay-bench-telugu">{activeMark.teluguLabel}</p>
               </div>
               <div className="assay-rate-badge tabular-nums">
-                <small>Effective Rate</small>
-                <strong>
-                  <AnimatedINR value={benchmarks.effectiveRatePerGram} />
-                  /g
-                </strong>
+                <small>Pure Gold Content</small>
+                <strong>{activeMark.purePercent}</strong>
               </div>
             </div>
 
@@ -209,84 +201,48 @@ export function GoldTouchstoneAssay({
               </div>
             </div>
 
-            {/* Traditional Telugu & South Indian Gold Weight Payout Table */}
+            {/* Traditional Telugu & South Indian Gold Weight Standards */}
             <div className="weight-benchmarks-label">
-              <span>
-                Indicative Spot Payout (After Flat 1% Processing Fee)
-              </span>
-              <span className="tabular-nums">
-                Based on ₹{ratePerGram22k.toLocaleString('en-IN')}/g (22K)
-              </span>
+              <span>Traditional Telugu Weight Standards We Value</span>
+              <span className="tabular-nums">Flat 1% Processing Fee Only</span>
             </div>
 
-            <div className="weight-benchmarks-grid">
+            <div className="weight-benchmarks-grid" style={{ marginBottom: 16 }}>
               <div className="weight-benchmark-box">
                 <span className="wb-unit">1 Gram · 1 గ్రాము</span>
-                <strong className="wb-val tabular-nums">
-                  <AnimatedINR value={benchmarks.oneGramNet} />
-                </strong>
-                <button
-                  type="button"
-                  className="wb-load-btn"
-                  onClick={() =>
-                    onSelectForCalculator(activeMark.linkedCategoryId, 1)
-                  }
-                >
-                  Test 1g <ArrowUpRight size={12} />
-                </button>
+                <strong className="wb-val tabular-nums">1.00 g Net</strong>
               </div>
 
               <div className="weight-benchmark-box highlight">
-                <span className="wb-unit">1 Kasu (Sovereign) · 8g</span>
-                <strong className="wb-val tabular-nums">
-                  <AnimatedINR value={benchmarks.oneSovereign8gNet} />
-                </strong>
-                <button
-                  type="button"
-                  className="wb-load-btn"
-                  onClick={() =>
-                    onSelectForCalculator(activeMark.linkedCategoryId, 8)
-                  }
-                >
-                  Test 8g (1 కాసు) <ArrowUpRight size={12} />
-                </button>
+                <span className="wb-unit">1 Kasu (Sovereign) · 1 కాసు</span>
+                <strong className="wb-val tabular-nums">8.00 Grams</strong>
               </div>
 
               <div className="weight-benchmark-box highlight">
-                <span className="wb-unit">1 Tulam (Tola) · 10g</span>
-                <strong className="wb-val tabular-nums">
-                  <AnimatedINR value={benchmarks.oneTola10gNet} />
-                </strong>
-                <button
-                  type="button"
-                  className="wb-load-btn"
-                  onClick={() =>
-                    onSelectForCalculator(activeMark.linkedCategoryId, 10)
-                  }
-                >
-                  Test 10g (1 తులం) <ArrowUpRight size={12} />
-                </button>
+                <span className="wb-unit">1 Tulam (Tola) · 1 తులం</span>
+                <strong className="wb-val tabular-nums">10.00 Grams</strong>
               </div>
 
               <div className="weight-benchmark-box">
-                <span className="wb-unit">3 Kasulu · 24 Grams</span>
-                <strong className="wb-val tabular-nums">
-                  <AnimatedINR value={benchmarks.threeSovereigns24gNet} />
-                </strong>
-                <button
-                  type="button"
-                  className="wb-load-btn"
-                  onClick={() =>
-                    onSelectForCalculator(activeMark.linkedCategoryId, 24)
-                  }
-                >
-                  Test 24g <ArrowUpRight size={12} />
-                </button>
+                <span className="wb-unit">3 Kasulu · 3 కాసులు</span>
+                <strong className="wb-val tabular-nums">24.00 Grams</strong>
               </div>
             </div>
+
+            <a
+              href={whatsappAssayUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-gold"
+              style={{ width: '100%' }}
+            >
+              <MessageCircle size={17} /> Check Today’s Live {activeMark.karat}{' '}
+              Rate on WhatsApp <ArrowRight size={16} />
+            </a>
           </div>
         </div>
       </div>
     </section>
   )
 }
+

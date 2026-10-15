@@ -45,6 +45,7 @@ import {
   type GoldCategoryTier,
 } from '@/lib/gold-calculator'
 import { type Language, TRANSLATIONS } from '@/lib/i18n'
+import { FloatingWhatsApp } from '@/components/FloatingWhatsApp'
 import { GoldTouchstoneAssay } from '@/components/GoldTouchstoneAssay'
 import { SiteMotion, Split } from '@/components/SiteMotion'
 import { ImageReveal } from '@/components/animations/ImageReveal'
@@ -2366,6 +2367,9 @@ export default function TrustGoldHomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Floating WhatsApp Action Button */}
+      <FloatingWhatsApp lang={lang} />
 
       {/* Non-Obscuring Sticky Mobile Conversion Bar */}
       <div

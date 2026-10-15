@@ -24,6 +24,7 @@ import {
   GOLD_CATEGORIES,
   REQUIRED_DOCUMENTS,
 } from '@/lib/gold-calculator'
+import { FloatingWhatsApp } from '@/components/FloatingWhatsApp'
 import { SiteMotion, Split } from '@/components/SiteMotion'
 
 export const metadata: Metadata = {
@@ -668,6 +669,8 @@ export default function VijayawadaBranchPage() {
           </div>
         </section>
       </main>
+
+      <FloatingWhatsApp />
     </div>
   )
 }

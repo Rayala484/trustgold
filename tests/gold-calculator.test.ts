@@ -265,6 +265,9 @@ test('homepage implements the 11-step Competitor-Informed Conversion Hierarchy, 
   assert.ok(css.includes('.worked-ledgers-grid'), 'globals.css must style .worked-ledgers-grid')
   assert.ok(css.includes('.reviews-grid'), 'globals.css must style .reviews-grid')
   assert.ok(css.includes('.lang-switcher'), 'globals.css must style .lang-switcher')
+  assert.ok(css.includes('.floating-whatsapp-btn'), 'globals.css must style .floating-whatsapp-btn')
+  assert.ok(pageSource.includes('<FloatingWhatsApp'), 'app/page.tsx must render FloatingWhatsApp button')
+  assert.ok(vjaSource.includes('<FloatingWhatsApp'), 'app/vijayawada/page.tsx must render FloatingWhatsApp button')
   assert.ok(
     gsapSetup.includes('gsap.registerPlugin(ScrollTrigger, useGSAP)'),
     'animations/gsap.ts must register ScrollTrigger and useGSAP once'
@@ -281,4 +284,42 @@ test('homepage implements the 11-step Competitor-Informed Conversion Hierarchy, 
     siteMotion.includes('initPremiumScrollSystem'),
     'SiteMotion.tsx must initialize initPremiumScrollSystem'
   )
+
+  // Verify every single CSS class used across pages/components is defined in globals.css:
+  const filesToAudit = [
+    '../app/page.tsx',
+    '../app/vijayawada/page.tsx',
+    '../components/GoldTouchstoneAssay.tsx',
+    '../components/FloatingWhatsApp.tsx',
+  ]
+  const utilityExempt = new Set([
+    'sr-only',
+    'open',
+    'active',
+    'highlight',
+    'pledge-only',
+    'd1',
+    'd2',
+    'd3',
+    'd4',
+    'd5',
+    'd6',
+    'lang-en-root',
+    'w-scroll',
+  ])
+
+  for (const relPath of filesToAudit) {
+    const src = await fs.readFile(new URL(relPath, import.meta.url), 'utf8')
+    const classMatches = [...src.matchAll(/className=["']([^"']+)["']/g)]
+    for (const m of classMatches) {
+      for (const cls of m[1].split(/\s+/)) {
+        if (!cls || utilityExempt.has(cls)) continue
+        assert.ok(
+          css.includes(`.${cls}`),
+          `Class .${cls} used in ${relPath} must be defined in app/globals.css`
+        )
+      }
+    }
+  }
 })
+

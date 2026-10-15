@@ -346,16 +346,46 @@ test('Coded 3D Trust Gold Medallion Stage & Single-Layer Segmented Control Verif
   )
   assert.ok(
     stageSource.includes('EXTRUSION_SLICES') &&
-      stageSource.includes('WAVE_RIBBON_PATHS') &&
-      stageSource.includes('rotationY: 86') &&
-      stageSource.includes('dockToHero'),
-    'TrustGold3DStage must implement the 3D extruded gold ring spin (rotationY: 86 -> 0), wave ribbons, and dockToHero FLIP timeline'
+      stageSource.includes('WAVE_RIBBON_PATHS'),
+    'TrustGold3DStage must implement the 3D extruded gold ring and wave ribbons'
   )
   assert.ok(
-    stageSource.includes('Skip Intro') &&
-      stageSource.includes('Spin 3D') &&
-      stageSource.includes('Replay Intro'),
-    'TrustGold3DStage must provide Skip Intro, Spin 3D, and Replay Intro interactive controls'
+    stageSource.includes('Spin 3D') &&
+      stageSource.includes('Replay Intro') &&
+      stageSource.includes('triggerTrustGoldIntro'),
+    'TrustGold3DStage must provide Spin 3D and a Replay Intro control wired to the opening'
+  )
+})
+
+test('Opening sequence: 1.5s storyboard, exact logo, skippable, reduced-motion safe', async () => {
+  const fs = await import('node:fs/promises')
+  const openSource = await fs.readFile(
+    new URL('../components/OpeningSequence.tsx', import.meta.url),
+    'utf8'
+  )
+  const pageSource = await fs.readFile(
+    new URL('../app/page.tsx', import.meta.url),
+    'utf8'
+  )
+  const css = await fs.readFile(
+    new URL('../app/globals.css', import.meta.url),
+    'utf8'
+  )
+
+  assert.ok(pageSource.includes('<OpeningSequence />'), 'Homepage must mount <OpeningSequence />')
+  assert.ok(openSource.includes('src="/logo.png"'), 'Opening must reveal the supplied /logo.png, not a redrawn mark')
+  assert.ok(openSource.includes('Skip opening animation'), 'Opening must have an accessible Skip control')
+  assert.ok(openSource.includes('prefers-reduced-motion: reduce'), 'Opening must respect reduced motion in JS')
+  assert.ok(css.includes('tg-open-failsafe'), 'Opening must have a CSS failsafe so it can never stay on screen')
+
+  // Every tween must end by 1.5s: position + duration of each tl.to(...) call
+  const ends = [...openSource.matchAll(/duration: ([\d.]+)[^}]*}[^)]*?,\s*([\d.]+)\s*\)/g)].map(
+    ([, dur, at]) => Number(dur) + Number(at)
+  )
+  assert.ok(ends.length >= 10, `expected the storyboard tweens to be parsed, got ${ends.length}`)
+  assert.ok(
+    Math.max(...ends) <= 1.5 + 1e-9,
+    `opening must finish within 1.5s, last tween ends at ${Math.max(...ends)}s`
   )
   assert.ok(
     css.includes('.tg-3d-medallion-rotor') &&

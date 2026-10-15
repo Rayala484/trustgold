@@ -134,7 +134,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${jakarta.variable} ${notoTelugu.variable} ${jetbrainsMono.variable}`}
+      className={`${cormorant.variable} ${jakarta.variable} ${notoTelugu.variable} ${jetbrainsMono.variable} intro`}
       suppressHydrationWarning
     >
       <body>

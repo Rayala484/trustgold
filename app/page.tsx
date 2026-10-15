@@ -49,6 +49,7 @@ import { FloatingWhatsApp } from '@/components/FloatingWhatsApp'
 import { GoldTouchstoneAssay } from '@/components/GoldTouchstoneAssay'
 import { SiteMotion, Split } from '@/components/SiteMotion'
 import { TrustGold3DStage } from '@/components/TrustGold3DStage'
+import { OpeningSequence } from '@/components/OpeningSequence'
 import { ImageReveal } from '@/components/animations/ImageReveal'
 import { Magnetic } from '@/components/animations/Magnetic'
 import { Parallax } from '@/components/animations/Parallax'
@@ -336,6 +337,7 @@ export default function TrustGoldHomePage() {
       </div>
 
       {/* 1. Compact Sticky Navigation (Services, How It Works, Why Trust Gold, Reviews, Contact + Language Toggle) */}
+      <OpeningSequence />
       <header className="site-header">
         <div className="nav-bar">
           <a

@@ -1,20 +1,17 @@
 'use client'
 
-import { Fragment, useEffect, useRef, useState, type JSX } from 'react'
+import { useEffect, useRef, useState, type JSX } from 'react'
 
 /**
- * 1. Masked Word-by-Word Reveal (<Split />)
- * Wraps each word in a clipping mask (.w > span) so it rises smoothly into view.
- * - mode="load": animates on initial paint (and syncs with the GoldOpening iris reveal when html.intro is present)
- * - mode="scroll": triggered by <PageMotion /> IntersectionObserver when scrolled into view
+ * 1. Editorial Heading Component (<Split />)
+ * Renders crisp editorial display headings without fragile off-screen word clipping
+ * or AI-template single-word random coloring.
  */
 export function Split({
   text,
   as: Tag = 'h2',
-  mode = 'scroll',
   className,
   id,
-  goldWords = [],
 }: {
   text: string
   as?: keyof Pick<JSX.IntrinsicElements, 'h1' | 'h2' | 'h3' | 'p'>
@@ -23,40 +20,9 @@ export function Split({
   id?: string
   goldWords?: string[]
 }) {
-  const words = text.split(' ')
-  const goldSet = new Set(goldWords.map((w) => w.toLowerCase()))
-
   return (
-    <Tag
-      id={id}
-      className={className}
-      aria-label={text}
-      data-split={mode === 'scroll' ? 'scroll' : 'load'}
-    >
-      {words.map((w, i) => {
-        const cleanWord = w.replace(/[.,—–!?’'“”]/g, '').toLowerCase()
-        const isGold =
-          goldSet.has(w.toLowerCase()) || goldSet.has(cleanWord)
-        const spanClass = [
-          'w',
-          mode === 'load' ? 'w-load' : '',
-          isGold ? 'w-gold-ink' : '',
-        ]
-          .filter(Boolean)
-          .join(' ')
-        return (
-          <Fragment key={i}>
-            <span
-              aria-hidden="true"
-              className={spanClass}
-              style={{ '--i': i } as React.CSSProperties}
-            >
-              <i className={isGold ? 'w-gold-ink' : undefined}>{w}</i>
-            </span>
-            {i < words.length - 1 ? ' ' : null}
-          </Fragment>
-        )
-      })}
+    <Tag id={id} className={className}>
+      {text}
     </Tag>
   )
 }
@@ -69,7 +35,7 @@ export function Split({
  */
 export function Magnetic({
   children,
-  strength = 0.24,
+  strength = 0.22,
   className,
 }: {
   children: React.ReactNode
@@ -102,7 +68,6 @@ export function Magnetic({
         s.raf = 0
         return
       }
-      // Spring constants: stiffness = 0.18, damping = 0.74
       s.vx = (s.vx + (s.targetX - s.x) * 0.18) * 0.74
       s.vy = (s.vy + (s.targetY - s.y) * 0.18) * 0.74
       s.x += s.vx
@@ -226,73 +191,14 @@ export function AnimatedINR({
 
 /**
  * 4. PageMotion Orchestrator (<PageMotion />)
- * - Enables scroll-triggered reveals ([data-split], [data-reveal], [data-reveal-group], [data-img-reveal], [data-draw])
- * - Assigns --stagger indices on [data-reveal-group] direct children
- * - Updates header scroll elevation & progress hairline
- * - Updates [data-parallax] subtle vertical offset
+ * - Updates header scroll elevation & live gold scroll-progress hairline
  * - Tracks mouse position on .spotlight-card for 24K brushed-gold border & surface glare
+ * - Never hides content with opacity:0 gates
  */
 export function PageMotion() {
   useEffect(() => {
-    const html = document.documentElement
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      html.classList.remove('motion-ok')
-      return
-    }
-
-    ;(window as unknown as { __tgMotion?: boolean }).__tgMotion = true
-
-    const groups = document.querySelectorAll<HTMLElement>('[data-reveal-group]')
-    groups.forEach((group) => {
-      Array.from(group.children).forEach((child, idx) => {
-        ;(child as HTMLElement).style.setProperty('--stagger', String(idx))
-      })
-    })
-
-    const targets = Array.from(
-      document.querySelectorAll<HTMLElement>(
-        '[data-split], [data-reveal], [data-reveal-group], [data-img-reveal], [data-draw]'
-      )
-    )
-
-    const revealElement = (el: HTMLElement) => {
-      el.classList.add('in', 'is-in')
-    }
-
-    // Synchronously mark elements already in or above the viewport before enabling motion-ok
-    const vh = window.innerHeight || 800
-    targets.forEach((el) => {
-      const r = el.getBoundingClientRect()
-      if (r.top <= vh * 0.94) {
-        revealElement(el)
-      }
-    })
-
-    html.classList.add('motion-ok')
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue
-          const el = entry.target as HTMLElement
-          revealElement(el)
-          io.unobserve(el)
-        }
-      },
-      { rootMargin: '0px 0px -4% 0px', threshold: 0.02 }
-    )
-
-    targets.forEach((el) => {
-      if (!el.classList.contains('in')) {
-        io.observe(el)
-      }
-    })
-
     const header = document.querySelector<HTMLElement>('.site-header')
     const progressEl = document.querySelector<HTMLElement>('.scroll-progress')
-    const parallaxEls = Array.from(
-      document.querySelectorAll<HTMLElement>('[data-parallax]')
-    )
 
     let scrollRaf = 0
     const onScroll = () => {
@@ -313,35 +219,12 @@ export function PageMotion() {
           const ratio = Math.min(1, Math.max(0, y / maxScroll))
           progressEl.style.transform = `scaleX(${ratio.toFixed(4)})`
         }
-
-        // Scroll fallback reveal so fast scrolling or anchor jumps never leave an element hidden
-        for (const el of targets) {
-          if (!el.classList.contains('in')) {
-            const rect = el.getBoundingClientRect()
-            if (rect.top <= curVh * 0.94) {
-              revealElement(el)
-              io.unobserve(el)
-            }
-          }
-        }
-
-        // Subtle vertical parallax on [data-parallax] media wrappers
-        for (const pel of parallaxEls) {
-          const rect = pel.getBoundingClientRect()
-          if (rect.bottom >= -100 && rect.top <= curVh + 100) {
-            const centerOffset =
-              (rect.top + rect.height / 2 - curVh / 2) / curVh
-            const py = Math.max(-14, Math.min(14, -centerOffset * 18))
-            pel.style.setProperty('--py', `${py.toFixed(1)}px`)
-          }
-        }
       })
     }
 
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
 
-    // Delegated 24K Brushed-Gold Spotlight on cards (.spotlight-card)
     const onPointerMove = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse') return
       const card = (e.target as HTMLElement | null)?.closest<HTMLElement>(
@@ -356,7 +239,6 @@ export function PageMotion() {
     document.addEventListener('pointermove', onPointerMove, { passive: true })
 
     return () => {
-      io.disconnect()
       window.removeEventListener('scroll', onScroll)
       document.removeEventListener('pointermove', onPointerMove)
       cancelAnimationFrame(scrollRaf)
@@ -365,4 +247,5 @@ export function PageMotion() {
 
   return null
 }
+
 

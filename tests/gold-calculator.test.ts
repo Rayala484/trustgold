@@ -102,7 +102,7 @@ test('calculateTouchstoneBenchmarks computes accurate 1g, 1 Kasu (8g), 1 Tulam (
   assert.equal(b916.threeSovereigns24gNet, Math.round(7350 * 24 * 0.99))
 })
 
-test('footer Follow Trust Gold section renders accessible SVG icon buttons instead of plain text pills and includes motion rules', async () => {
+test('footer Follow Trust Gold section renders accessible SVG icon buttons and competitive visual upgrades', async () => {
   const fs = await import('node:fs/promises')
   const pageSource = await fs.readFile(new URL('../app/page.tsx', import.meta.url), 'utf8')
   const css = await fs.readFile(new URL('../app/globals.css', import.meta.url), 'utf8')
@@ -113,12 +113,25 @@ test('footer Follow Trust Gold section renders accessible SVG icon buttons inste
   assert.ok(pageSource.includes('aria-label="Subscribe to Trust Gold Services on YouTube"'), 'YouTube icon button must have accessible aria-label')
   assert.ok(pageSource.includes('aria-label="Chat with Trust Gold Services on WhatsApp"'), 'WhatsApp icon button must have accessible aria-label')
 
+  // Competitive web design upgrades & Hero no-calculator rule:
+  assert.ok(pageSource.includes('hero-showcase-stage'), 'Hero must feature the luxury .hero-showcase-stage centerpiece instead of a calculator form')
+  const heroSectionBlock = pageSource.split('<section className="hero-vault">')[1]?.split('</section>')[0] ?? ''
+  assert.ok(!heroSectionBlock.includes('calculator-shell'), 'Hero opening section must NOT contain .calculator-shell')
+  assert.ok(heroSectionBlock.includes('/images/hero.png'), 'Hero must showcase authentic /images/hero.png scale & touchstone photo')
+  assert.ok(pageSource.includes('<section id="calculator"'), 'Calculator must be in its own dedicated section lower on the page')
+  assert.ok(pageSource.includes('id="comparison"'), 'Page must include the 3-column #comparison matrix')
+  assert.ok(pageSource.includes('PROCESS_TRACKS'), 'Process section must support 2-track switching (Direct Sale vs Pledged Release)')
+  assert.ok(pageSource.includes('/images/about-shop.png'), 'Process section must showcase /images/about-shop.png branch interior')
+  assert.ok(pageSource.includes('contact-map-frame'), 'Contact section must include embedded Google Map')
+
   assert.ok(css.includes('.social-icon-btn'), 'globals.css must style .social-icon-btn')
   assert.ok(css.includes('.scroll-progress'), 'globals.css must style .scroll-progress')
   assert.ok(css.includes('.gold-marquee-bar'), 'globals.css must style .gold-marquee-bar')
   assert.ok(css.includes('.spotlight-card'), 'globals.css must style .spotlight-card')
   assert.ok(css.includes('.parallax-media-wrap'), 'globals.css must style .parallax-media-wrap with absolute inset:0')
-
-  const siteMotionSource = await fs.readFile(new URL('../components/SiteMotion.tsx', import.meta.url), 'utf8')
-  assert.ok(siteMotionSource.includes("classList.add('in', 'is-in')"), 'SiteMotion must add both .in and .is-in on reveal')
+  assert.ok(css.includes('.comparison-table'), 'globals.css must style .comparison-table')
+  assert.ok(css.includes('.hero-showcase-stage'), 'globals.css must style .hero-showcase-stage')
+  assert.ok(!css.includes('html.motion-ok [data-reveal]'), 'globals.css must not hide sections at opacity:0 waiting for scroll')
 })
+
+

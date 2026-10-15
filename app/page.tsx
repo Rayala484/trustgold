@@ -95,6 +95,92 @@ const KYC_DOCS = {
   ],
 } as const
 
+const COMPARISON_ROWS = [
+  {
+    feature: 'Processing / Service Charge',
+    trustGold: 'Flat 1% Only · Written Breakdown',
+    corporate: '3% to 5% Service Fee + GST',
+    pawnBroker: '8% to 15% Hidden Wastage Cuts',
+  },
+  {
+    feature: 'Valuation & Melting Policy',
+    trustGold: '100% Your Choice (Direct Buy or Melt in Presence)',
+    corporate: 'Mandatory Melting Required',
+    pawnBroker: 'Back-Room Acid Test / Rough Guess',
+  },
+  {
+    feature: 'Stones, Beads & Gems',
+    trustGold: 'Carefully Removed & Returned to You',
+    corporate: 'Often Crushed During Forced Melting',
+    pawnBroker: 'Heavy Arbitrary Weight Deductions',
+  },
+  {
+    feature: 'Unmarked / Ancestral Gold',
+    trustGold: 'Accepted at True Tested Purity Value',
+    corporate: 'Frequently Rejected or Heavily Penalized',
+    pawnBroker: 'Under-Valued by 15%–20%',
+  },
+  {
+    feature: 'Bank / NBFC Loan Release',
+    trustGold: 'Executive Escorts You & Advances Full Payoff',
+    corporate: 'Long Approval & High Margin Charges',
+    pawnBroker: 'High-Interest Bridge Loans',
+  },
+  {
+    feature: 'Payout Speed & Mode',
+    trustGold: '15-Min Instant Cash / RTGS / IMPS / UPI',
+    corporate: 'T+1 Bank Processing Delays',
+    pawnBroker: 'Delayed Partial Cash Notes',
+  },
+] as const
+
+const PROCESS_TRACKS = {
+  'direct-sale': [
+    {
+      step: 'STEP 01',
+      title: 'Walk In or WhatsApp Estimate',
+      desc: 'Visit Shop No. 5, Vasisth Enclave in Gandhinagar, or send ornament details on WhatsApp for an instant indicative quote.',
+    },
+    {
+      step: 'STEP 02',
+      title: 'Open-Counter Purity & Weighing',
+      desc: 'Watch calibrated 0.01g digital weighing and purity testing right in front of your eyes. Choose direct purchase or melting.',
+    },
+    {
+      step: 'STEP 03',
+      title: 'Written 1% Fee Breakdown',
+      desc: 'We write down today’s live gold rate, net weight after returning stones, and our flat 1% processing fee before you decide.',
+    },
+    {
+      step: 'STEP 04',
+      title: 'Instant Spot Settlement',
+      desc: 'Walk out in 15 minutes with immediate payment via Cash, UPI, IMPS, or RTGS directly into your bank account.',
+    },
+  ],
+  'pledged-release': [
+    {
+      step: 'STEP 01',
+      title: 'Share Bank / NBFC Pledge Token',
+      desc: 'Bring your original gold loan receipt from SBI, HDFC, ICICI, Muthoot, Manappuram, IIFL, or any bank/NBFC branch.',
+    },
+    {
+      step: 'STEP 02',
+      title: 'Quick KYC & Security Protocol',
+      desc: 'Complete Aadhaar/PAN verification, simple residence check, and 2 security cheques so our team can advance the payoff funds.',
+    },
+    {
+      step: 'STEP 03',
+      title: 'We Accompany You & Close Loan',
+      desc: 'Our executive travels with you to the bank or NBFC branch, pays off the full principal + interest, and releases your ornaments.',
+    },
+    {
+      step: 'STEP 04',
+      title: 'Open Assay & Net Balance Payout',
+      desc: 'We value the released gold at today’s live market rate in your presence, deduct only the loan payoff + 1% fee, and pay your balance.',
+    },
+  ],
+} as const
+
 const FAQS = [
   {
     q: 'What types of gold jewellery do you buy?',
@@ -139,6 +225,9 @@ export default function TrustGoldRedesignedPage() {
   // KYC Document Checklist Tab State
   const [kycTab, setKycTab] = useState<EstimateMode>('direct-sale')
   const [kycSwitching, setKycSwitching] = useState(false)
+
+  // Two-Track Process Switcher State
+  const [processTrack, setProcessTrack] = useState<EstimateMode>('direct-sale')
 
   // FAQ Accordion State
   const [openFaq, setOpenFaq] = useState<number | null>(0)
@@ -297,6 +386,9 @@ export default function TrustGoldRedesignedPage() {
             <a href="#categories" onClick={() => setMobileMenuOpen(false)}>
               3 Gold Tiers
             </a>
+            <a href="#comparison" onClick={() => setMobileMenuOpen(false)}>
+              1% Fee vs Others
+            </a>
             <a href="#services" onClick={() => setMobileMenuOpen(false)}>
               Services
             </a>
@@ -305,9 +397,6 @@ export default function TrustGoldRedesignedPage() {
             </a>
             <a href="#documents" onClick={() => setMobileMenuOpen(false)}>
               Documents
-            </a>
-            <a href="#faq" onClick={() => setMobileMenuOpen(false)}>
-              FAQs
             </a>
             <a href="#contact" onClick={() => setMobileMenuOpen(false)}>
               Contact
@@ -350,7 +439,7 @@ export default function TrustGoldRedesignedPage() {
 
       <main>
         {/* ====================================================================
-            HERO + INTERACTIVE GOLD & PLEDGED RELEASE CALCULATOR
+            LUXURY EDITORIAL HERO SECTION (NO CALCULATOR FORM IN OPENING)
             ==================================================================== */}
         <section className="hero-vault">
           {/* Slowly Rotating 40-Ray Sovereign Gold Sunburst Behind Hero */}
@@ -385,7 +474,7 @@ export default function TrustGoldRedesignedPage() {
 
           <div className="container-shell hero-grid">
             {/* Left Editorial Column */}
-            <div>
+            <div className="hero-copy-col">
               <div
                 className="telugu-pill rise"
                 style={{ '--d': '40ms' } as React.CSSProperties}
@@ -399,8 +488,8 @@ export default function TrustGoldRedesignedPage() {
               <Split
                 as="h1"
                 mode="load"
-                text="Transparent Gold Buying. Customer’s Choice. Clear Value."
-                goldWords={['Customer’s', 'Choice.']}
+                text="Where Your Gold Meets Honest, Open-Counter Value."
+                goldWords={['Gold', 'Open-Counter']}
                 className="hero-display"
               />
 
@@ -408,12 +497,15 @@ export default function TrustGoldRedesignedPage() {
                 className="hero-lead rise"
                 style={{ '--d': '260ms' } as React.CSSProperties}
               >
-                Sell old gold or release bank &amp; NBFC pledged gold in
-                Vijayawada with complete dignity. We clearly explain today’s
-                gold rate, purity, stone deductions, and our flat{' '}
-                <strong style={{ color: '#e6b95c' }}>1% processing fee</strong>{' '}
-                before proceeding—and let you choose between direct purchase or
-                melting in your presence.
+                Sell old gold jewellery or release bank &amp; NBFC pledged gold
+                in Vijayawada with complete dignity. Watch every purity test on
+                our calibrated scale right in front of your eyes, choose between
+                direct purchase or melting, and keep{' '}
+                <strong style={{ color: '#e6b95c' }}>
+                  99% of your gold’s market value
+                </strong>{' '}
+                with our flat{' '}
+                <strong style={{ color: '#e6b95c' }}>1% processing fee</strong>.
               </p>
 
               <div
@@ -438,66 +530,453 @@ export default function TrustGoldRedesignedPage() {
                     <Phone size={17} /> Call {BUSINESS_INFO.phoneDisplay}
                   </a>
                 </Magnetic>
+                <a href="#calculator" className="hero-estimator-link">
+                  <Scale size={15} /> Try Live Gold Estimator ↓
+                </a>
               </div>
 
-              {/* Founder Personal Guarantee Strip */}
-              <div
-                className="hero-founder-strip rise"
-                style={{ '--d': '480ms' } as React.CSSProperties}
-              >
-                <div
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 12,
-                    background: 'rgba(200, 146, 42, 0.16)',
-                    border: '1px solid rgba(230, 185, 92, 0.4)',
-                    display: 'grid',
-                    placeItems: 'center',
-                    color: 'var(--bullion-gold-bright)',
-                    flexShrink: 0,
-                  }}
-                >
-                  <ShieldCheck size={24} />
-                </div>
-                <div className="hero-founder-meta">
-                  <strong>Open-Counter Assay Promise</strong>
-                  <span>
-                    Gandhinagar, Vijayawada · Serving AP &amp; Telangana
-                  </span>
-                  <p>
-                    “Selling gold should never feel confusing or unfair. Every
-                    purity test and calculation happens right in front of your
-                    eyes.”
-                  </p>
-                </div>
-              </div>
-
+              {/* 3 Institutional Bullion Trust Pillars */}
               <div
                 className="hero-metrics rise"
-                style={{ '--d': '580ms' } as React.CSSProperties}
+                style={{ '--d': '520ms' } as React.CSSProperties}
               >
                 <div className="metric-item">
-                  <strong className="tabular-nums">3 Types</strong>
-                  <span>Hallmark 22K · 916 Mark · Unmarked Gold</span>
-                </div>
-                <div className="metric-item">
-                  <strong className="tabular-nums">1% Fee</strong>
-                  <span>Transparent processing fee, zero hidden cuts</span>
+                  <strong className="tabular-nums">99% Payout</strong>
+                  <span>Flat 1% processing fee, zero hidden cuts</span>
                 </div>
                 <div className="metric-item">
                   <strong>Your Choice</strong>
-                  <span>Direct purchase or melt in your presence</span>
+                  <span>Direct spot purchase or melt in your presence</span>
+                </div>
+                <div className="metric-item">
+                  <strong className="tabular-nums">15 Mins</strong>
+                  <span>Instant Cash · RTGS · IMPS · UPI settlement</span>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Interactive Live Assay & Loan Release Estimator */}
+            {/* Right Column: Cinematic Luxury Gold Assay & Bullion Showcase Stage */}
             <div
-              id="calculator"
-              className="calculator-shell spotlight-card rise"
-              style={{ '--d': '220ms' } as React.CSSProperties}
+              className="hero-showcase-stage rise"
+              style={{ '--d': '200ms' } as React.CSSProperties}
             >
+              {/* Floating Top-Left Card: 916 BIS & 3-Tier Purity Seal */}
+              <div className="hero-float-card hero-float-top spotlight-card">
+                <div className="hero-float-icon">
+                  <ShieldCheck size={20} />
+                </div>
+                <div>
+                  <span className="hero-float-eyebrow">
+                    3 PURITY TIERS ACCEPTED
+                  </span>
+                  <strong>BIS 916 · 916 Stamp · Unmarked</strong>
+                  <small>Stones carefully removed &amp; returned to you</small>
+                </div>
+              </div>
+
+              {/* Floating Top-Right Badge: Live Calibrated Scale Telemetry */}
+              <div className="hero-float-badge tabular-nums">
+                <span className="telugu-pill-dot" />
+                <span>OHAUS 0.01g Scale · 56.84g Live Assay</span>
+              </div>
+
+              {/* Main Architectural Gold-Bezel Showcase Frame */}
+              <div className="hero-stage-frame spotlight-card">
+                <div className="hero-stage-media">
+                  <Image
+                    src="/images/hero.png"
+                    alt="Open-counter 22K gold bangle valuation on a calibrated 56.84g digital scale beside a black Basanite touchstone at Trust Gold Services, Vijayawada"
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 580px"
+                    priority
+                  />
+                  <div className="hero-stage-vignette" aria-hidden="true" />
+                </div>
+
+                {/* Editorial Caption Overlay Inside Bottom of Frame */}
+                <div className="hero-stage-caption">
+                  <div className="hero-stage-caption-top">
+                    <span className="hero-stage-pill">
+                      <Sparkles size={12} /> OPEN-COUNTER VALUATION · GANDHINAGAR
+                    </span>
+                    <span className="hero-stage-rate tabular-nums">
+                      Flat 1% Fee Only
+                    </span>
+                  </div>
+                  <p className="hero-stage-telugu">
+                    “మెల్టింగ్ అడిగితే మెల్టింగ్ చేస్తాం, లేదు డైరెక్ట్‌గా
+                    కొనమంటే డైరెక్ట్‌గా కొంటాం.”
+                  </p>
+                  <p className="hero-stage-sub">
+                    Every digital weight reading, touchstone streak test, and
+                    payout sheet happens right in front of your eyes—never in a
+                    back room.
+                  </p>
+                </div>
+              </div>
+
+              {/* Floating Bottom-Right Card: Bank & NBFC Pledged Gold Release Escort */}
+              <div className="hero-float-card hero-float-bottom spotlight-card">
+                <div className="hero-float-icon">
+                  <Landmark size={20} />
+                </div>
+                <div>
+                  <span className="hero-float-eyebrow">
+                    BANK &amp; NBFC LOAN RELEASE
+                  </span>
+                  <strong>SBI · HDFC · Muthoot · Manappuram</strong>
+                  <small>
+                    We escort you, settle the loan &amp; pay your balance
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ====================================================================
+            INFINITE BULLION & BANK GOLD LOAN RELEASE MARQUEE STRIP
+            ==================================================================== */}
+        <section
+          aria-label="Supported banks, NBFCs and hallmark purities"
+          className="gold-marquee-bar"
+        >
+          <div className="gold-marquee">
+            <ul className="gold-marquee-track">
+              {[0, 1].map((copy) =>
+                MARQUEE_ITEMS.map((item) => (
+                  <li
+                    key={`${copy}-${item}`}
+                    aria-hidden={copy === 1 ? 'true' : undefined}
+                    className="gold-marquee-item"
+                  >
+                    <span>{item}</span>
+                    <svg
+                      aria-hidden="true"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      className="gold-marquee-star"
+                    >
+                      <path
+                        d="M7 0l1.6 5.4L14 7l-5.4 1.6L7 14l-1.6-5.4L0 7l5.4-1.6z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
+        </section>
+
+        {/* ====================================================================
+            THE CRAFT OF GOLD VALUATION: BASANITE TOUCHSTONE & 916 ASSAY BENCH
+            ==================================================================== */}
+        <GoldTouchstoneAssay
+          ratePerGram22k={ratePerGram22k}
+          onSelectForCalculator={handleSelectFromTouchstone}
+        />
+
+        {/* ====================================================================
+            3 TYPES OF GOLD JEWELLERY + CUSTOMER'S CHOICE BANNER
+            ==================================================================== */}
+        <section id="categories" className="section-pad">
+          <div className="container-shell">
+            <span className="section-tag">3 Gold Categories We Buy</span>
+            <Split
+              text="Clear valuation for every mark, purity, and ornament."
+              goldWords={['mark,', 'purity,']}
+              className="section-heading"
+            />
+            <p data-reveal className="section-sub">
+              Whether your ornaments carry a BIS 916 hallmark, a traditional 916
+              stamp, or no mark at all, we evaluate every piece openly in your
+              presence and explain the exact calculation before you decide.
+            </p>
+
+            <div data-reveal-group className="categories-grid">
+              {GOLD_CATEGORIES.map((cat) => (
+                <article key={cat.id} className="category-card spotlight-card">
+                  <div>
+                    <div className="category-card-top">
+                      <span className="category-num">
+                        CATEGORY {cat.number}
+                      </span>
+                      <span className="category-badge">{cat.badge}</span>
+                    </div>
+                    <h3>{cat.title}</h3>
+                    <p className="category-telugu">{cat.teluguHint}</p>
+                    <p className="category-desc">{cat.description}</p>
+                    <ul className="category-list">
+                      {cat.highlights.map((item) => (
+                        <li key={item}>
+                          <CheckCircle2 size={16} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <a
+                    href={`https://wa.me/${
+                      BUSINESS_INFO.whatsappNumber
+                    }?text=${encodeURIComponent(
+                      `Hi Trust Gold Services, I want to check today's rate for ${cat.title}.`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-navy"
+                    style={{ width: '100%' }}
+                  >
+                    Enquire for {cat.title.replace(' Jewellery', '')}{' '}
+                    <ArrowRight size={15} />
+                  </a>
+                </article>
+              ))}
+            </div>
+
+            {/* Customer's Choice Banner: Direct Purchase vs Melting in Presence */}
+            <div data-reveal className="choice-banner spotlight-card">
+              <div>
+                <span
+                  className="section-tag"
+                  style={{ color: 'var(--bullion-gold-bright)' }}
+                >
+                  Customer’s Choice Guarantee
+                </span>
+                <h3
+                  style={{
+                    fontFamily: 'var(--font-display), Georgia, serif',
+                    fontSize: 'clamp(1.75rem, 2.8vw, 2.35rem)',
+                    margin: '0 0 12px',
+                    lineHeight: 1.12,
+                  }}
+                >
+                  Direct Purchase or Melting in Your Presence—You Decide.
+                </h3>
+                <p
+                  style={{
+                    margin: '0 0 14px',
+                    color: 'rgba(255,255,255,0.82)',
+                    fontSize: '0.94rem',
+                  }}
+                >
+                  At Trust Gold Services, we never force a single method.
+                  Customers choose the valuation process they are most
+                  comfortable with—including purity testing, careful stone
+                  removal, or melting right in front of their eyes.
+                </p>
+                <p
+                  style={{
+                    margin: 0,
+                    color: 'var(--bullion-gold-bright)',
+                    fontSize: '0.86rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  “మెల్టింగ్ అడిగితే మెల్టింగ్ చేస్తాం, లేదు డైరెక్ట్‌గా
+                  కొనమంటే డైరెక్ట్‌గా కొంటాం.”
+                </p>
+              </div>
+
+              <div className="choice-cards">
+                <div className="choice-option">
+                  <Scale
+                    size={22}
+                    style={{
+                      color: 'var(--bullion-gold-bright)',
+                      marginBottom: 10,
+                    }}
+                  />
+                  <h4>Direct Valuation &amp; Spot Buy</h4>
+                  <small>No melting required</small>
+                  <p>
+                    We test purity and weigh your jewellery on our calibrated
+                    scale in front of you, deduct stone weight transparently,
+                    and pay you immediately.
+                  </p>
+                </div>
+
+                <div className="choice-option">
+                  <Flame
+                    size={22}
+                    style={{
+                      color: 'var(--bullion-gold-bright)',
+                      marginBottom: 10,
+                    }}
+                  />
+                  <h4>Melting in Your Presence</h4>
+                  <small>100% homogeneous purity assay</small>
+                  <p>
+                    Prefer melting for complete certainty? We remove stones so
+                    you keep them, melt the gold in your presence, and settle
+                    on the exact net reading.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ====================================================================
+            TRANSPARENT SIDE-BY-SIDE COMPARISON MATRIX (TRUST GOLD VS OTHERS)
+            ==================================================================== */}
+        <section id="comparison" className="section-pad section-vault">
+          <div className="container-shell">
+            <div className="comparison-header">
+              <div>
+                <span className="section-tag">Why Vijayawada Chooses Us</span>
+                <Split
+                  text="See how much more you keep with our flat 1% fee."
+                  goldWords={['1%', 'fee.']}
+                  className="section-heading"
+                />
+              </div>
+              <p className="section-sub">
+                Most corporate gold buyers deduct 3%–5% in service charges and
+                force melting, while local pawn brokers cut 8%–15% as hidden
+                wastage. Compare our open-counter terms side by side.
+              </p>
+            </div>
+
+            <div className="comparison-table-shell spotlight-card">
+              <table className="comparison-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Valuation &amp; Settlement Factor</th>
+                    <th scope="col" className="col-trustgold">
+                      <span className="col-badge">RECOMMENDED · 99% VALUE</span>
+                      <strong>Trust Gold Services</strong>
+                      <small>Gandhinagar, Vijayawada</small>
+                    </th>
+                    <th scope="col">
+                      <strong>Corporate Gold Chains</strong>
+                      <small>Typical Franchise Buyers</small>
+                    </th>
+                    <th scope="col">
+                      <strong>Local Pawn Brokers</strong>
+                      <small>Unorganized Cash Buyers</small>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARISON_ROWS.map((row) => (
+                    <tr key={row.feature}>
+                      <th scope="row">{row.feature}</th>
+                      <td className="col-trustgold">
+                        <span className="cell-trustgold-inner">
+                          <CheckCircle2 size={16} />
+                          <strong>{row.trustGold}</strong>
+                        </span>
+                      </td>
+                      <td>{row.corporate}</td>
+                      <td>{row.pawnBroker}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        {/* ====================================================================
+            DEDICATED INTERACTIVE GOLD & PLEDGED LOAN RELEASE ESTIMATOR SECTION
+            ==================================================================== */}
+        <section id="calculator" className="section-pad">
+          <div className="container-shell estimator-section-grid">
+            {/* Left Column: Clear Explanation & 1-Click Scenario Presets */}
+            <div className="estimator-intro-col">
+              <span className="section-tag">Interactive Valuation Desk</span>
+              <Split
+                text="Calculate your indicative payout before visiting our shop."
+                goldWords={['indicative', 'payout']}
+                className="section-heading"
+              />
+              <p className="section-sub" style={{ marginBottom: 24 }}>
+                We believe you should know every number before you step into our
+                Gandhinagar branch. Test a Direct Old Gold Sale or calculate
+                how much net cash remains after we close your Bank / NBFC gold
+                loan.
+              </p>
+
+              <div className="estimator-preset-box">
+                <span className="estimator-preset-label">
+                  Try a Common Vijayawada Ornament Scenario:
+                </span>
+                <div className="estimator-preset-pills">
+                  <button
+                    type="button"
+                    className="preset-pill pressable"
+                    onClick={() => {
+                      setMode('direct-sale')
+                      setCategoryId('hallmark-22k')
+                      setWeightGrams(8)
+                      setStoneWeightGrams(0)
+                    }}
+                  >
+                    1 Kasu (8g) 916 Coin / Chain
+                  </button>
+                  <button
+                    type="button"
+                    className="preset-pill pressable"
+                    onClick={() => {
+                      setMode('direct-sale')
+                      setCategoryId('hallmark-22k')
+                      setWeightGrams(24)
+                      setStoneWeightGrams(1)
+                    }}
+                  >
+                    3 Kasulu (24g) Bangles
+                  </button>
+                  <button
+                    type="button"
+                    className="preset-pill pressable"
+                    onClick={() => {
+                      setMode('pledged-release')
+                      setCategoryId('mark-916')
+                      setWeightGrams(50)
+                      setStoneWeightGrams(0)
+                      setLoanPayoffAmount(240000)
+                    }}
+                  >
+                    50g Bank Gold Loan Release
+                  </button>
+                </div>
+              </div>
+
+              <div className="estimator-formula-card spotlight-card">
+                <h4>How Our Written Receipt Works</h4>
+                <ul>
+                  <li>
+                    <CheckCircle2 size={16} />
+                    <span>
+                      <strong>Step 1 — Net Gold Weight:</strong> We weigh your
+                      ornament on our 0.01g scale and subtract stone/bead weight
+                      (stones are returned to you).
+                    </span>
+                  </li>
+                  <li>
+                    <CheckCircle2 size={16} />
+                    <span>
+                      <strong>Step 2 — Live Purity Rate:</strong> Multiplied by
+                      today’s Vijayawada gold rate for your tested purity.
+                    </span>
+                  </li>
+                  <li>
+                    <CheckCircle2 size={16} />
+                    <span>
+                      <strong>Step 3 — Flat 1% Fee Only:</strong> We deduct only
+                      our standard 1% processing fee (plus bank payoff if
+                      releasing a pledged loan).
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Right Column: Interactive Live Value & Release Estimator Card */}
+            <div className="calculator-shell spotlight-card">
               <div className="calc-header">
                 <div className="calc-title-block">
                   <h2>Live Value &amp; Release Estimator</h2>
@@ -772,191 +1251,6 @@ export default function TrustGoldRedesignedPage() {
               >
                 Send This Estimate to WhatsApp <ArrowRight size={17} />
               </a>
-            </div>
-          </div>
-        </section>
-
-        {/* ====================================================================
-            INFINITE BULLION & BANK GOLD LOAN RELEASE MARQUEE STRIP
-            ==================================================================== */}
-        <section
-          aria-label="Supported banks, NBFCs and hallmark purities"
-          className="gold-marquee-bar"
-        >
-          <div className="gold-marquee">
-            <ul className="gold-marquee-track">
-              {[0, 1].map((copy) =>
-                MARQUEE_ITEMS.map((item) => (
-                  <li
-                    key={`${copy}-${item}`}
-                    aria-hidden={copy === 1 ? 'true' : undefined}
-                    className="gold-marquee-item"
-                  >
-                    <span>{item}</span>
-                    <svg
-                      aria-hidden="true"
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      className="gold-marquee-star"
-                    >
-                      <path
-                        d="M7 0l1.6 5.4L14 7l-5.4 1.6L7 14l-1.6-5.4L0 7l5.4-1.6z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </li>
-                ))
-              )}
-            </ul>
-          </div>
-        </section>
-
-        {/* ====================================================================
-            THE CRAFT OF GOLD VALUATION: BASANITE TOUCHSTONE & 916 ASSAY BENCH
-            ==================================================================== */}
-        <GoldTouchstoneAssay
-          ratePerGram22k={ratePerGram22k}
-          onSelectForCalculator={handleSelectFromTouchstone}
-        />
-
-        {/* ====================================================================
-            3 TYPES OF GOLD JEWELLERY + CUSTOMER'S CHOICE BANNER
-            ==================================================================== */}
-        <section id="categories" className="section-pad">
-          <div className="container-shell">
-            <span className="section-tag">3 Gold Categories We Buy</span>
-            <Split
-              text="Clear valuation for every mark, purity, and ornament."
-              goldWords={['mark,', 'purity,']}
-              className="section-heading"
-            />
-            <p data-reveal className="section-sub">
-              Whether your ornaments carry a BIS 916 hallmark, a traditional 916
-              stamp, or no mark at all, we evaluate every piece openly in your
-              presence and explain the exact calculation before you decide.
-            </p>
-
-            <div data-reveal-group className="categories-grid">
-              {GOLD_CATEGORIES.map((cat) => (
-                <article key={cat.id} className="category-card spotlight-card">
-                  <div>
-                    <div className="category-card-top">
-                      <span className="category-num">
-                        CATEGORY {cat.number}
-                      </span>
-                      <span className="category-badge">{cat.badge}</span>
-                    </div>
-                    <h3>{cat.title}</h3>
-                    <p className="category-telugu">{cat.teluguHint}</p>
-                    <p className="category-desc">{cat.description}</p>
-                    <ul className="category-list">
-                      {cat.highlights.map((item) => (
-                        <li key={item}>
-                          <CheckCircle2 size={16} />
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <a
-                    href={`https://wa.me/${
-                      BUSINESS_INFO.whatsappNumber
-                    }?text=${encodeURIComponent(
-                      `Hi Trust Gold Services, I want to check today's rate for ${cat.title}.`
-                    )}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-navy"
-                    style={{ width: '100%' }}
-                  >
-                    Enquire for {cat.title.replace(' Jewellery', '')}{' '}
-                    <ArrowRight size={15} />
-                  </a>
-                </article>
-              ))}
-            </div>
-
-            {/* Customer's Choice Banner: Direct Purchase vs Melting in Presence */}
-            <div data-reveal className="choice-banner spotlight-card">
-              <div>
-                <span
-                  className="section-tag"
-                  style={{ color: 'var(--bullion-gold-bright)' }}
-                >
-                  Customer’s Choice Guarantee
-                </span>
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-display), Georgia, serif',
-                    fontSize: 'clamp(1.75rem, 2.8vw, 2.35rem)',
-                    margin: '0 0 12px',
-                    lineHeight: 1.12,
-                  }}
-                >
-                  Direct Purchase or Melting in Your Presence—You Decide.
-                </h3>
-                <p
-                  style={{
-                    margin: '0 0 14px',
-                    color: 'rgba(255,255,255,0.82)',
-                    fontSize: '0.94rem',
-                  }}
-                >
-                  At Trust Gold Services, we never force a single method.
-                  Customers choose the valuation process they are most
-                  comfortable with—including purity testing, careful stone
-                  removal, or melting right in front of their eyes.
-                </p>
-                <p
-                  style={{
-                    margin: 0,
-                    color: 'var(--bullion-gold-bright)',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                  }}
-                >
-                  “మెల్టింగ్ అడిగితే మెల్టింగ్ చేస్తాం, లేదు డైరెక్ట్‌గా
-                  కొనమంటే డైరెక్ట్‌గా కొంటాం.”
-                </p>
-              </div>
-
-              <div className="choice-cards">
-                <div className="choice-option">
-                  <Scale
-                    size={22}
-                    style={{
-                      color: 'var(--bullion-gold-bright)',
-                      marginBottom: 10,
-                    }}
-                  />
-                  <h4>Direct Valuation &amp; Spot Buy</h4>
-                  <small>No melting required</small>
-                  <p>
-                    We test purity and weigh your jewellery on our calibrated
-                    scale in front of you, deduct stone weight transparently,
-                    and pay you immediately.
-                  </p>
-                </div>
-
-                <div className="choice-option">
-                  <Flame
-                    size={22}
-                    style={{
-                      color: 'var(--bullion-gold-bright)',
-                      marginBottom: 10,
-                    }}
-                  />
-                  <h4>Melting in Your Presence</h4>
-                  <small>100% homogeneous purity assay</small>
-                  <p>
-                    Prefer melting for complete certainty? We remove stones so
-                    you keep them, melt the gold in your presence, and settle
-                    on the exact net reading.
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </section>
@@ -1331,20 +1625,64 @@ export default function TrustGoldRedesignedPage() {
         </section>
 
         {/* ====================================================================
-            4-STEP TRANSPARENT PROCESS
+            INTERACTIVE 2-TRACK PROCESS + GANDHINAGAR BRANCH SHOWCASE
             ==================================================================== */}
         <section id="process" className="section-pad section-alabaster">
           <div className="container-shell">
-            <span className="section-tag">How It Works</span>
-            <Split
-              text="Four calm, visible steps from arrival to spot payout."
-              goldWords={['visible', 'spot', 'payout.']}
-              className="section-heading"
-            />
-            <p data-reveal className="section-sub">
-              No back-room testing and no rushed pressure. Everything happens at
-              our front counter in Gandhinagar, Vijayawada.
-            </p>
+            <div className="process-header-bar">
+              <div>
+                <span className="section-tag">How It Works</span>
+                <Split
+                  text="Four calm, visible steps from arrival to spot payout."
+                  goldWords={['visible', 'spot', 'payout.']}
+                  className="section-heading"
+                />
+                <p data-reveal className="section-sub">
+                  Switch between our Direct Gold Sale flow and our Bank / NBFC
+                  Pledged Gold Release flow below.
+                </p>
+              </div>
+
+              {/* Interactive Two-Track Process Switcher */}
+              <div
+                className="segmented-control"
+                role="tablist"
+                aria-label="Select process workflow"
+                style={{ minWidth: 340, marginBottom: 0 }}
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={processTrack === 'direct-sale'}
+                  className="segmented-btn"
+                  onClick={() => setProcessTrack('direct-sale')}
+                >
+                  Track 1: Sell Old Gold
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={processTrack === 'pledged-release'}
+                  className="segmented-btn"
+                  onClick={() => setProcessTrack('pledged-release')}
+                >
+                  Track 2: Release Pledged Gold
+                </button>
+                <div
+                  className="segmented-overlay"
+                  aria-hidden="true"
+                  style={{
+                    clipPath:
+                      processTrack === 'direct-sale'
+                        ? 'inset(0 50% 0 0 round 7px)'
+                        : 'inset(0 0% 0 50% round 7px)',
+                  }}
+                >
+                  <span>Track 1: Sell Old Gold</span>
+                  <span>Track 2: Release Pledged Gold</span>
+                </div>
+              </div>
+            </div>
 
             <div className="steps-timeline-wrap">
               <span
@@ -1353,42 +1691,52 @@ export default function TrustGoldRedesignedPage() {
                 className="steps-golden-line"
               />
               <div data-reveal-group className="steps-grid">
-                <div className="step-card spotlight-card">
-                  <span className="step-num">STEP 01</span>
-                  <h3>Share Details or Walk In</h3>
-                  <p>
-                    Visit Shop No. 5, Vasisth Enclave in Gandhinagar, or send
-                    your ornament / bank loan details on WhatsApp for a free
-                    initial estimate.
-                  </p>
-                </div>
+                {PROCESS_TRACKS[processTrack].map((item) => (
+                  <div key={item.title} className="step-card spotlight-card">
+                    <span className="step-num">{item.step}</span>
+                    <h3>{item.title}</h3>
+                    <p>{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-                <div className="step-card spotlight-card">
-                  <span className="step-num">STEP 02</span>
-                  <h3>Choose Your Assay Method</h3>
-                  <p>
-                    Watch purity testing and digital weighing in front of you.
-                    Choose direct valuation or request melting in your presence.
-                  </p>
-                </div>
-
-                <div className="step-card spotlight-card">
-                  <span className="step-num">STEP 03</span>
-                  <h3>Review Clear Breakdown</h3>
-                  <p>
-                    We show the live day’s rate, purity, stone weight, and flat
-                    1% processing fee on paper before you make your decision.
-                  </p>
-                </div>
-
-                <div className="step-card spotlight-card">
-                  <span className="step-num">STEP 04</span>
-                  <h3>Instant Spot Settlement</h3>
-                  <p>
-                    Receive immediate payment via Cash, UPI, IMPS, or RTGS—or
-                    let our team close your bank loan and hand over your
-                    balance.
-                  </p>
+            {/* Authentic Gandhinagar Branch Open-Counter Showcase (/images/about-shop.png) */}
+            <div className="branch-counter-banner spotlight-card">
+              <div className="branch-counter-media">
+                <Image
+                  src="/images/about-shop.png"
+                  alt="Trust Gold Services Gandhinagar Vijayawada branch consultation counter and digital gold weighing scale"
+                  fill
+                  sizes="(max-width: 900px) 100vw, 460px"
+                />
+              </div>
+              <div className="branch-counter-copy">
+                <span
+                  className="section-tag"
+                  style={{ color: 'var(--bullion-gold-bright)' }}
+                >
+                  Inside Our Gandhinagar Branch
+                </span>
+                <h3>
+                  A Private, Respectful Consultation Counter Built for Families
+                </h3>
+                <p>
+                  Unlike crowded street-side pawn shops, our First Floor office
+                  at Shop No. 5, Vasisth Enclave in Gandhinagar offers air-conditioned
+                  privacy, calibrated digital scales, and complete transparency
+                  for women, senior citizens, and families across Vijayawada.
+                </p>
+                <div className="branch-counter-badges">
+                  <span>
+                    <ShieldCheck size={15} /> 100% Open-Counter Testing
+                  </span>
+                  <span>
+                    <Award size={15} /> Stones Returned Intact
+                  </span>
+                  <span>
+                    <Clock size={15} /> 15-Minute Spot Settlement
+                  </span>
                 </div>
               </div>
             </div>
@@ -1511,6 +1859,16 @@ export default function TrustGoldRedesignedPage() {
                     <strong>{BUSINESS_INFO.hours}</strong>
                   </div>
                 </div>
+              </div>
+
+              {/* Embedded Live Google Map for Gandhinagar, Vijayawada */}
+              <div className="contact-map-frame">
+                <iframe
+                  title="Trust Gold Services — Shop No. 5, Vasisth Enclave, Gandhinagar, Vijayawada Map"
+                  src="https://www.google.com/maps?q=Vasisth+Enclave,+Gandhinagar,+Vijayawada,+Andhra+Pradesh+520003&output=embed"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
               </div>
             </div>
 

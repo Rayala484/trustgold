@@ -180,6 +180,24 @@ export default function TrustGoldHomePage() {
     }
   }, [])
 
+  // Mobile dock: hide it while the hero buttons or the contact form are on screen, so the same
+  // Call / WhatsApp actions are never shown twice at once.
+  useEffect(() => {
+    const dock = document.querySelector<HTMLElement>('.mobile-dock')
+    const targets = document.querySelectorAll('.hero-actions, #contact')
+    if (!dock || !targets.length || !('IntersectionObserver' in window)) return
+    const visible = new Set<Element>()
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) visible.add(e.target)
+        else visible.delete(e.target)
+      }
+      dock.dataset.hidden = visible.size > 0 ? 'true' : 'false'
+    })
+    targets.forEach((el) => io.observe(el))
+    return () => io.disconnect()
+  }, [])
+
   function handleLanguageSwitch(nextLang: Language) {
     setLang(nextLang)
     try {
@@ -382,7 +400,7 @@ export default function TrustGoldHomePage() {
               aria-label={`Call Trust Gold Services at ${BUSINESS_INFO.phoneDisplay}`}
             >
               <Phone size={15} style={{ color: '#e6b95c' }} />
-              {t.nav.callNow}
+              <span className="nav-phone-text">{t.nav.callNow}</span>
             </a>
 
             <Magnetic strength={0.22}>
@@ -2146,7 +2164,7 @@ export default function TrustGoldHomePage() {
               <span
                 style={{
                   display: 'block',
-                  fontSize: '0.72rem',
+                  fontSize: '0.75rem',
                   fontWeight: 700,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',

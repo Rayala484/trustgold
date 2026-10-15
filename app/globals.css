@@ -4724,3 +4724,222 @@ html.lenis body {
 
 
 
+
+/* ==========================================================================
+   20. Mobile & Touch Polish (header fit, single CTA path, 44px targets, opaque header)
+   ========================================================================== */
+
+/* Header sits over dark and light sections alike: keep it opaque so headings never ghost through. */
+.site-header {
+  background: rgba(5, 16, 36, 0.97);
+}
+
+/* Touch targets: 44px minimum on touch and compact layouts. Pseudo-element expands links without reflow. */
+.top-ribbon a,
+.nav-links a {
+  position: relative;
+}
+.top-ribbon a::after,
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  inset: -12px -6px;
+}
+
+@media (max-width: 1024px), (pointer: coarse) {
+  .btn,
+  .btn-sm,
+  .nav-phone-pill,
+  .menu-toggle,
+  .tg-3d-action-btn {
+    min-height: 44px;
+  }
+  .menu-toggle {
+    width: 44px;
+  }
+  .lang-pill-btn {
+    min-height: 40px;
+    min-width: 44px;
+    padding: 0 12px;
+  }
+  .lang-switcher {
+    padding: 2px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* The bottom dock and the drawer already carry Call + WhatsApp. */
+  .nav-phone-pill,
+  .floating-whatsapp-wrap {
+    display: none;
+  }
+
+  .nav-bar {
+    gap: 10px;
+  }
+  .brand-lockup {
+    min-width: 0;
+    flex-shrink: 1;
+    gap: 10px;
+  }
+  .brand-emblem {
+    width: 40px;
+    height: 40px;
+  }
+  .brand-title-main {
+    font-size: 1.12rem;
+  }
+  .nav-cta-group {
+    gap: 8px;
+  }
+
+  /* Dock: equal, never-clipped buttons; slides away while the same actions are already on screen. */
+  .mobile-dock {
+    transition: transform 240ms var(--ease-out), opacity 200ms var(--ease-out);
+  }
+  .mobile-dock[data-hidden='true'] {
+    transform: translateY(110%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .mobile-dock-inner {
+    gap: 8px;
+  }
+  .mobile-dock-inner .btn {
+    width: 100%;
+    min-width: 0;
+    padding: 0 10px;
+    font-size: 0.8rem;
+    min-height: 48px;
+  }
+}
+
+/* Narrow phones: show only the language you are NOT reading (one tap to flip). */
+@media (max-width: 480px) {
+  .brand-title-sub {
+    display: none;
+  }
+  .nav-cta-group .lang-pill-btn.active {
+    display: none;
+  }
+  .nav-cta-group .lang-switcher {
+    padding: 2px;
+  }
+}
+
+
+
+@media (max-width: 1024px), (pointer: coarse) {
+  .brand-lockup,
+  .segmented-btn,
+  .doc-filter-btn,
+  .lang-pill-btn {
+    min-height: 44px;
+  }
+  .footer-col a,
+  .contact-detail-text a,
+  form a[href^='tel:'] {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* Legibility floor: nothing a visitor has to read is smaller than 12px. */
+.brand-title-sub,
+.tg-3d-stage-pill,
+.tg-3d-action-btn,
+.tg-3d-verif-tag,
+.category-badge,
+.basanite-badge,
+.assay-bench-tag,
+.wb-unit,
+.choice-badge-pill,
+.worked-ledger-badge,
+.worked-row-note,
+.col-badge,
+.review-service-tag,
+.founder-verified-pill,
+.vm-label,
+.doc-badge {
+  font-size: max(0.75rem, 12px);
+}
+small {
+  font-size: max(12px, 0.833em);
+}
+
+div small,
+.assay-rate-badge small,
+.service-media-caption span {
+  font-size: max(12px, 0.833em);
+}
+
+@media (max-width: 768px) {
+  .mobile-drawer-inner a {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .mobile-drawer-inner .btn {
+    justify-content: center;
+  }
+  /* Drawer already has Call + WhatsApp; don't stack a second pair under it. */
+  body:has(.mobile-drawer.open) .mobile-dock {
+    transform: translateY(110%);
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Header never wider than its container: shed the least important parts as space shrinks. */
+@media (max-width: 1300px) {
+  .brand-title-sub {
+    display: none;
+  }
+}
+@media (max-width: 1200px) and (min-width: 769px) {
+  .nav-phone-text {
+    display: none;
+  }
+  .nav-phone-pill {
+    padding: 0 12px;
+    min-width: 44px;
+    justify-content: center;
+  }
+}
+@media (max-width: 1100px) {
+  .nav-links {
+    display: none;
+  }
+  .menu-toggle {
+    display: inline-flex;
+  }
+}
+
+/* Small phones (320–400px): grid children may shrink, aspect-ratio frames stop forcing width. */
+.founder-grid > *,
+.hero-grid > *,
+.contact-layout > *,
+.faq-layout > * {
+  min-width: 0;
+}
+@media (max-width: 480px) {
+  .founder-main-frame {
+    min-height: 0;
+  }
+}
+@media (max-width: 400px) {
+  .segmented-control {
+    max-width: 100%;
+  }
+  .segmented-btn {
+    flex: 1 1 100%;
+    white-space: normal;
+    text-align: center;
+  }
+  .btn {
+    white-space: normal;
+    text-align: center;
+    max-width: 100%;
+  }
+}

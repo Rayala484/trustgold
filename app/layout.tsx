@@ -27,9 +27,10 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 })
 
-// Runs before first paint: enables scroll reveals (html.motion-ok with a 4s hydration failsafe)
-// and plays the Trust Gold Bullion Forging & 916 Assay Opening unless prefers-reduced-motion or ?nointro is present.
-const introBootScript = `try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches){d.classList.add("motion-ok");setTimeout(function(){if(!window.__tgMotion)d.classList.remove("motion-ok")},4000);if(!/[?&]nointro/.test(location.search)){d.classList.add("intro");setTimeout(function(){d.classList.remove("intro")},3600)}}}catch(e){}`
+// Runs before first paint: plays the Trust Gold Bullion Forging & 916 Assay Opening
+// unless prefers-reduced-motion or ?nointro is present.
+const introBootScript = `try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&!/[?&]nointro/.test(location.search)){var d=document.documentElement;d.classList.add("intro");setTimeout(function(){d.classList.remove("intro")},3600)}}catch(e){}`
+
 
 export const metadata: Metadata = {
   metadataBase: new URL(

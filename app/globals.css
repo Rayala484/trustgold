@@ -2436,6 +2436,10 @@ html.intro .tg-intro-overlay::before {
    15. Choreographed Site Motion, Gold Sunburst, Marquee & Social Icon Buttons
    ========================================================================== */
 
+section[id] {
+  scroll-margin-top: 90px;
+}
+
 /* Header Scroll Elevation & Gold Progress Hairline */
 .site-header {
   transition: background-color 260ms var(--ease-out),
@@ -2500,40 +2504,49 @@ html.intro .tg-intro-overlay::before {
   will-change: transform;
 }
 
-.w-gold-ink > i {
-  color: var(--bullion-gold-bright);
+.w-gold-ink > i,
+.w > i.w-gold-ink {
+  color: var(--bullion-gold-deep);
   font-style: italic;
 }
 
+:is(.hero-vault, .section-vault, .touchstone-section) :is(.w-gold-ink > i, .w > i.w-gold-ink) {
+  color: var(--bullion-gold-bright);
+}
+
 /* Load-triggered hero entrance (auto-delays by 2.58s when html.intro is active) */
-html.motion-ok {
+html {
   --load-offset: 0s;
 }
 
-html.motion-ok.intro {
+html.intro {
   --load-offset: 2.58s;
 }
 
-html.motion-ok .w-load > i {
-  transform: translateY(112%);
-  animation: tg-word-rise 0.76s var(--ease-out) forwards;
+.w-load > i {
+  animation: tg-word-rise 0.76s var(--ease-out) both;
   animation-delay: calc(var(--load-offset) + 80ms + var(--i, 0) * 34ms);
 }
 
 @keyframes tg-word-rise {
+  from {
+    transform: translateY(112%);
+  }
   to {
     transform: translateY(0);
   }
 }
 
-html.motion-ok .rise {
-  opacity: 0;
-  transform: translateY(16px);
-  animation: tg-rise-in 0.72s var(--ease-out) forwards;
+.rise {
+  animation: tg-rise-in 0.72s var(--ease-out) both;
   animation-delay: calc(var(--load-offset) + var(--d, 0s));
 }
 
 @keyframes tg-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
   to {
     opacity: 1;
     transform: translateY(0);
@@ -2547,7 +2560,7 @@ html.motion-ok [data-split='scroll'] .w > i {
   transition-delay: calc(var(--i, 0) * 28ms);
 }
 
-html.motion-ok [data-split='scroll'].in .w > i {
+html.motion-ok [data-split='scroll']:is(.in, .is-in) .w > i {
   transform: translateY(0);
 }
 
@@ -2560,19 +2573,26 @@ html.motion-ok [data-reveal-group] > * {
   transition-delay: calc(var(--stagger, 0) * 85ms);
 }
 
-html.motion-ok [data-reveal].in,
-html.motion-ok [data-reveal-group].in > * {
+html.motion-ok [data-reveal]:is(.in, .is-in),
+html.motion-ok [data-reveal-group]:is(.in, .is-in) > * {
   opacity: 1;
   transform: translateY(0);
 }
 
 /* Curtain Image Reveal & Scroll Parallax */
+.parallax-media-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
 html.motion-ok [data-img-reveal] {
   clip-path: inset(0 0 14% 0 round 12px);
   transition: clip-path 0.88s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-html.motion-ok [data-img-reveal].in {
+html.motion-ok [data-img-reveal]:is(.in, .is-in) {
   clip-path: inset(0 0 0% 0 round 12px);
 }
 
@@ -2593,7 +2613,16 @@ html.motion-ok [data-parallax] {
   right: 8%;
   top: 44px;
   width: 84%;
-  height: 6px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--bullion-gold) 15%,
+    var(--bullion-gold-bright) 50%,
+    var(--bullion-gold) 85%,
+    transparent 100%
+  );
+  transform-origin: 0 50%;
   pointer-events: none;
   z-index: 0;
 }
@@ -2603,15 +2632,15 @@ html.motion-ok [data-parallax] {
   z-index: 1;
 }
 
-html.motion-ok [data-draw] path {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1.35s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+html.motion-ok [data-draw] {
+  transform: scaleX(0);
+  transition: transform 1.25s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
 }
 
-html.motion-ok [data-draw].in path {
-  stroke-dashoffset: 0;
+html.motion-ok [data-draw]:is(.in, .is-in) {
+  transform: scaleX(1);
 }
+
 
 /* Infinite Gold Bullion & Bank Release Marquee Strip */
 .gold-marquee-bar {

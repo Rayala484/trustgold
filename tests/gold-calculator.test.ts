@@ -117,5 +117,8 @@ test('footer Follow Trust Gold section renders accessible SVG icon buttons inste
   assert.ok(css.includes('.scroll-progress'), 'globals.css must style .scroll-progress')
   assert.ok(css.includes('.gold-marquee-bar'), 'globals.css must style .gold-marquee-bar')
   assert.ok(css.includes('.spotlight-card'), 'globals.css must style .spotlight-card')
-})
+  assert.ok(css.includes('.parallax-media-wrap'), 'globals.css must style .parallax-media-wrap with absolute inset:0')
 
+  const siteMotionSource = await fs.readFile(new URL('../components/SiteMotion.tsx', import.meta.url), 'utf8')
+  assert.ok(siteMotionSource.includes("classList.add('in', 'is-in')"), 'SiteMotion must add both .in and .is-in on reveal')
+})

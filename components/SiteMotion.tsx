@@ -31,20 +31,27 @@ export function Split({
       id={id}
       className={className}
       aria-label={text}
-      data-split={mode === 'scroll' ? '' : undefined}
+      data-split={mode === 'scroll' ? 'scroll' : 'load'}
     >
       {words.map((w, i) => {
-        const cleanWord = w.replace(/[.,—–!?’']/g, '').toLowerCase()
+        const cleanWord = w.replace(/[.,—–!?’'“”]/g, '').toLowerCase()
         const isGold =
           goldSet.has(w.toLowerCase()) || goldSet.has(cleanWord)
+        const spanClass = [
+          'w',
+          mode === 'load' ? 'w-load' : '',
+          isGold ? 'w-gold-ink' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')
         return (
           <Fragment key={i}>
             <span
               aria-hidden="true"
-              className={mode === 'load' ? 'w w-load' : 'w'}
+              className={spanClass}
               style={{ '--i': i } as React.CSSProperties}
             >
-              <span className={isGold ? 'w-gold-ink' : undefined}>{w}</span>
+              <i className={isGold ? 'w-gold-ink' : undefined}>{w}</i>
             </span>
             {i < words.length - 1 ? ' ' : null}
           </Fragment>
@@ -220,8 +227,9 @@ export function AnimatedINR({
 /**
  * 4. PageMotion Orchestrator (<PageMotion />)
  * - Enables scroll-triggered reveals ([data-split], [data-reveal], [data-reveal-group], [data-img-reveal], [data-draw])
- * - Runs smooth count-up on [data-count]
- * - Updates header scroll elevation & progress hairline fallback
+ * - Assigns --stagger indices on [data-reveal-group] direct children
+ * - Updates header scroll elevation & progress hairline
+ * - Updates [data-parallax] subtle vertical offset
  * - Tracks mouse position on .spotlight-card for 24K brushed-gold border & surface glare
  */
 export function PageMotion() {
@@ -233,6 +241,33 @@ export function PageMotion() {
     }
 
     ;(window as unknown as { __tgMotion?: boolean }).__tgMotion = true
+
+    const groups = document.querySelectorAll<HTMLElement>('[data-reveal-group]')
+    groups.forEach((group) => {
+      Array.from(group.children).forEach((child, idx) => {
+        ;(child as HTMLElement).style.setProperty('--stagger', String(idx))
+      })
+    })
+
+    const targets = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '[data-split], [data-reveal], [data-reveal-group], [data-img-reveal], [data-draw]'
+      )
+    )
+
+    const revealElement = (el: HTMLElement) => {
+      el.classList.add('in', 'is-in')
+    }
+
+    // Synchronously mark elements already in or above the viewport before enabling motion-ok
+    const vh = window.innerHeight || 800
+    targets.forEach((el) => {
+      const r = el.getBoundingClientRect()
+      if (r.top <= vh * 0.94) {
+        revealElement(el)
+      }
+    })
+
     html.classList.add('motion-ok')
 
     const io = new IntersectionObserver(
@@ -240,40 +275,65 @@ export function PageMotion() {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue
           const el = entry.target as HTMLElement
-          el.classList.add('is-in')
+          revealElement(el)
           io.unobserve(el)
         }
       },
-      { rootMargin: '0px 0px -10% 0px', threshold: 0.06 }
+      { rootMargin: '0px 0px -4% 0px', threshold: 0.02 }
     )
 
-    const targets = document.querySelectorAll(
-      '[data-split], [data-reveal], [data-reveal-group], [data-img-reveal], [data-draw]'
-    )
-    targets.forEach((el) => io.observe(el))
+    targets.forEach((el) => {
+      if (!el.classList.contains('in')) {
+        io.observe(el)
+      }
+    })
 
-    // Smart Header scroll elevation + fallback scroll progress bar
     const header = document.querySelector<HTMLElement>('.site-header')
     const progressEl = document.querySelector<HTMLElement>('.scroll-progress')
-    const supportsScrollTimeline =
-      typeof CSS !== 'undefined' &&
-      CSS.supports('animation-timeline: scroll()')
+    const parallaxEls = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-parallax]')
+    )
 
     let scrollRaf = 0
     const onScroll = () => {
       cancelAnimationFrame(scrollRaf)
       scrollRaf = requestAnimationFrame(() => {
         const y = window.scrollY
+        const curVh = window.innerHeight || 800
+
         if (header) {
           header.dataset.scrolled = String(y > 32)
         }
-        if (progressEl && !supportsScrollTimeline) {
+
+        if (progressEl) {
           const maxScroll = Math.max(
             1,
-            document.documentElement.scrollHeight - window.innerHeight
+            document.documentElement.scrollHeight - curVh
           )
           const ratio = Math.min(1, Math.max(0, y / maxScroll))
           progressEl.style.transform = `scaleX(${ratio.toFixed(4)})`
+        }
+
+        // Scroll fallback reveal so fast scrolling or anchor jumps never leave an element hidden
+        for (const el of targets) {
+          if (!el.classList.contains('in')) {
+            const rect = el.getBoundingClientRect()
+            if (rect.top <= curVh * 0.94) {
+              revealElement(el)
+              io.unobserve(el)
+            }
+          }
+        }
+
+        // Subtle vertical parallax on [data-parallax] media wrappers
+        for (const pel of parallaxEls) {
+          const rect = pel.getBoundingClientRect()
+          if (rect.bottom >= -100 && rect.top <= curVh + 100) {
+            const centerOffset =
+              (rect.top + rect.height / 2 - curVh / 2) / curVh
+            const py = Math.max(-14, Math.min(14, -centerOffset * 18))
+            pel.style.setProperty('--py', `${py.toFixed(1)}px`)
+          }
         }
       })
     }
@@ -305,3 +365,4 @@ export function PageMotion() {
 
   return null
 }
+

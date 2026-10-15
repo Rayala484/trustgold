@@ -1,0 +1,218 @@
+export type EstimateMode = 'direct-sale' | 'pledged-release'
+export type GoldCategoryId = 'hallmark-22k' | 'mark-916' | 'other-unmarked'
+export type ValuationMethodId = 'direct' | 'melting'
+
+export interface GoldCategory {
+  id: GoldCategoryId
+  number: string
+  title: string
+  teluguHint: string
+  badge: string
+  purityFactor: number
+  description: string
+  highlights: string[]
+}
+
+export const BUSINESS_INFO = {
+  name: 'Trust Gold Services',
+  shortName: 'Trust Gold',
+  teluguTagline: 'మేము బంగారం కొంటాము',
+  uspHeadline: 'Transparent Gold Buying. Customer’s Choice. Clear Value.',
+  founderName: 'Manohar Reddy',
+  founderRole: 'Founder & Managing Director',
+  phone: '9393494455',
+  phoneFormatted: '+91 93934 94455',
+  phoneDisplay: '93934 94455',
+  whatsappNumber: '919393494455',
+  email: 'trustgoldservices@gmail.com',
+  addressShort: 'First Floor, Shop No. 5, Vasisth Enclave, Gandhinagar, Vijayawada',
+  addressFull:
+    'First Floor, Shop No. 5, Vasisth Enclave, Gandhinagar, Vijayawada, Andhra Pradesh 520003',
+  mapsUrl: 'https://maps.app.goo.gl/hkybjegfg9zumDPx6',
+  hours: 'Monday – Saturday · 9:00 AM – 9:00 PM',
+  regionServed: 'Vijayawada, Andhra Pradesh & Telangana',
+  processingFeePercent: 1,
+  socials: {
+    instagram: 'https://www.instagram.com/trustgoldservices?utm_source=qr',
+    facebook: 'https://www.facebook.com/share/1bgL24rnT9/?mibextid=wwXIfr',
+    youtube: 'https://youtube.com/@trustgoldservices?si=hwW0_PeAESfY0t1x',
+  },
+} as const
+
+export const GOLD_CATEGORIES: GoldCategory[] = [
+  {
+    id: 'hallmark-22k',
+    number: '01',
+    title: 'Hallmark 22K Jewellery',
+    teluguHint: 'BIS 916 హాల్‌మార్క్ ఆభరణాలు',
+    badge: 'BIS 916 Certified',
+    purityFactor: 1.0,
+    description:
+      'Government BIS Hallmarked 22-Karat (916 HUID) ornaments. Verified in front of you for maximum benchmark rate.',
+    highlights: [
+      'Instant BIS 916 hallmark & purity verification in your presence',
+      '100% of live 22K market rate applied to net gold weight',
+      'Zero hidden weight cuts — digital scale reading visible to you',
+    ],
+  },
+  {
+    id: 'mark-916',
+    number: '02',
+    title: 'Only 916 Mark Jewellery',
+    teluguHint: '916 మార్క్ ఉన్న బంగారు ఆభరణాలు',
+    badge: '916 Stamped',
+    purityFactor: 1.0,
+    description:
+      'Jewellery carrying the traditional 916 stamp without HUID. Tested transparently on our precision analyzer right before your eyes.',
+    highlights: [
+      'Open-counter purity verification with full calculation sheet',
+      'Choose direct purchase or melting assay based on your comfort',
+      'Stone or wax weight separated fairly with your approval',
+    ],
+  },
+  {
+    id: 'other-unmarked',
+    number: '03',
+    title: 'Other Marks or Unmarked Gold',
+    teluguHint: 'ఇతర మార్కులు / మార్క్ లేని పాత బంగారం',
+    badge: 'Custom Assay',
+    purityFactor: 0.94,
+    description:
+      'Ancestral, KDM, broken, stone-studded, or unmarked gold ornaments. We test exact karat purity openly so you never guess its true worth.',
+    highlights: [
+      'Exact karat reading explained in plain language before you decide',
+      'Careful stone removal so you keep your stones and get full gold value',
+      'Option to melt in your presence for 100% exact purity settlement',
+    ],
+  },
+]
+
+export const VALUATION_METHODS = [
+  {
+    id: 'direct' as ValuationMethodId,
+    title: 'Direct Testing & Spot Purchase',
+    teluguNote: 'నేరుగా కొనుగోలు (Direct Purchase)',
+    summary:
+      'Non-destructive purity testing and weighing in front of you. Best when you want an immediate quote and spot payment without melting.',
+  },
+  {
+    id: 'melting' as ValuationMethodId,
+    title: 'Melting in Your Presence',
+    teluguNote: 'మీ సమక్షంలో మెల్టింగ్ (Melting Option)',
+    summary:
+      'If you ask for melting, we melt the ornament right in front of you and test the homogeneous bar for 100% exact net purity.',
+  },
+] as const
+
+export interface EstimateInput {
+  mode: EstimateMode
+  categoryId: GoldCategoryId
+  valuationMethod: ValuationMethodId
+  weightGrams: number
+  stoneWeightGrams: number
+  ratePerGram22k: number
+  loanPayoffAmount: number
+}
+
+export interface EstimateResult {
+  mode: EstimateMode
+  category: GoldCategory
+  valuationMethod: ValuationMethodId
+  valuationMethodLabel: string
+  grossWeightGrams: number
+  stoneWeightGrams: number
+  netWeightGrams: number
+  effectiveRatePerGram: number
+  grossValue: number
+  processingFeePercent: number
+  processingFee: number
+  valueAfterFee: number
+  loanPayoffAmount: number
+  netCustomerPayout: number
+}
+
+export function calculateGoldEstimate(input: EstimateInput): EstimateResult {
+  const category =
+    GOLD_CATEGORIES.find((c) => c.id === input.categoryId) ?? GOLD_CATEGORIES[0]
+
+  const grossWeightGrams = Math.max(0, Number(input.weightGrams) || 0)
+  const stoneWeightGrams = Math.min(
+    grossWeightGrams,
+    Math.max(0, Number(input.stoneWeightGrams) || 0)
+  )
+  const netWeightGrams = Number((grossWeightGrams - stoneWeightGrams).toFixed(2))
+
+  const baseRate = Math.max(0, Number(input.ratePerGram22k) || 0)
+  const effectiveRatePerGram = Math.round(baseRate * category.purityFactor)
+
+  const grossValue = Math.round(netWeightGrams * effectiveRatePerGram)
+  const processingFeePercent = BUSINESS_INFO.processingFeePercent
+  const processingFee = Math.round(grossValue * (processingFeePercent / 100))
+  const valueAfterFee = Math.max(0, grossValue - processingFee)
+
+  const loanPayoffAmount =
+    input.mode === 'pledged-release'
+      ? Math.max(0, Math.round(Number(input.loanPayoffAmount) || 0))
+      : 0
+
+  const netCustomerPayout = valueAfterFee - loanPayoffAmount
+
+  const valuationMethodLabel =
+    input.valuationMethod === 'melting'
+      ? 'Melting in Presence'
+      : 'Direct Valuation & Purchase'
+
+  return {
+    mode: input.mode,
+    category,
+    valuationMethod: input.valuationMethod,
+    valuationMethodLabel,
+    grossWeightGrams,
+    stoneWeightGrams,
+    netWeightGrams,
+    effectiveRatePerGram,
+    grossValue,
+    processingFeePercent,
+    processingFee,
+    valueAfterFee,
+    loanPayoffAmount,
+    netCustomerPayout,
+  }
+}
+
+export function formatINR(value: number): string {
+  const abs = Math.abs(Math.round(value))
+  const formatted = abs.toLocaleString('en-IN')
+  return value < 0 ? `-₹${formatted}` : `₹${formatted}`
+}
+
+export function buildEstimateWhatsAppUrl(result: EstimateResult): string {
+  const modeLabel =
+    result.mode === 'pledged-release'
+      ? 'Bank / NBFC Pledged Gold Release'
+      : 'Direct Old Gold Sale'
+
+  const lines = [
+    `Hi Trust Gold Services, I used the calculator on your website and would like an estimate:`,
+    ``,
+    `• *Service:* ${modeLabel}`,
+    `• *Jewellery Type:* ${result.category.title}`,
+    `• *Preferred Valuation:* ${result.valuationMethodLabel}`,
+    `• *Gross Weight:* ${result.grossWeightGrams}g (Stone/Deduction: ${result.stoneWeightGrams}g → Net: ${result.netWeightGrams}g)`,
+    `• *Indicative Gross Value:* ${formatINR(result.grossValue)}`,
+    `• *Processing Fee (${result.processingFeePercent}%):* ${formatINR(result.processingFee)}`,
+  ]
+
+  if (result.mode === 'pledged-release' && result.loanPayoffAmount > 0) {
+    lines.push(`• *Bank Loan Closure Amount:* ${formatINR(result.loanPayoffAmount)}`)
+    lines.push(`• *Estimated Net Balance to Me:* ${formatINR(result.netCustomerPayout)}`)
+  } else {
+    lines.push(`• *Estimated Spot Payout:* ${formatINR(result.netCustomerPayout)}`)
+  }
+
+  lines.push(``, `Please confirm today's live Vijayawada market rate and guide me.`)
+
+  return `https://wa.me/${BUSINESS_INFO.whatsappNumber}?text=${encodeURIComponent(
+    lines.join('\n')
+  )}`
+}

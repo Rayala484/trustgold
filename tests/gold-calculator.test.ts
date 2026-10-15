@@ -126,6 +126,15 @@ test('footer Follow Trust Gold section renders accessible SVG icon buttons and c
   assert.ok(pageSource.includes('contact-map-frame'), 'Contact section must include embedded Google Map')
 
   const siteMotion = await fs.readFile(new URL('../components/SiteMotion.tsx', import.meta.url), 'utf8')
+  const gsapSetup = await fs.readFile(new URL('../animations/gsap.ts', import.meta.url), 'utf8')
+  const lenisSetup = await fs.readFile(new URL('../animations/lenis.ts', import.meta.url), 'utf8')
+  const scrollOrchestrator = await fs.readFile(new URL('../animations/scroll.ts', import.meta.url), 'utf8')
+  const magneticComp = await fs.readFile(new URL('../components/animations/Magnetic.tsx', import.meta.url), 'utf8')
+  const scrollRevealComp = await fs.readFile(new URL('../components/animations/ScrollReveal.tsx', import.meta.url), 'utf8')
+  const textRevealComp = await fs.readFile(new URL('../components/animations/TextReveal.tsx', import.meta.url), 'utf8')
+  const imageRevealComp = await fs.readFile(new URL('../components/animations/ImageReveal.tsx', import.meta.url), 'utf8')
+  const parallaxComp = await fs.readFile(new URL('../components/animations/Parallax.tsx', import.meta.url), 'utf8')
+  const stackingCardsComp = await fs.readFile(new URL('../components/animations/StackingCards.tsx', import.meta.url), 'utf8')
 
   assert.ok(css.includes('.social-icon-btn'), 'globals.css must style .social-icon-btn')
   assert.ok(css.includes('.scroll-progress'), 'globals.css must style .scroll-progress')
@@ -135,15 +144,20 @@ test('footer Follow Trust Gold section renders accessible SVG icon buttons and c
   assert.ok(css.includes('.comparison-table'), 'globals.css must style .comparison-table')
   assert.ok(css.includes('.trust-pillars-bento'), 'globals.css must style .trust-pillars-bento')
   assert.ok(css.includes('.hero-showcase-stage'), 'globals.css must style .hero-showcase-stage')
+  assert.ok(css.includes('html.lenis'), 'globals.css must include Lenis smooth scroll styles')
 
-  // Verify scrolling animations choreography is active:
-  assert.ok(css.includes('html.motion-ok [data-reveal]'), 'globals.css must animate [data-reveal] on scroll')
-  assert.ok(css.includes('html.motion-ok [data-reveal-group] > *'), 'globals.css must stagger-animate [data-reveal-group] > * on scroll')
-  assert.ok(css.includes('html.motion-ok [data-img-reveal]'), 'globals.css must curtain-wipe [data-img-reveal] on scroll')
-  assert.ok(css.includes('html.motion-ok [data-split-scroll] .w-scroll > i'), 'globals.css must reveal Split heading words on scroll')
-  assert.ok(css.includes('html.motion-ok [data-draw]'), 'globals.css must draw golden timeline beam on scroll')
-  assert.ok(siteMotion.includes('IntersectionObserver'), 'SiteMotion.tsx must observe scroll-animated elements')
-  assert.ok(siteMotion.includes('[data-parallax]'), 'SiteMotion.tsx must update 60fps scroll parallax')
+  // Verify GSAP + ScrollTrigger + Lenis architecture:
+  assert.ok(gsapSetup.includes('gsap.registerPlugin(ScrollTrigger, useGSAP)'), 'animations/gsap.ts must register ScrollTrigger and useGSAP once')
+  assert.ok(lenisSetup.includes("lenis.on('scroll', ScrollTrigger.update)"), 'animations/lenis.ts must sync Lenis with ScrollTrigger.update')
+  assert.ok(lenisSetup.includes('gsap.ticker.add'), 'animations/lenis.ts must drive Lenis from GSAP ticker')
+  assert.ok(scrollOrchestrator.includes('gsap.matchMedia()'), 'animations/scroll.ts must use gsap.matchMedia() for responsive desktop/tablet/mobile/reduced-motion behavior')
+  assert.ok(siteMotion.includes('initPremiumScrollSystem'), 'SiteMotion.tsx must initialize initPremiumScrollSystem')
+  assert.ok(magneticComp.includes('gsap.quickTo'), 'Magnetic.tsx must use GSAP quickTo')
+  assert.ok(scrollRevealComp.includes('createFadeReveal'), 'ScrollReveal.tsx must use createFadeReveal')
+  assert.ok(textRevealComp.includes('createTextMaskReveal'), 'TextReveal.tsx must use createTextMaskReveal')
+  assert.ok(imageRevealComp.includes('createImageMaskReveal'), 'ImageReveal.tsx must use createImageMaskReveal')
+  assert.ok(parallaxComp.includes('createParallax'), 'Parallax.tsx must use createParallax')
+  assert.ok(stackingCardsComp.includes('createStackingCards'), 'StackingCards.tsx must use createStackingCards')
 })
 
 

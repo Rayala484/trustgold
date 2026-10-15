@@ -39,9 +39,9 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 })
 
-// Runs before first paint: plays the Trust Gold Bullion Forging & 916 Assay Opening
-// unless prefers-reduced-motion or ?nointro is present.
-const introBootScript = `try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&!/[?&]nointro/.test(location.search)){var d=document.documentElement;d.classList.add("intro");setTimeout(function(){d.classList.remove("intro")},3600)}}catch(e){}`
+// Runs before first paint: activates the full-screen Trust Gold opening video overlay
+// once per browser session on the homepage unless prefers-reduced-motion or ?nointro is set.
+const introBootScript = `try{if(location.pathname==="/"&&!sessionStorage.getItem("trustgold_intro_seen")&&!matchMedia("(prefers-reduced-motion: reduce)").matches&&!/[?&]nointro/.test(location.search)){var d=document.documentElement;d.classList.add("intro");setTimeout(function(){d.classList.remove("intro")},5600)}}catch(e){}`
 
 
 export const metadata: Metadata = {

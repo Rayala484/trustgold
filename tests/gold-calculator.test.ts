@@ -291,6 +291,7 @@ test('homepage implements the 11-step Competitor-Informed Conversion Hierarchy, 
     '../app/vijayawada/page.tsx',
     '../components/GoldTouchstoneAssay.tsx',
     '../components/FloatingWhatsApp.tsx',
+    '../components/GoldOpening.tsx',
   ]
   const utilityExempt = new Set([
     'sr-only',
@@ -322,4 +323,64 @@ test('homepage implements the 11-step Competitor-Informed Conversion Hierarchy, 
     }
   }
 })
+
+test('Opening Animation Video Integration: asset, playback, sessionStorage, Skip Intro & fallbacks', async () => {
+  const fs = await import('node:fs/promises')
+  const videoStat = await fs.stat(
+    new URL('../public/videos/trust-gold-opening.mp4', import.meta.url)
+  )
+  assert.equal(
+    videoStat.size,
+    963661,
+    'public/videos/trust-gold-opening.mp4 must match the exact 963,661-byte user video'
+  )
+
+  const goldOpening = await fs.readFile(
+    new URL('../components/GoldOpening.tsx', import.meta.url),
+    'utf8'
+  )
+  const layoutSource = await fs.readFile(
+    new URL('../app/layout.tsx', import.meta.url),
+    'utf8'
+  )
+  const css = await fs.readFile(
+    new URL('../app/globals.css', import.meta.url),
+    'utf8'
+  )
+
+  assert.ok(
+    goldOpening.includes('/videos/trust-gold-opening.mp4'),
+    'GoldOpening must reference /videos/trust-gold-opening.mp4'
+  )
+  assert.ok(
+    goldOpening.includes('autoPlay') &&
+      goldOpening.includes('muted') &&
+      goldOpening.includes('playsInline') &&
+      goldOpening.includes('preload="auto"'),
+    'GoldOpening <video> must include autoPlay, muted, playsInline, and preload="auto"'
+  )
+  assert.ok(
+    goldOpening.includes('onEnded=') && goldOpening.includes('onError='),
+    'GoldOpening <video> must handle onEnded and onError'
+  )
+  assert.ok(
+    goldOpening.includes('sessionStorage') &&
+      goldOpening.includes('trustgold_intro_seen'),
+    'GoldOpening must record session state in sessionStorage (trustgold_intro_seen)'
+  )
+  assert.ok(
+    goldOpening.includes('Skip Intro') && goldOpening.includes("e.key === 'Escape'"),
+    'GoldOpening must provide a visible Skip Intro button and Escape key support'
+  )
+  assert.ok(
+    layoutSource.includes('sessionStorage.getItem("trustgold_intro_seen")') &&
+      layoutSource.includes('location.pathname==="/"'),
+    'app/layout.tsx introBootScript must check sessionStorage and homepage pathname'
+  )
+  assert.ok(
+    css.includes('.tg-intro-video') && css.includes('object-fit: contain'),
+    'globals.css must preserve the video aspect ratio via object-fit: contain'
+  )
+})
+
 

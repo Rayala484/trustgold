@@ -1531,550 +1531,101 @@ button {
 
 .tg-intro-overlay {
   display: none;
+  pointer-events: none;
 }
 
-html.intro .tg-intro-overlay {
+html.intro .tg-intro-overlay,
+.tg-intro-overlay[data-fading='true'] {
   position: fixed;
   inset: 0;
   z-index: 120;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  background: radial-gradient(
-    115% 85% at 50% 42%,
-    #112748 0%,
-    #071428 55%,
-    #030812 100%
-  );
-  isolation: isolate;
-  --iris: 0px;
-  -webkit-mask: radial-gradient(
-    circle at 50% 43%,
-    transparent var(--iris),
-    #000 calc(var(--iris) + 1px)
-  );
-  mask: radial-gradient(
-    circle at 50% 43%,
-    transparent var(--iris),
-    #000 calc(var(--iris) + 1px)
-  );
-  animation: tg-iris 0.78s cubic-bezier(0.77, 0, 0.175, 1) 2.52s forwards;
-}
-
-@keyframes tg-iris {
-  to {
-    --iris: 150vmax;
-    visibility: hidden;
-  }
-}
-
-/* Warm crucible glow rising from below */
-html.intro .tg-intro-overlay::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(
-    72% 55% at 50% 104%,
-    rgba(255, 132, 28, 0.48),
-    rgba(230, 185, 92, 0.14) 48%,
-    transparent 72%
-  );
-  opacity: 0;
-  animation: tg-forge-glow 2.45s var(--ease-out) forwards;
-}
-
-@keyframes tg-forge-glow {
-  0% {
-    opacity: 0;
-  }
-  25% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.95;
-  }
-  100% {
-    opacity: 0.32;
-  }
-}
-
-.tg-intro-stage {
-  display: grid;
-  justify-items: center;
-  width: 100%;
-  padding: 0 16px;
-}
-
-/* Digital Assay Scale Telemetry Pill at top of Intro Stage */
-.tg-assay-hud {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 8px 18px;
-  border-radius: 999px;
-  background: rgba(5, 16, 36, 0.82);
-  border: 1px solid rgba(230, 185, 92, 0.34);
-  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.65);
-  margin-bottom: -14px;
-  position: relative;
-  z-index: 2;
-  opacity: 0;
-  transform: translateY(-10px);
-  animation: tg-hud-in 0.55s var(--ease-out) 0.08s forwards,
-    tg-hud-out 0.5s var(--ease-in-out) 2.45s forwards;
-}
-
-@keyframes tg-hud-in {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes tg-hud-out {
-  to {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-}
-
-.tg-hud-cell {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  line-height: 1.15;
-}
-
-.tg-hud-label {
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  color: rgba(255, 255, 255, 0.55);
-  font-weight: 700;
-}
-
-.tg-hud-val {
-  font-size: 0.8rem;
-  color: #ffffff;
-  font-weight: 700;
-}
-
-.tg-hud-gold {
-  color: #f5ce70;
-}
-
-.tg-hud-sep {
-  width: 1px;
-  height: 22px;
-  background: rgba(230, 185, 92, 0.25);
-}
-
-.tg-intro-art {
-  position: relative;
-  width: min(82vmin, 540px);
-  aspect-ratio: 1;
-  animation: tg-art-out 0.78s cubic-bezier(0.77, 0, 0.175, 1) 2.52s forwards;
-}
-
-@keyframes tg-art-out {
-  to {
-    transform: scale(1.16);
-    opacity: 0;
-  }
-}
-
-.tg-intro-svg,
-.tg-intro-fx {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.tg-disc-core {
-  opacity: 0;
-  transform-box: view-box;
-  transform-origin: 300px 250px;
-  transform: scale(0.92);
-  animation: tg-disc-in 0.65s var(--ease-out) 0.18s forwards;
-}
-
-@keyframes tg-disc-in {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Molten Shield & Assay Rings */
-.tg-wire-edge,
-.tg-wire-metal,
-.tg-wire-shine,
-.tg-wire-hot,
-.tg-ring-edge,
-.tg-ring-metal,
-.tg-ring-hot {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-}
-
-.tg-shield-group :is(.tg-wire-edge, .tg-wire-metal, .tg-wire-shine) {
-  animation: tg-draw-wire 0.82s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards;
-}
-
-.tg-shield-group .tg-wire-hot {
-  animation: tg-draw-wire 0.82s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards,
-    tg-cool-heat 0.65s ease-out 1.28s forwards;
-}
-
-.tg-ring-group :is(.tg-ring-edge, .tg-ring-metal) {
-  animation: tg-draw-wire 0.76s cubic-bezier(0.65, 0, 0.35, 1) 0.24s forwards;
-}
-
-.tg-ring-group .tg-ring-hot {
-  animation: tg-draw-wire 0.76s cubic-bezier(0.65, 0, 0.35, 1) 0.24s forwards,
-    tg-cool-heat 0.65s ease-out 1.32s forwards;
-}
-
-@keyframes tg-draw-wire {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes tg-cool-heat {
-  to {
-    opacity: 0;
-    stroke: #ffb347;
-  }
-}
-
-/* Forged 24K Checkmark Stamped in 2 Strikes (0.88s & 1.18s) */
-.tg-check-shadow,
-.tg-check-metal,
-.tg-check-shine,
-.tg-check-hot {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-}
-
-.tg-check-group :is(.tg-check-shadow, .tg-check-metal, .tg-check-shine) {
-  animation: tg-check-stamp 0.52s cubic-bezier(0.23, 1, 0.32, 1) 0.86s forwards;
-}
-
-.tg-check-group .tg-check-hot {
-  animation: tg-check-stamp 0.52s cubic-bezier(0.23, 1, 0.32, 1) 0.86s forwards,
-    tg-cool-heat 0.55s ease-out 1.42s forwards;
-}
-
-@keyframes tg-check-stamp {
-  0% {
-    stroke-dashoffset: 1;
-  }
-  42% {
-    stroke-dashoffset: 0.62;
-  }
-  58% {
-    stroke-dashoffset: 0.62;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-.tg-hallmark-stamp {
-  opacity: 0;
-  transform-box: view-box;
-  transform-origin: 300px 358px;
-  transform: scale(0.92);
-  animation: tg-disc-in 0.45s var(--ease-out) 1.2s forwards;
-}
-
-/* Goldsmith's Hammer Swing & Two Strikes */
-.tg-hammer {
-  opacity: 0;
-  transform-box: view-box;
-  transform-origin: 646px 120px;
-  transform: rotate(22deg);
-  animation: tg-hammer-strike 0.96s linear 0.46s forwards;
-}
-
-@keyframes tg-hammer-strike {
-  0% {
-    opacity: 0;
-    transform: rotate(30deg);
-    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
-  }
-  12% {
-    opacity: 1;
-    transform: rotate(22deg);
-    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
-  }
-  42% {
-    transform: rotate(0deg);
-    animation-timing-function: cubic-bezier(0.1, 0.6, 0.3, 1);
-  }
-  58% {
-    transform: rotate(15deg);
-    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
-  }
-  74% {
-    transform: rotate(-3deg);
-    animation-timing-function: cubic-bezier(0.1, 0.6, 0.3, 1);
-  }
-  90% {
-    opacity: 1;
-    transform: rotate(18deg);
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(30deg);
-  }
-}
-
-/* Strike Shockwaves, White-Hot Flashes & Micro-Recoil */
-.tg-wave,
-.tg-flash {
-  opacity: 0;
-  transform-box: view-box;
-}
-
-.tg-wave-1,
-.tg-flash-1 {
-  transform-origin: 286px 288px;
-}
-
-.tg-wave-2,
-.tg-flash-2 {
-  transform-origin: 348px 224px;
-}
-
-.tg-wave-1 {
-  animation: tg-wave-expand 0.55s var(--ease-out) 0.88s;
-}
-
-.tg-wave-2 {
-  animation: tg-wave-expand 0.55s var(--ease-out) 1.18s;
-}
-
-@keyframes tg-wave-expand {
-  0% {
-    opacity: 0.95;
-    transform: scale(0.9);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(6.5);
-  }
-}
-
-.tg-flash-1 {
-  animation: tg-flash-pop 0.3s ease-out 0.88s;
-}
-
-.tg-flash-2 {
-  animation: tg-flash-pop 0.3s ease-out 1.18s;
-}
-
-@keyframes tg-flash-pop {
-  0% {
-    opacity: 1;
-    transform: scale(0.85);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.55);
-  }
-}
-
-.tg-shake {
-  animation: tg-recoil 0.16s linear 0.88s, tg-recoil 0.16s linear 1.18s;
-}
-
-@keyframes tg-recoil {
-  0%,
-  100% {
-    transform: none;
-  }
-  30% {
-    transform: translate(0, 4px);
-  }
-  65% {
-    transform: translate(-1px, -2px);
-  }
-}
-
-/* Mirror-Polish Glint, Star Twinkle & 48 Sovereign Rays */
-.tg-glint {
-  transform: skewX(-20deg);
-  animation: tg-glint-sweep 0.58s cubic-bezier(0.77, 0, 0.175, 1) 1.65s forwards;
-}
-
-@keyframes tg-glint-sweep {
-  from {
-    transform: skewX(-20deg) translateX(0);
-  }
-  to {
-    transform: skewX(-20deg) translateX(580px);
-  }
-}
-
-.tg-twinkle {
-  opacity: 0;
-  transform-box: view-box;
-  transform-origin: 388px 184px;
-  animation: tg-twinkle-spin 0.72s var(--ease-out) 1.88s;
-}
-
-@keyframes tg-twinkle-spin {
-  0% {
-    opacity: 0;
-    transform: scale(0.85) rotate(0deg);
-  }
-  42% {
-    opacity: 1;
-    transform: scale(1.18) rotate(45deg);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.85) rotate(90deg);
-  }
-}
-
-.tg-rays {
-  opacity: 0;
-  transform-box: view-box;
-  transform-origin: 300px 250px;
-  transform: scale(0.88);
-  animation: tg-rays-bloom 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.68s forwards;
-}
-
-@keyframes tg-rays-bloom {
-  to {
-    opacity: 0.76;
-    transform: scale(1) rotate(6deg);
-  }
-}
-
-/* Brand Lockup Below Shield */
-.tg-intro-brand {
-  display: grid;
-  justify-items: center;
-  margin-top: -6%;
-  text-align: center;
-}
-
-.tg-intro-name {
-  display: flex;
-  align-items: baseline;
   justify-content: center;
   overflow: hidden;
-  margin: 0;
-  padding-bottom: 0.08em;
-  font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(2.35rem, 7.5vmin, 4.4rem);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1;
+  pointer-events: auto;
+  /* Studio cyclorama background matched to frame 0 of trust-gold-opening.mp4 */
+  background-color: #ded9ce;
+  background-image: radial-gradient(
+    circle at 50% 56%,
+    #ece8df 0%,
+    #ded9ce 58%,
+    #cfc9bc 100%
+  );
+  isolation: isolate;
 }
 
-.tg-word-group {
-  display: inline-flex;
+.tg-intro-overlay[data-fading='true'] {
+  pointer-events: none;
 }
 
-.tg-word-spacer {
-  display: inline-block;
-  width: 0.32em;
-}
-
-.tg-intro-letter {
-  display: inline-block;
-  transform: translateY(112%);
-  animation: tg-letter-rise 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(1.62s + var(--i) * 42ms);
-}
-
-.tg-letter-platinum {
-  background: linear-gradient(180deg, #ffffff 0%, #dce6f5 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.tg-letter-gold {
-  background: linear-gradient(180deg, #fff5d1 0%, #e6b95c 52%, #b88019 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-@keyframes tg-letter-rise {
-  to {
-    transform: translateY(0);
-  }
-}
-
-.tg-intro-subbar {
+.tg-intro-video-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 6px;
-  opacity: 0;
-  animation: tg-fade-up 0.55s var(--ease-out) 2.02s forwards;
+  justify-content: center;
+  overflow: hidden;
 }
 
-.tg-subbar-line {
-  width: clamp(28px, 6vw, 56px);
-  height: 1.5px;
-  background: linear-gradient(90deg, transparent, #e6b95c, transparent);
-}
-
-.tg-subbar-text {
-  font-size: clamp(0.68rem, 1.8vmin, 0.82rem);
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  color: #e6b95c;
-}
-
-.tg-intro-telugu {
-  margin: 8px 0 0;
-  font-size: clamp(0.78rem, 2vmin, 0.94rem);
-  color: rgba(255, 255, 255, 0.78);
-  opacity: 0;
-  animation: tg-fade-up 0.55s var(--ease-out) 2.14s forwards;
-}
-
-@keyframes tg-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.tg-intro-video {
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  max-height: 100dvh;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+  user-select: none;
 }
 
 .tg-intro-skip {
   position: absolute;
-  right: 20px;
+  right: clamp(16px, 3vw, 28px);
   bottom: max(20px, env(safe-area-inset-bottom));
-  min-height: 42px;
-  padding: 0 16px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
   border-radius: 999px;
-  border: 1px solid rgba(230, 185, 92, 0.35);
-  background: rgba(5, 16, 36, 0.78);
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 0.82rem;
+  border: 1px solid rgba(230, 185, 92, 0.48);
+  background: rgba(5, 16, 36, 0.84);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #ffffff;
+  font-size: 0.84rem;
   font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 10px 26px -8px rgba(5, 16, 36, 0.45);
   transition: transform 140ms var(--ease-out), border-color 160ms var(--ease-out),
-    color 160ms var(--ease-out);
+    background-color 160ms var(--ease-out), color 160ms var(--ease-out);
+}
+
+.tg-intro-skip:hover,
+.tg-intro-skip:focus-visible {
+  background: rgba(5, 16, 36, 0.94);
+  border-color: var(--bullion-gold-bright);
+  color: var(--bullion-gold-bright);
 }
 
 .tg-intro-skip:active {
   transform: scale(0.97);
+}
+
+.tg-intro-skip-arrow {
+  font-size: 0.92rem;
+  line-height: 1;
+  transition: transform 160ms var(--ease-out);
+}
+
+.tg-intro-skip:hover .tg-intro-skip-arrow,
+.tg-intro-skip:focus-visible .tg-intro-skip-arrow {
+  transform: translateX(3px);
 }
 
 /* ==========================================================================
@@ -2514,13 +2065,18 @@ section[id] {
   color: var(--bullion-gold-bright);
 }
 
-/* Load-triggered hero entrance (auto-delays by 2.58s when html.intro is active) */
+/* Load-triggered hero entrance (auto-delays while html.intro opening video is active) */
 html {
   --load-offset: 0s;
 }
 
 html.intro {
-  --load-offset: 2.58s;
+  --load-offset: 3.9s;
+  overflow: hidden;
+}
+
+html.intro body {
+  overflow: hidden;
 }
 
 .w-load > i {
@@ -3350,7 +2906,12 @@ html.lenis body {
    16. Accessibility: Reduced Motion & Reduced Transparency (Apple §14)
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
-  html.intro .tg-intro-overlay {
+  html.intro,
+  html.intro body {
+    overflow: visible !important;
+  }
+  html.intro .tg-intro-overlay,
+  .tg-intro-overlay[data-fading='true'] {
     display: none !important;
   }
   .w-load > i,

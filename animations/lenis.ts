@@ -35,6 +35,9 @@ export function createLenisSmoothScroll(): LenisController | null {
     wheelMultiplier: 1,
     touchMultiplier: 1,
     autoRaf: false,
+    prevent: () =>
+      typeof document !== 'undefined' &&
+      document.documentElement.classList.contains('intro'),
   })
 
   // Keep ScrollTrigger in lockstep with Lenis scroll position

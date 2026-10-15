@@ -4,6 +4,8 @@ import {
   calculateGoldEstimate,
   buildEstimateWhatsAppUrl,
   GOLD_CATEGORIES,
+  GOLD_TOUCHSTONE_MARKS,
+  calculateTouchstoneBenchmarks,
 } from '../lib/gold-calculator.ts'
 
 test('GOLD_CATEGORIES defines all 3 client jewellery categories from brief', () => {
@@ -87,4 +89,17 @@ test('navbar links, phone pill, and buttons enforce white-space: nowrap to preve
   const btnMatch = css.match(/\.btn\s*\{[^}]*\}/)
   assert.ok(btnMatch && btnMatch[0].includes('white-space: nowrap'), '.btn must include white-space: nowrap')
 })
+
+test('calculateTouchstoneBenchmarks computes accurate 1g, 1 Kasu (8g), 1 Tulam (10g), and 24g net payouts after 1% fee', () => {
+  assert.equal(GOLD_TOUCHSTONE_MARKS.length, 4)
+
+  // At ₹7,350/g for 22K (916 fineness), 99% net after 1% fee:
+  const b916 = calculateTouchstoneBenchmarks(7350, 916)
+  assert.equal(b916.effectiveRatePerGram, 7350)
+  assert.equal(b916.oneGramNet, Math.round(7350 * 0.99))
+  assert.equal(b916.oneSovereign8gNet, Math.round(7350 * 8 * 0.99))
+  assert.equal(b916.oneTola10gNet, Math.round(7350 * 10 * 0.99))
+  assert.equal(b916.threeSovereigns24gNet, Math.round(7350 * 24 * 0.99))
+})
+
 

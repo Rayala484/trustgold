@@ -1501,9 +1501,944 @@ button {
 }
 
 /* ==========================================================================
-   13. Accessibility: Reduced Motion & Reduced Transparency (Apple §14)
+   13. Opening Sequence: Sovereign Bullion Shield, 916 Assay & Checkmark Forge
+   ========================================================================== */
+@property --iris {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+.ribbon-replay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(230, 185, 92, 0.38);
+  background: rgba(200, 146, 42, 0.14);
+  color: var(--bullion-gold-bright);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition: transform 140ms var(--ease-out), background-color 160ms var(--ease-out),
+    border-color 160ms var(--ease-out);
+}
+
+.ribbon-replay-btn:active {
+  transform: scale(0.97);
+}
+
+.tg-intro-overlay {
+  display: none;
+}
+
+html.intro .tg-intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: radial-gradient(
+    115% 85% at 50% 42%,
+    #112748 0%,
+    #071428 55%,
+    #030812 100%
+  );
+  isolation: isolate;
+  --iris: 0px;
+  -webkit-mask: radial-gradient(
+    circle at 50% 43%,
+    transparent var(--iris),
+    #000 calc(var(--iris) + 1px)
+  );
+  mask: radial-gradient(
+    circle at 50% 43%,
+    transparent var(--iris),
+    #000 calc(var(--iris) + 1px)
+  );
+  animation: tg-iris 0.78s cubic-bezier(0.77, 0, 0.175, 1) 2.52s forwards;
+}
+
+@keyframes tg-iris {
+  to {
+    --iris: 150vmax;
+    visibility: hidden;
+  }
+}
+
+/* Warm crucible glow rising from below */
+html.intro .tg-intro-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    72% 55% at 50% 104%,
+    rgba(255, 132, 28, 0.48),
+    rgba(230, 185, 92, 0.14) 48%,
+    transparent 72%
+  );
+  opacity: 0;
+  animation: tg-forge-glow 2.45s var(--ease-out) forwards;
+}
+
+@keyframes tg-forge-glow {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0.32;
+  }
+}
+
+.tg-intro-stage {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  padding: 0 16px;
+}
+
+/* Digital Assay Scale Telemetry Pill at top of Intro Stage */
+.tg-assay-hud {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(5, 16, 36, 0.82);
+  border: 1px solid rgba(230, 185, 92, 0.34);
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.65);
+  margin-bottom: -14px;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: tg-hud-in 0.55s var(--ease-out) 0.08s forwards,
+    tg-hud-out 0.5s var(--ease-in-out) 2.45s forwards;
+}
+
+@keyframes tg-hud-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tg-hud-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.tg-hud-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+
+.tg-hud-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 700;
+}
+
+.tg-hud-val {
+  font-size: 0.8rem;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.tg-hud-gold {
+  color: #f5ce70;
+}
+
+.tg-hud-sep {
+  width: 1px;
+  height: 22px;
+  background: rgba(230, 185, 92, 0.25);
+}
+
+.tg-intro-art {
+  position: relative;
+  width: min(82vmin, 540px);
+  aspect-ratio: 1;
+  animation: tg-art-out 0.78s cubic-bezier(0.77, 0, 0.175, 1) 2.52s forwards;
+}
+
+@keyframes tg-art-out {
+  to {
+    transform: scale(1.16);
+    opacity: 0;
+  }
+}
+
+.tg-intro-svg,
+.tg-intro-fx {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.tg-disc-core {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 300px 250px;
+  transform: scale(0.92);
+  animation: tg-disc-in 0.65s var(--ease-out) 0.18s forwards;
+}
+
+@keyframes tg-disc-in {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Molten Shield & Assay Rings */
+.tg-wire-edge,
+.tg-wire-metal,
+.tg-wire-shine,
+.tg-wire-hot,
+.tg-ring-edge,
+.tg-ring-metal,
+.tg-ring-hot {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.tg-shield-group :is(.tg-wire-edge, .tg-wire-metal, .tg-wire-shine) {
+  animation: tg-draw-wire 0.82s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards;
+}
+
+.tg-shield-group .tg-wire-hot {
+  animation: tg-draw-wire 0.82s cubic-bezier(0.65, 0, 0.35, 1) 0.1s forwards,
+    tg-cool-heat 0.65s ease-out 1.28s forwards;
+}
+
+.tg-ring-group :is(.tg-ring-edge, .tg-ring-metal) {
+  animation: tg-draw-wire 0.76s cubic-bezier(0.65, 0, 0.35, 1) 0.24s forwards;
+}
+
+.tg-ring-group .tg-ring-hot {
+  animation: tg-draw-wire 0.76s cubic-bezier(0.65, 0, 0.35, 1) 0.24s forwards,
+    tg-cool-heat 0.65s ease-out 1.32s forwards;
+}
+
+@keyframes tg-draw-wire {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes tg-cool-heat {
+  to {
+    opacity: 0;
+    stroke: #ffb347;
+  }
+}
+
+/* Forged 24K Checkmark Stamped in 2 Strikes (0.88s & 1.18s) */
+.tg-check-shadow,
+.tg-check-metal,
+.tg-check-shine,
+.tg-check-hot {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.tg-check-group :is(.tg-check-shadow, .tg-check-metal, .tg-check-shine) {
+  animation: tg-check-stamp 0.52s cubic-bezier(0.23, 1, 0.32, 1) 0.86s forwards;
+}
+
+.tg-check-group .tg-check-hot {
+  animation: tg-check-stamp 0.52s cubic-bezier(0.23, 1, 0.32, 1) 0.86s forwards,
+    tg-cool-heat 0.55s ease-out 1.42s forwards;
+}
+
+@keyframes tg-check-stamp {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  42% {
+    stroke-dashoffset: 0.62;
+  }
+  58% {
+    stroke-dashoffset: 0.62;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.tg-hallmark-stamp {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 300px 358px;
+  transform: scale(0.92);
+  animation: tg-disc-in 0.45s var(--ease-out) 1.2s forwards;
+}
+
+/* Goldsmith's Hammer Swing & Two Strikes */
+.tg-hammer {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 646px 120px;
+  transform: rotate(22deg);
+  animation: tg-hammer-strike 0.96s linear 0.46s forwards;
+}
+
+@keyframes tg-hammer-strike {
+  0% {
+    opacity: 0;
+    transform: rotate(30deg);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  12% {
+    opacity: 1;
+    transform: rotate(22deg);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
+  }
+  42% {
+    transform: rotate(0deg);
+    animation-timing-function: cubic-bezier(0.1, 0.6, 0.3, 1);
+  }
+  58% {
+    transform: rotate(15deg);
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.4);
+  }
+  74% {
+    transform: rotate(-3deg);
+    animation-timing-function: cubic-bezier(0.1, 0.6, 0.3, 1);
+  }
+  90% {
+    opacity: 1;
+    transform: rotate(18deg);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(30deg);
+  }
+}
+
+/* Strike Shockwaves, White-Hot Flashes & Micro-Recoil */
+.tg-wave,
+.tg-flash {
+  opacity: 0;
+  transform-box: view-box;
+}
+
+.tg-wave-1,
+.tg-flash-1 {
+  transform-origin: 286px 288px;
+}
+
+.tg-wave-2,
+.tg-flash-2 {
+  transform-origin: 348px 224px;
+}
+
+.tg-wave-1 {
+  animation: tg-wave-expand 0.55s var(--ease-out) 0.88s;
+}
+
+.tg-wave-2 {
+  animation: tg-wave-expand 0.55s var(--ease-out) 1.18s;
+}
+
+@keyframes tg-wave-expand {
+  0% {
+    opacity: 0.95;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(6.5);
+  }
+}
+
+.tg-flash-1 {
+  animation: tg-flash-pop 0.3s ease-out 0.88s;
+}
+
+.tg-flash-2 {
+  animation: tg-flash-pop 0.3s ease-out 1.18s;
+}
+
+@keyframes tg-flash-pop {
+  0% {
+    opacity: 1;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+.tg-shake {
+  animation: tg-recoil 0.16s linear 0.88s, tg-recoil 0.16s linear 1.18s;
+}
+
+@keyframes tg-recoil {
+  0%,
+  100% {
+    transform: none;
+  }
+  30% {
+    transform: translate(0, 4px);
+  }
+  65% {
+    transform: translate(-1px, -2px);
+  }
+}
+
+/* Mirror-Polish Glint, Star Twinkle & 48 Sovereign Rays */
+.tg-glint {
+  transform: skewX(-20deg);
+  animation: tg-glint-sweep 0.58s cubic-bezier(0.77, 0, 0.175, 1) 1.65s forwards;
+}
+
+@keyframes tg-glint-sweep {
+  from {
+    transform: skewX(-20deg) translateX(0);
+  }
+  to {
+    transform: skewX(-20deg) translateX(580px);
+  }
+}
+
+.tg-twinkle {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 388px 184px;
+  animation: tg-twinkle-spin 0.72s var(--ease-out) 1.88s;
+}
+
+@keyframes tg-twinkle-spin {
+  0% {
+    opacity: 0;
+    transform: scale(0.85) rotate(0deg);
+  }
+  42% {
+    opacity: 1;
+    transform: scale(1.18) rotate(45deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.85) rotate(90deg);
+  }
+}
+
+.tg-rays {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 300px 250px;
+  transform: scale(0.88);
+  animation: tg-rays-bloom 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.68s forwards;
+}
+
+@keyframes tg-rays-bloom {
+  to {
+    opacity: 0.76;
+    transform: scale(1) rotate(6deg);
+  }
+}
+
+/* Brand Lockup Below Shield */
+.tg-intro-brand {
+  display: grid;
+  justify-items: center;
+  margin-top: -6%;
+  text-align: center;
+}
+
+.tg-intro-name {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  overflow: hidden;
+  margin: 0;
+  padding-bottom: 0.08em;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.35rem, 7.5vmin, 4.4rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.tg-word-group {
+  display: inline-flex;
+}
+
+.tg-word-spacer {
+  display: inline-block;
+  width: 0.32em;
+}
+
+.tg-intro-letter {
+  display: inline-block;
+  transform: translateY(112%);
+  animation: tg-letter-rise 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(1.62s + var(--i) * 42ms);
+}
+
+.tg-letter-platinum {
+  background: linear-gradient(180deg, #ffffff 0%, #dce6f5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tg-letter-gold {
+  background: linear-gradient(180deg, #fff5d1 0%, #e6b95c 52%, #b88019 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes tg-letter-rise {
+  to {
+    transform: translateY(0);
+  }
+}
+
+.tg-intro-subbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  opacity: 0;
+  animation: tg-fade-up 0.55s var(--ease-out) 2.02s forwards;
+}
+
+.tg-subbar-line {
+  width: clamp(28px, 6vw, 56px);
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, #e6b95c, transparent);
+}
+
+.tg-subbar-text {
+  font-size: clamp(0.68rem, 1.8vmin, 0.82rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: #e6b95c;
+}
+
+.tg-intro-telugu {
+  margin: 8px 0 0;
+  font-size: clamp(0.78rem, 2vmin, 0.94rem);
+  color: rgba(255, 255, 255, 0.78);
+  opacity: 0;
+  animation: tg-fade-up 0.55s var(--ease-out) 2.14s forwards;
+}
+
+@keyframes tg-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tg-intro-skip {
+  position: absolute;
+  right: 20px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(230, 185, 92, 0.35);
+  background: rgba(5, 16, 36, 0.78);
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: transform 140ms var(--ease-out), border-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+
+.tg-intro-skip:active {
+  transform: scale(0.97);
+}
+
+/* ==========================================================================
+   14. Interactive Basanite Touchstone & Open-Counter Assay Bench (#gold-craft)
+   ========================================================================== */
+.touchstone-section {
+  background: linear-gradient(180deg, #07142b 0%, #040c1b 100%);
+  color: #ffffff;
+  padding: 84px 0;
+  border-bottom: 1px solid rgba(230, 185, 92, 0.22);
+  position: relative;
+}
+
+.touchstone-header {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 36px;
+  align-items: end;
+  margin-bottom: 42px;
+}
+
+.touchstone-header .section-heading {
+  color: #ffffff;
+  margin-bottom: 0;
+}
+
+.touchstone-lead {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.96rem;
+  line-height: 1.65;
+}
+
+.touchstone-lead strong {
+  color: var(--bullion-gold-bright);
+}
+
+.touchstone-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 28px;
+  align-items: stretch;
+}
+
+.basanite-slab {
+  background: radial-gradient(
+    120% 100% at 20% 10%,
+    #1c212b 0%,
+    #12161d 60%,
+    #0b0e13 100%
+  );
+  border: 1px solid rgba(230, 185, 92, 0.28);
+  border-radius: 20px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 48px -20px rgba(0, 0, 0, 0.65);
+}
+
+.basanite-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.basanite-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--bullion-gold-bright);
+}
+
+.basanite-hint {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.streak-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.streak-card {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 16px;
+  color: #ffffff;
+  transition: transform 160ms var(--ease-out), border-color 180ms var(--ease-out),
+    background-color 180ms var(--ease-out);
+}
+
+.streak-card.active {
+  background: rgba(200, 146, 42, 0.13);
+  border-color: var(--bullion-gold-bright);
+  box-shadow: 0 0 0 1px rgba(230, 185, 92, 0.35);
+}
+
+.streak-canvas-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #0d1015;
+  padding: 4px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.streak-svg {
+  width: 100%;
+  height: 48px;
+  display: block;
+}
+
+.streak-rub-cover {
+  position: absolute;
+  inset: 0;
+  background: #0d1015;
+  transform: translateX(101%);
+  pointer-events: none;
+}
+
+.streak-rub-cover.animate-rub {
+  animation: tg-streak-rub 0.65s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+@keyframes tg-streak-rub {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(101%);
+  }
+}
+
+.streak-meta-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.streak-karat {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.streak-fineness {
+  font-size: 0.78rem;
+  color: var(--bullion-gold-bright);
+  font-weight: 600;
+}
+
+.streak-pure {
+  margin: 4px 0 0;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.basanite-footer-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.basanite-footer-pills span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 5px 11px;
+  border-radius: 999px;
+}
+
+.basanite-footer-pills svg {
+  color: var(--bullion-gold-bright);
+}
+
+.assay-bench-card {
+  background: rgba(11, 28, 58, 0.78);
+  border: 1px solid rgba(230, 185, 92, 0.32);
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.assay-bench-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(230, 185, 92, 0.18);
+}
+
+.assay-bench-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--bullion-gold-bright);
+  margin-bottom: 6px;
+}
+
+.assay-bench-top h3 {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.65rem;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.assay-bench-telugu {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: var(--bullion-gold-bright);
+  font-weight: 600;
+}
+
+.assay-rate-badge {
+  background: rgba(200, 146, 42, 0.16);
+  border: 1px solid rgba(230, 185, 92, 0.4);
+  border-radius: 12px;
+  padding: 10px 14px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.assay-rate-badge small {
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.assay-rate-badge strong {
+  font-size: 1.18rem;
+  color: var(--bullion-gold-bright);
+}
+
+.assay-detail-boxes {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.assay-detail-item {
+  background: rgba(5, 16, 36, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 15px;
+}
+
+.assay-detail-item strong {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--bullion-gold-bright);
+  margin-bottom: 4px;
+}
+
+.assay-detail-item p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.5;
+}
+
+.weight-benchmarks-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 10px;
+}
+
+.weight-benchmarks-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.weight-benchmark-box {
+  background: rgba(5, 16, 36, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.weight-benchmark-box.highlight {
+  border-color: rgba(230, 185, 92, 0.38);
+  background: rgba(200, 146, 42, 0.1);
+}
+
+.wb-unit {
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.wb-val {
+  font-size: 1.12rem;
+  color: #ffffff;
+}
+
+.wb-load-btn {
+  margin-top: 4px;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--bullion-gold-bright);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+@media (max-width: 1024px) {
+  .touchstone-header,
+  .touchstone-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .tg-hud-hide-sm {
+    display: none;
+  }
+  .streak-cards-grid,
+  .weight-benchmarks-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   15. Accessibility: Reduced Motion & Reduced Transparency (Apple §14)
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
+  html.intro .tg-intro-overlay {
+    display: none !important;
+  }
   *,
   *::before,
   *::after {
@@ -1520,3 +2455,4 @@ button {
     backdrop-filter: none;
   }
 }
+

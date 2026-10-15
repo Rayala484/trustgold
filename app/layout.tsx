@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google'
+import { GoldOpening } from '@/components/GoldOpening'
 import { BUSINESS_INFO } from '@/lib/gold-calculator'
 import './globals.css'
 
@@ -25,6 +26,10 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ['500', '600'],
   display: 'swap',
 })
+
+// Runs before first paint: plays the Trust Gold Bullion Forging & 916 Assay Opening
+// unless prefers-reduced-motion is enabled or ?nointro is present. Includes a 3.6s failsafe.
+const introBootScript = `try{var d=document.documentElement;if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&!/[?&]nointro/.test(location.search)){d.classList.add("intro");setTimeout(function(){d.classList.remove("intro")},3600)}}catch(e){}`
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -122,8 +127,13 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${cormorant.variable} ${jakarta.variable} ${jetbrainsMono.variable}`}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: introBootScript }} />
+      </head>
       <body>
+        <GoldOpening />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -134,3 +144,4 @@ export default function RootLayout({
     </html>
   )
 }
+

@@ -34,6 +34,8 @@ import {
   type GoldCategoryId,
   type ValuationMethodId,
 } from '@/lib/gold-calculator'
+import { triggerTrustGoldIntro } from '@/components/GoldOpening'
+import { GoldTouchstoneAssay } from '@/components/GoldTouchstoneAssay'
 
 const KYC_DOCS = {
   'direct-sale': [
@@ -161,6 +163,21 @@ export default function TrustGoldRedesignedPage() {
     setTimeout(() => setKycSwitching(false), 180)
   }
 
+  function handleSelectFromTouchstone(
+    nextCategory: GoldCategoryId,
+    nextWeight: number
+  ) {
+    setReceiptTransitioning(true)
+    setCategoryId(nextCategory)
+    setWeightGrams(nextWeight)
+    setStoneWeightGrams(0)
+    setTimeout(() => setReceiptTransitioning(false), 180)
+    const calcEl = document.getElementById('calculator')
+    if (calcEl) {
+      calcEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+
   function handleContactSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!contactForm.name.trim() || !contactForm.phone.trim()) return
@@ -207,6 +224,14 @@ export default function TrustGoldRedesignedPage() {
             </a>
           </div>
           <div className="ribbon-right">
+            <button
+              type="button"
+              onClick={triggerTrustGoldIntro}
+              className="ribbon-replay-btn"
+              title="Replay the Trust Gold 916 Assay & Shield Forging Opening"
+            >
+              <Sparkles size={12} /> Replay Gold Intro
+            </button>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <Clock size={13} /> {BUSINESS_INFO.hours}
             </span>
@@ -670,6 +695,14 @@ export default function TrustGoldRedesignedPage() {
             </div>
           </div>
         </section>
+
+        {/* ====================================================================
+            THE CRAFT OF GOLD VALUATION: BASANITE TOUCHSTONE & 916 ASSAY BENCH
+            ==================================================================== */}
+        <GoldTouchstoneAssay
+          ratePerGram22k={ratePerGram22k}
+          onSelectForCalculator={handleSelectFromTouchstone}
+        />
 
         {/* ====================================================================
             3 TYPES OF GOLD JEWELLERY + CUSTOMER'S CHOICE BANNER

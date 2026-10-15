@@ -216,3 +216,110 @@ export function buildEstimateWhatsAppUrl(result: EstimateResult): string {
     lines.join('\n')
   )}`
 }
+
+export interface TouchstoneMark {
+  id: string
+  karat: string
+  fineness: number
+  purePercent: string
+  teluguLabel: string
+  title: string
+  streakColor: string
+  svgPath: string
+  linkedCategoryId: GoldCategoryId
+  assayMethod: string
+  ornamentExamples: string
+}
+
+export const GOLD_TOUCHSTONE_MARKS: TouchstoneMark[] = [
+  {
+    id: '22k-916',
+    karat: '22K',
+    fineness: 916,
+    purePercent: '91.6%',
+    teluguLabel: '22 క్యారెట్ల 916 బంగారం',
+    title: 'BIS 916 & 916-Stamped Ornaments',
+    streakColor: '#e8b94f',
+    svgPath: 'M8 46 C 46 34, 78 36, 112 24 S 162 16, 192 10',
+    linkedCategoryId: 'hallmark-22k',
+    assayMethod:
+      'Verified via BIS HUID / 916 stamp check & non-destructive XRF purity reading right in front of you.',
+    ornamentExamples:
+      'Bridal harams, vaddanam, kasulaperu, bangles, chains & hallmarked family jewellery.',
+  },
+  {
+    id: '24k-999',
+    karat: '24K',
+    fineness: 999,
+    purePercent: '99.9%',
+    teluguLabel: '24 క్యారెట్ల మేలిమి బంగారం (999)',
+    title: '24K Coins, Bars & Biscuit Bullion',
+    streakColor: '#f6c844',
+    svgPath: 'M8 44 C 42 28, 72 38, 106 20 S 160 12, 192 8',
+    linkedCategoryId: 'hallmark-22k',
+    assayMethod:
+      'Assayed for 999.0 fine gold purity and weighed on our calibrated 0.01g precision bullion scale.',
+    ornamentExamples:
+      'Bank gold coins, 999 bullion bars, Lakshmi coins & pure melted gold buttons.',
+  },
+  {
+    id: '20k-850',
+    karat: '20K–21K',
+    fineness: 860,
+    purePercent: '86.0%',
+    teluguLabel: 'పాత తరం / KDM బంగారు ఆభరణాలు',
+    title: 'Traditional Soldered & Unmarked Gold',
+    streakColor: '#d4a353',
+    svgPath: 'M8 48 C 44 38, 82 32, 116 26 S 164 18, 192 12',
+    linkedCategoryId: 'other-unmarked',
+    assayMethod:
+      'Tested on black Basanite touchstone (గీటు రాయి) + analyzer, or melted in your presence for 100% exact net purity.',
+    ornamentExamples:
+      'Ancestral jewellery, non-hallmarked old ornaments, broken pieces & traditional KDM items.',
+  },
+  {
+    id: '18k-750',
+    karat: '18K',
+    fineness: 750,
+    purePercent: '75.0%',
+    teluguLabel: '18 క్యారెట్ల రాళ్ల ఆభరణాలు (750)',
+    title: 'Stone-Studded & Designer 18K Gold',
+    streakColor: '#c29963',
+    svgPath: 'M8 46 C 38 36, 76 38, 104 28 S 158 20, 192 14',
+    linkedCategoryId: 'other-unmarked',
+    assayMethod:
+      'Stones & beads are carefully removed and returned to you; you are paid for 100% of the exact net gold fineness.',
+    ornamentExamples:
+      'CZ/stone-studded necklaces, diamond-mount frames, lightweight modern 18K jewellery.',
+  },
+]
+
+export interface TouchstoneBenchmarkResult {
+  fineness: number
+  effectiveRatePerGram: number
+  oneGramNet: number
+  oneSovereign8gNet: number
+  oneTola10gNet: number
+  threeSovereigns24gNet: number
+}
+
+export function calculateTouchstoneBenchmarks(
+  ratePerGram22k: number,
+  fineness: number
+): TouchstoneBenchmarkResult {
+  const safe22kRate = Math.max(0, Number(ratePerGram22k) || 0)
+  const safeFineness = Math.max(0, Math.min(999, Number(fineness) || 916))
+  // Scale rate proportionally against 916 fineness benchmark
+  const effectiveRatePerGram = Math.round((safe22kRate * safeFineness) / 916)
+  const feeFactor = 1 - BUSINESS_INFO.processingFeePercent / 100
+
+  return {
+    fineness: safeFineness,
+    effectiveRatePerGram,
+    oneGramNet: Math.round(effectiveRatePerGram * 1 * feeFactor),
+    oneSovereign8gNet: Math.round(effectiveRatePerGram * 8 * feeFactor),
+    oneTola10gNet: Math.round(effectiveRatePerGram * 10 * feeFactor),
+    threeSovereigns24gNet: Math.round(effectiveRatePerGram * 24 * feeFactor),
+  }
+}
+

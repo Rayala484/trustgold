@@ -73,3 +73,18 @@ test('buildEstimateWhatsAppUrl formats structured WhatsApp enquiry link for 9193
   assert.ok(decoded.includes('29g'))
   assert.ok(decoded.includes('Melting in Presence'))
 })
+
+test('navbar links, phone pill, and buttons enforce white-space: nowrap to prevent multi-line wrapping', async () => {
+  const fs = await import('node:fs/promises')
+  const css = await fs.readFile(new URL('../app/globals.css', import.meta.url), 'utf8')
+
+  const navLinksMatch = css.match(/\.nav-links\s+a\s*\{[^}]*\}/)
+  assert.ok(navLinksMatch && navLinksMatch[0].includes('white-space: nowrap'), '.nav-links a must include white-space: nowrap')
+
+  const phonePillMatch = css.match(/\.nav-phone-pill\s*\{[^}]*\}/)
+  assert.ok(phonePillMatch && phonePillMatch[0].includes('white-space: nowrap'), '.nav-phone-pill must include white-space: nowrap')
+
+  const btnMatch = css.match(/\.btn\s*\{[^}]*\}/)
+  assert.ok(btnMatch && btnMatch[0].includes('white-space: nowrap'), '.btn must include white-space: nowrap')
+})
+

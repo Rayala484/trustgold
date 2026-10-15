@@ -132,13 +132,13 @@ button {
 }
 
 .nav-bar {
-  width: min(1240px, calc(100% - 48px));
+  width: min(1280px, calc(100% - 40px));
   margin-inline: auto;
   height: 78px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 18px;
 }
 
 .brand-lockup {
@@ -146,70 +146,84 @@ button {
   align-items: center;
   gap: 12px;
   min-width: max-content;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .brand-emblem {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   border-radius: 999px;
   object-fit: contain;
+  flex-shrink: 0;
   box-shadow: 0 0 0 1px rgba(230, 185, 92, 0.35);
 }
 
 .brand-title {
   display: flex;
   flex-direction: column;
+  white-space: nowrap;
 }
 
 .brand-title-main {
   font-family: var(--font-display), Georgia, serif;
-  font-size: 1.35rem;
+  font-size: 1.32rem;
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.015em;
   color: #ffffff;
+  white-space: nowrap;
 }
 
 .brand-title-sub {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--bullion-gold-bright);
   margin-top: 2px;
+  white-space: nowrap;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 26px;
-  font-size: 0.88rem;
+  gap: 20px;
+  font-size: 0.85rem;
   font-weight: 500;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .nav-links a {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.82);
   padding: 6px 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: color 160ms var(--ease-out);
 }
 
 .nav-cta-group {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .nav-phone-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 9px 14px;
+  gap: 7px;
+  padding: 9px 13px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
-  font-size: 0.84rem;
+  font-size: 0.83rem;
   font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: transform 140ms var(--ease-out), border-color 160ms var(--ease-out),
     background-color 160ms var(--ease-out);
 }
@@ -224,6 +238,7 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.06);
   color: #ffffff;
+  flex-shrink: 0;
   transition: transform 140ms var(--ease-out);
 }
 
@@ -234,14 +249,16 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  min-height: 48px;
-  padding: 0 22px;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 20px;
   border-radius: 8px;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
   letter-spacing: -0.005em;
   border: 1px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   transition: transform 140ms var(--ease-out), background-color 180ms var(--ease-out),
@@ -1376,7 +1393,39 @@ button {
 /* ==========================================================================
    12. Responsive Breakpoints (Mobile-First Adaptations)
    ========================================================================== */
+@media (max-width: 1180px) {
+  .nav-links {
+    gap: 14px;
+    font-size: 0.82rem;
+  }
+  .nav-phone-pill {
+    padding: 8px 11px;
+    font-size: 0.8rem;
+  }
+}
+
 @media (max-width: 1024px) {
+  .nav-links {
+    display: none;
+  }
+  .nav-links.open {
+    display: flex;
+    position: fixed;
+    top: 78px;
+    left: 0;
+    right: 0;
+    background: rgba(5, 16, 36, 0.97);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    gap: 18px;
+    font-size: 1.05rem;
+    border-bottom: 1px solid rgba(230, 185, 92, 0.25);
+  }
+  .menu-toggle {
+    display: inline-flex;
+  }
   .hero-grid,
   .founder-grid,
   .kyc-container,
@@ -1400,27 +1449,6 @@ button {
 @media (max-width: 768px) {
   .top-ribbon {
     display: none;
-  }
-  .nav-links {
-    display: none;
-  }
-  .nav-links.open {
-    display: flex;
-    position: fixed;
-    top: 78px;
-    left: 0;
-    right: 0;
-    background: rgba(5, 16, 36, 0.97);
-    backdrop-filter: blur(20px);
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 24px;
-    gap: 18px;
-    font-size: 1.05rem;
-    border-bottom: 1px solid rgba(230, 185, 92, 0.25);
-  }
-  .menu-toggle {
-    display: inline-flex;
   }
   .nav-cta-group .btn {
     display: none;

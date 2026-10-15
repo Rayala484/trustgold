@@ -1643,6 +1643,21 @@ button {
     );
 }
 
+.tg-studio-floor-horizon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 36vh;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(210, 203, 189, 0) 0%,
+    rgba(238, 233, 222, 0.72) 32%,
+    #e5dfd2 100%
+  );
+}
+
 /* Top Bar Inside the Hero 3D Stage */
 .tg-3d-stage-topbar {
   position: relative;
@@ -1725,6 +1740,11 @@ button {
   padding: 12px 16px 18px;
 }
 
+/* CRITICAL: While the opening spin-and-dock is active, elevate viewport & anchor ABOVE .tg-studio-curtain (z-index: 115) */
+.tg-3d-hero-card[data-intro-active='true'] .tg-3d-stage-viewport {
+  z-index: 130;
+}
+
 .tg-3d-wave-ribbons {
   position: absolute;
   inset: auto -6% 4% -6%;
@@ -1759,6 +1779,10 @@ button {
   aspect-ratio: 1 / 1;
 }
 
+.tg-3d-hero-card[data-intro-active='true'] .tg-3d-medallion-anchor {
+  z-index: 135;
+}
+
 .tg-3d-medallion-rig {
   position: relative;
   width: 100%;
@@ -1783,34 +1807,31 @@ button {
   will-change: transform;
 }
 
-/* 20 Stacked Z-Depth Metallic Gold Ring Slices -> Forms a solid 3D cylinder rim when viewed edge-on */
+/* 24 Solid Metallic 24K Gold Discs (-14px to +14px) -> Forms an unbroken 28px-thick 3D gold cylinder rim edge-on */
 .tg-3d-rim-slice {
   position: absolute;
   inset: 3.4%;
   border-radius: 999px;
   pointer-events: none;
-  border: 13px solid transparent;
   background: linear-gradient(
-      135deg,
-      #fff6c7 0%,
-      #e5b752 20%,
-      #9b670e 48%,
-      #f6d67e 74%,
-      #6a4303 100%
-    )
-    border-box;
-  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  box-shadow: 0 0 2px rgba(122, 79, 6, 0.45);
+    90deg,
+    #6e4504 0%,
+    #c8922a 18%,
+    #fff6c7 46%,
+    #e5b752 68%,
+    #8f5e0c 88%,
+    #593602 100%
+  );
+  border: 1.5px solid rgba(255, 245, 196, 0.48);
+  box-shadow: inset 0 0 4px rgba(92, 58, 4, 0.55);
 }
 
-/* Front Medallion Face (translateZ(16px)) */
+/* Front Medallion Face (translateZ(15px)) */
 .tg-3d-medallion-front {
   position: absolute;
   inset: 0;
   border-radius: 999px;
-  transform: translateZ(16px);
+  transform: translateZ(15px);
   transform-style: preserve-3d;
   backface-visibility: hidden;
   display: flex;
@@ -1818,12 +1839,24 @@ button {
   justify-content: center;
 }
 
-/* Back Bullion Hallmark Face (translateZ(-16px) rotateY(180deg)) */
+/* Elevated 3D Faceted Gold Shield Layer (translateZ(10px) in front of medallion face) */
+.tg-3d-shield-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateZ(10px);
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Back Bullion Hallmark Face (translateZ(-15px) rotateY(180deg)) */
 .tg-3d-medallion-back {
   position: absolute;
   inset: 3.4%;
   border-radius: 999px;
-  transform: translateZ(-16px) rotateY(180deg);
+  transform: translateZ(-15px) rotateY(180deg);
   backface-visibility: hidden;
   background: radial-gradient(
     circle at 38% 32%,

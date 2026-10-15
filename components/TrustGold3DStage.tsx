@@ -18,10 +18,9 @@ export interface TrustGold3DStageProps {
   choiceBadge: string
 }
 
-// 20 depth slices create a solid 3D extruded metallic gold cylinder rim when viewed edge-on at rotateY(86deg)
-const EXTRUSION_SLICES = Array.from({ length: 20 }, (_, idx) => {
-  const z = -15 + idx * 1.5
-  return z
+// 24 solid metallic gold Z-slices (-14px to +14px) create a thick, unbroken 3D gold bullion cylinder rim when viewed edge-on
+const EXTRUSION_SLICES = Array.from({ length: 24 }, (_, idx) => {
+  return Number((-14 + idx * (28 / 23)).toFixed(2))
 })
 
 // 12 flowing silk wave strands matching the blue & gold wave ribbons in 00:02-00:03 of the reference video
@@ -29,62 +28,62 @@ const WAVE_RIBBON_PATHS = [
   {
     d: 'M -40 165 C 120 95, 290 215, 460 135 C 610 65, 720 155, 840 110',
     stroke: 'url(#tgWaveGold)',
-    width: 2.2,
-    opacity: 0.92,
+    width: 2.4,
+    opacity: 0.94,
   },
   {
     d: 'M -40 178 C 135 108, 305 225, 475 145 C 625 75, 730 165, 840 122',
     stroke: 'url(#tgWaveGold)',
-    width: 1.5,
-    opacity: 0.7,
+    width: 1.6,
+    opacity: 0.74,
   },
   {
     d: 'M -40 192 C 150 122, 320 235, 490 155 C 640 85, 740 175, 840 134',
     stroke: 'url(#tgWaveBlue)',
-    width: 2.6,
-    opacity: 0.88,
+    width: 2.8,
+    opacity: 0.9,
   },
   {
     d: 'M -40 205 C 165 135, 335 245, 505 165 C 655 95, 750 185, 840 146',
     stroke: 'url(#tgWaveBlue)',
-    width: 1.8,
-    opacity: 0.75,
+    width: 1.9,
+    opacity: 0.78,
   },
   {
     d: 'M -40 218 C 180 148, 350 255, 520 175 C 670 105, 760 195, 840 158',
     stroke: 'url(#tgWaveBlue)',
     width: 1.4,
-    opacity: 0.62,
+    opacity: 0.64,
   },
   {
     d: 'M -40 230 C 195 160, 365 262, 535 185 C 685 115, 770 205, 840 170',
     stroke: 'url(#tgWaveCyan)',
     width: 1.6,
-    opacity: 0.68,
+    opacity: 0.7,
   },
   {
     d: 'M -40 152 C 110 188, 280 88, 450 168 C 600 228, 715 118, 840 152',
     stroke: 'url(#tgWaveBlue)',
-    width: 2.0,
-    opacity: 0.8,
+    width: 2.1,
+    opacity: 0.82,
   },
   {
     d: 'M -40 164 C 125 198, 295 98, 465 178 C 615 238, 725 128, 840 164',
     stroke: 'url(#tgWaveCyan)',
-    width: 1.4,
-    opacity: 0.64,
+    width: 1.5,
+    opacity: 0.66,
   },
   {
     d: 'M -40 176 C 140 208, 310 108, 480 188 C 630 248, 735 138, 840 176',
     stroke: 'url(#tgWaveGold)',
-    width: 1.8,
-    opacity: 0.82,
+    width: 1.9,
+    opacity: 0.84,
   },
   {
     d: 'M -40 188 C 155 218, 325 118, 495 198 C 645 255, 745 148, 840 188',
     stroke: 'url(#tgWaveGold)',
-    width: 1.2,
-    opacity: 0.58,
+    width: 1.3,
+    opacity: 0.6,
   },
 ]
 
@@ -92,14 +91,14 @@ const WAVE_RIBBON_PATHS = [
  * Coded 3D Trust Gold Medallion, Shield & Wave Stage.
  *
  * Recreates the exact visual story from the reference animation directly in code:
- * 1. Act I (0.0s – 1.2s): Full-screen warm champagne studio stage where the 3D extruded
- *    24K gold ring starts edge-on (`rotateY(86deg)`) and rotates smoothly to `rotateY(0deg)`,
- *    revealing the 3D faceted Gold Shield, Checkmark, "TRUST GOLD SERVICES" typography,
- *    and deep royal-blue & gold wave crest.
- * 2. Act II (1.2s – 2.25s): Instead of a video preloader that vanishes, the 3D Gold Medallion
- *    smoothly glides and docks directly into the right-hand Hero Showcase Stage while the
- *    wide silk wave ribbons unfurl behind it and the website navbar + hero headline reveal.
- * 3. Act III (Live Interactive Hero Centerpiece): Stays permanently in the Hero section with
+ * 1. Act I (0.0s – 1.25s): Full-screen warm champagne studio stage where the 3D extruded
+ *    24K gold medallion starts edge-on (`rotateY(86deg)`) with real 28px cylinder depth and
+ *    3D-extruded shield/typography, rotating smoothly to `rotateY(0deg)` to reveal the
+ *    Trust Gold Services emblem and deep royal-blue & gold wave crest.
+ * 2. Act II (1.25s – 2.25s): The 3D Gold Medallion smoothly glides and docks directly into
+ *    the right-hand Hero Showcase Stage while the studio curtain dissolves and the wide
+ *    royal-blue & 24K-gold silk wave ribbons unfurl across the Hero stage.
+ * 3. Act III (Live Interactive Hero Centerpiece): Remains permanently in the Hero section with
  *    interactive 3D pointer tilt, click-to-spin 360° physics, and a "Replay Intro" trigger.
  */
 export function TrustGold3DStage({
@@ -135,7 +134,7 @@ export function TrustGold3DStage({
   }, [])
 
   // Run the full 3D Studio Spin -> Hero Dock choreography
-  const playOpeningToHeroChoreography = useCallback(() => {
+  const playOpeningToHeroChoreography = useCallback((forceFullIntro = false) => {
     if (typeof window === 'undefined') return
 
     ensureGsapRegistered()
@@ -164,7 +163,11 @@ export function TrustGold3DStage({
       tlRef.current.kill()
     }
 
-    if (prefersReducedMotion || hasNoIntroParam) {
+    // If reduced motion, ?nointro, or user reloaded while scrolled far down the page (and not forced),
+    // skip the full-screen curtain so we never cover a scrolled viewport unexpectedly.
+    const isScrolledDown = !forceFullIntro && window.scrollY > 220
+
+    if (prefersReducedMotion || hasNoIntroParam || isScrolledDown) {
       document.documentElement.classList.remove('intro')
       gsap.set([rig, rotor], { clearProps: 'all' })
       gsap.set(curtain, { autoAlpha: 0, pointerEvents: 'none' })
@@ -174,6 +177,7 @@ export function TrustGold3DStage({
     }
 
     // Measure where the Hero anchor sits relative to the viewport center for FLIP docking
+    gsap.set(rig, { clearProps: 'x,y,scale,zIndex' })
     const rect = anchor.getBoundingClientRect()
     const anchorCenterX = rect.left + rect.width / 2
     const anchorCenterY = rect.top + rect.height / 2
@@ -182,7 +186,7 @@ export function TrustGold3DStage({
 
     const deltaX = viewportCenterX - anchorCenterX
     const deltaY = viewportCenterY - anchorCenterY
-    const startScale = window.innerWidth < 640 ? 1.06 : 1.22
+    const startScale = window.innerWidth < 640 ? 1.08 : 1.26
 
     setIsIntroActive(true)
     document.documentElement.classList.remove('intro')
@@ -203,7 +207,7 @@ export function TrustGold3DStage({
       x: deltaX,
       y: deltaY,
       scale: startScale,
-      zIndex: 130,
+      zIndex: 135,
     })
     gsap.set(rotor, {
       rotationY: 86,
@@ -212,7 +216,7 @@ export function TrustGold3DStage({
       transformPerspective: 1200,
     })
     if (shadow) {
-      gsap.set(shadow, { scaleX: 0.38, autoAlpha: 0.55 })
+      gsap.set(shadow, { scaleX: 0.36, autoAlpha: 0.65 })
     }
     if (ribbons) {
       gsap.set(ribbons, { autoAlpha: 0, scaleX: 0.72, transformOrigin: '50% 50%' })
@@ -221,17 +225,17 @@ export function TrustGold3DStage({
       gsap.set(glint, { attr: { x: -260 } })
     }
 
-    // ACT I (0.0s -> 1.15s): 3D Extruded Gold Ring rotates from edge-on (86deg) to front-facing (0deg)
+    // ACT I (0.0s -> 1.18s): 3D Extruded Gold Ring rotates from edge-on (86deg) to front-facing (0deg)
     tl.to(
       rotor,
       {
         rotationY: 0,
         rotationX: 0,
         rotationZ: 0,
-        duration: 1.15,
-        ease: 'back.out(1.28)',
+        duration: 1.18,
+        ease: 'back.out(1.32)',
       },
-      0.05
+      0.04
     )
 
     if (shadow) {
@@ -239,11 +243,11 @@ export function TrustGold3DStage({
         shadow,
         {
           scaleX: 1,
-          autoAlpha: 0.85,
-          duration: 1.1,
+          autoAlpha: 0.88,
+          duration: 1.12,
           ease: 'power3.out',
         },
-        0.05
+        0.04
       )
     }
 
@@ -259,8 +263,8 @@ export function TrustGold3DStage({
       )
     }
 
-    // ACT II (1.22s -> 2.18s): Medallion glides & docks into the Hero Stage while studio curtain reveals the page
-    tl.addLabel('dockToHero', 1.22)
+    // ACT II (1.26s -> 2.2s): Medallion glides & docks into the Hero Stage while studio curtain reveals the page
+    tl.addLabel('dockToHero', 1.26)
 
     tl.to(
       rig,
@@ -268,7 +272,7 @@ export function TrustGold3DStage({
         x: 0,
         y: 0,
         scale: 1,
-        duration: 0.92,
+        duration: 0.94,
         ease: 'expo.inOut',
       },
       'dockToHero'
@@ -279,7 +283,7 @@ export function TrustGold3DStage({
       {
         autoAlpha: 0,
         pointerEvents: 'none',
-        duration: 0.68,
+        duration: 0.7,
         ease: 'power2.inOut',
       },
       'dockToHero+=0.14'
@@ -291,10 +295,10 @@ export function TrustGold3DStage({
         {
           autoAlpha: 1,
           scaleX: 1,
-          duration: 0.82,
+          duration: 0.84,
           ease: 'power3.out',
         },
-        'dockToHero+=0.22'
+        'dockToHero+=0.2'
       )
     }
   }, [])
@@ -340,11 +344,13 @@ export function TrustGold3DStage({
   }, [isIntroActive, isSpinning, skipToDockedHero])
 
   useEffect(() => {
-    playOpeningToHeroChoreography()
+    playOpeningToHeroChoreography(false)
 
     window.triggerTrustGoldIntro = () => {
       window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
-      playOpeningToHeroChoreography()
+      window.requestAnimationFrame(() => {
+        playOpeningToHeroChoreography(true)
+      })
     }
 
     const onKeyDown = (e: KeyboardEvent) => {
@@ -421,6 +427,7 @@ export function TrustGold3DStage({
         onClick={skipToDockedHero}
       >
         <div className="tg-studio-cyclorama-arcs" />
+        <div className="tg-studio-floor-horizon" />
         {isIntroActive && (
           <button
             type="button"
@@ -459,8 +466,10 @@ export function TrustGold3DStage({
             type="button"
             className="tg-3d-action-btn"
             onClick={() => {
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-              playOpeningToHeroChoreography()
+              window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+              window.requestAnimationFrame(() => {
+                playOpeningToHeroChoreography(true)
+              })
             }}
             title="Replay full-screen 3D opening transition"
           >
@@ -477,7 +486,7 @@ export function TrustGold3DStage({
           className="tg-3d-wave-ribbons"
           viewBox="0 0 800 320"
           fill="none"
-           preserveAspectRatio="xMidYMid slice"
+          preserveAspectRatio="xMidYMid slice"
           aria-hidden="true"
         >
           <defs>
@@ -534,7 +543,7 @@ export function TrustGold3DStage({
           >
             {/* 3D Preserve-3D Rotor */}
             <div ref={rotorRef} className="tg-3d-medallion-rotor">
-              {/* 20 Stacked Z-Depth Metallic Gold Ring Slices -> Forms a solid 3D gold cylinder rim edge-on */}
+              {/* 24 Stacked Solid Metallic Gold Discs -> Forms an unbroken 28px-thick 3D gold cylinder rim when viewed edge-on */}
               {EXTRUSION_SLICES.map((z, idx) => (
                 <div
                   key={idx}
@@ -555,15 +564,15 @@ export function TrustGold3DStage({
                 </div>
               </div>
 
-              {/* Front Medallion Face (Frame 00:01 & 00:02 Emblem) */}
+              {/* Front Medallion Face (translateZ(15px) — Frame 00:01 & 00:02 Emblem) */}
               <div className="tg-3d-medallion-front">
+                {/* Base Medallion Disc + Bezel + Clipped Bottom Royal-Blue & Gold Wave Crest */}
                 <svg
                   viewBox="0 0 360 360"
                   className="tg-3d-emblem-svg"
                   aria-hidden="true"
                 >
                   <defs>
-                    {/* Studio Ivory Disc Gradient */}
                     <radialGradient
                       id={`discBg-${uid}`}
                       cx="50%"
@@ -575,7 +584,6 @@ export function TrustGold3DStage({
                       <stop offset="100%" stopColor="#dcd5c6" />
                     </radialGradient>
 
-                    {/* 24K Metallic Gold Bezel Gradient */}
                     <linearGradient
                       id={`goldBezel-${uid}`}
                       x1="0%"
@@ -590,31 +598,6 @@ export function TrustGold3DStage({
                       <stop offset="100%" stopColor="#7a4f06" />
                     </linearGradient>
 
-                    {/* Left & Right Faceted 3D Shield Gradients */}
-                    <linearGradient
-                      id={`shieldLeft-${uid}`}
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop offset="0%" stopColor="#fff7d1" />
-                      <stop offset="45%" stopColor="#e8bc59" />
-                      <stop offset="100%" stopColor="#b67f1a" />
-                    </linearGradient>
-                    <linearGradient
-                      id={`shieldRight-${uid}`}
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="100%"
-                    >
-                      <stop offset="0%" stopColor="#ddb04c" />
-                      <stop offset="55%" stopColor="#b37b16" />
-                      <stop offset="100%" stopColor="#7e5307" />
-                    </linearGradient>
-
-                    {/* Deep Royal Blue Bottom Wave Gradient */}
                     <linearGradient
                       id={`waveDeep-${uid}`}
                       x1="0%"
@@ -638,49 +621,11 @@ export function TrustGold3DStage({
                       <stop offset="100%" stopColor="#092954" />
                     </linearGradient>
 
-                    {/* Specular Glint Sweep */}
-                    <linearGradient
-                      id={`glintGrad-${uid}`}
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="0%"
-                    >
-                      <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
-                      <stop
-                        offset="50%"
-                        stopColor="#fffbe6"
-                        stopOpacity="0.72"
-                      />
-                      <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-                    </linearGradient>
-
                     <clipPath id={`innerCircleClip-${uid}`}>
                       <circle cx="180" cy="180" r="158" />
                     </clipPath>
-
-                    <clipPath id={`shieldClip-${uid}`}>
-                      <path d="M180 54 L238 74 V134 C238 176 211 206 180 220 C149 206 122 176 122 134 V74 Z" />
-                    </clipPath>
-
-                    <filter
-                      id={`shieldShadow-${uid}`}
-                      x="-20%"
-                      y="-15%"
-                      width="140%"
-                      height="140%"
-                    >
-                      <feDropShadow
-                        dx="0"
-                        dy="8"
-                        stdDeviation="6"
-                        floodColor="#3b2806"
-                        floodOpacity="0.28"
-                      />
-                    </filter>
                   </defs>
 
-                  {/* Circular Studio Face + Clipped Royal-Blue & Gold Bottom Wave Crest */}
                   <g clipPath={`url(#innerCircleClip-${uid})`}>
                     <circle
                       cx="180"
@@ -689,7 +634,7 @@ export function TrustGold3DStage({
                       fill={`url(#discBg-${uid})`}
                     />
 
-                    {/* Deep Royal Blue & Sapphire Wave Crest in Lower Arc (Exact match to Frame 00:01) */}
+                    {/* Deep Royal Blue & Sapphire Wave Crest in Lower Arc (Frame 00:01) */}
                     <path
                       d="M 10 278 C 85 246, 155 292, 235 270 C 288 255, 328 242, 355 256 L 355 355 L 10 355 Z"
                       fill={`url(#waveDeep-${uid})`}
@@ -699,25 +644,24 @@ export function TrustGold3DStage({
                       fill={`url(#waveMid-${uid})`}
                       opacity="0.88"
                     />
-                    {/* Fine Golden & Cyan Wave Filaments inside Medallion Bottom Crest */}
                     <path
                       d="M 14 276 C 88 244, 158 290, 236 268 C 288 253, 326 240, 352 254"
                       stroke={`url(#goldBezel-${uid})`}
-                      strokeWidth="2.6"
+                      strokeWidth="2.8"
                       fill="none"
                     />
                     <path
                       d="M 18 286 C 96 258, 168 302, 246 276 C 296 260, 328 250, 350 262"
                       stroke="#63b3ff"
-                      strokeWidth="1.2"
-                      strokeOpacity="0.65"
+                      strokeWidth="1.3"
+                      strokeOpacity="0.68"
                       fill="none"
                     />
                     <path
                       d="M 22 296 C 102 270, 176 314, 254 286 C 302 270, 330 262, 348 272"
                       stroke={`url(#goldBezel-${uid})`}
-                      strokeWidth="1.4"
-                      strokeOpacity="0.78"
+                      strokeWidth="1.5"
+                      strokeOpacity="0.82"
                       fill="none"
                     />
                   </g>
@@ -737,8 +681,8 @@ export function TrustGold3DStage({
                     r="158"
                     fill="none"
                     stroke="#fff6cc"
-                    strokeWidth="1.5"
-                    strokeOpacity="0.85"
+                    strokeWidth="1.6"
+                    strokeOpacity="0.88"
                   />
                   <circle
                     cx="180"
@@ -746,36 +690,107 @@ export function TrustGold3DStage({
                     r="172"
                     fill="none"
                     stroke="#7a4f06"
-                    strokeWidth="1.5"
-                    strokeOpacity="0.65"
+                    strokeWidth="1.6"
+                    strokeOpacity="0.68"
                   />
+                </svg>
 
-                  {/* 3D Faceted 24K Gold Shield with Raised Checkmark */}
+                {/* Elevated 3D Faceted Gold Shield Layer (translateZ(18px) for true 3D relief during spin) */}
+                <svg
+                  viewBox="0 0 360 360"
+                  className="tg-3d-shield-layer"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <linearGradient
+                      id={`shieldBevel-${uid}`}
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
+                      <stop offset="0%" stopColor="#fff4c2" />
+                      <stop offset="30%" stopColor="#e5b856" />
+                      <stop offset="70%" stopColor="#9c680e" />
+                      <stop offset="100%" stopColor="#6e4604" />
+                    </linearGradient>
+                    <linearGradient
+                      id={`shieldLeft-${uid}`}
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
+                      <stop offset="0%" stopColor="#fff8d6" />
+                      <stop offset="45%" stopColor="#e8bc59" />
+                      <stop offset="100%" stopColor="#b67f1a" />
+                    </linearGradient>
+                    <linearGradient
+                      id={`shieldRight-${uid}`}
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
+                      <stop offset="0%" stopColor="#ddb04c" />
+                      <stop offset="55%" stopColor="#b37b16" />
+                      <stop offset="100%" stopColor="#7e5307" />
+                    </linearGradient>
+                    <linearGradient
+                      id={`glintGrad-${uid}`}
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="0%"
+                    >
+                      <stop offset="0%" stopColor="#ffffff" stopOpacity="0" />
+                      <stop
+                        offset="50%"
+                        stopColor="#fffbe6"
+                        stopOpacity="0.78"
+                      />
+                      <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+                    </linearGradient>
+                    <clipPath id={`shieldClip-${uid}`}>
+                      <path d="M180 50 L242 71 V134 C242 179 213 211 180 226 C147 211 118 179 118 134 V71 Z" />
+                    </clipPath>
+                    <filter
+                      id={`shieldShadow-${uid}`}
+                      x="-20%"
+                      y="-15%"
+                      width="140%"
+                      height="140%"
+                    >
+                      <feDropShadow
+                        dx="0"
+                        dy="10"
+                        stdDeviation="7"
+                        floodColor="#3b2806"
+                        floodOpacity="0.32"
+                      />
+                    </filter>
+                  </defs>
+
                   <g filter={`url(#shieldShadow-${uid})`}>
-                    {/* Outer Shield Bevel */}
                     <path
                       d="M180 50 L242 71 V134 C242 179 213 211 180 226 C147 211 118 179 118 134 V71 Z"
-                      fill={`url(#goldBezel-${uid})`}
+                      fill={`url(#shieldBevel-${uid})`}
                     />
-                    {/* Left Lit Facet */}
                     <path
                       d="M180 56 L180 218 C151 204 125 175 125 134 V76 Z"
                       fill={`url(#shieldLeft-${uid})`}
                     />
-                    {/* Right Shaded Facet */}
                     <path
                       d="M180 56 L235 76 V134 C235 175 209 204 180 218 Z"
                       fill={`url(#shieldRight-${uid})`}
                     />
-                    {/* Recessed Inner Shield Rim */}
                     <path
                       d="M180 65 L226 82 V133 C226 168 204 193 180 206 C156 193 134 168 134 133 V82 Z"
                       fill="none"
                       stroke="#fff7d6"
-                      strokeWidth="1.8"
-                      strokeOpacity="0.8"
+                      strokeWidth="1.9"
+                      strokeOpacity="0.85"
                     />
-                    {/* 3D Checkmark Shadow + Gold Checkmark */}
                     <path
                       d="M154 136 L173 155 L211 111"
                       fill="none"
@@ -796,7 +811,6 @@ export function TrustGold3DStage({
                     />
                   </g>
 
-                  {/* Animated Specular Light Sweep across Shield */}
                   <g clipPath={`url(#shieldClip-${uid})`}>
                     <rect
                       ref={glintRef}
@@ -810,7 +824,7 @@ export function TrustGold3DStage({
                   </g>
                 </svg>
 
-                {/* 3D Pop-Out Typography Lockup (translateZ(24px) for true 3D parallax during rotation) */}
+                {/* 3D Pop-Out Typography Lockup (translateZ(14px) for true 3D parallax during rotation) */}
                 <div className="tg-3d-brand-lockup">
                   <div className="tg-3d-brand-main">
                     <span className="tg-3d-word-trust">TRUST</span>{' '}

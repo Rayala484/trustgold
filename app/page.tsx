@@ -35,24 +35,6 @@ import {
   type ValuationMethodId,
 } from '@/lib/gold-calculator'
 
-const FOUNDER_PORTRAITS = [
-  {
-    src: '/images/owner-2.png',
-    label: 'Manohar Reddy — Founder, Trust Gold Services',
-    caption: 'Personal guidance at our Gandhinagar, Vijayawada branch',
-  },
-  {
-    src: '/images/owner-3.png',
-    label: 'Manohar Reddy — Customer First Consultation',
-    caption: 'Every valuation is explained openly before you decide',
-  },
-  {
-    src: '/images/owner-1.png',
-    label: 'Manohar Reddy — Transparent Gold Assay',
-    caption: 'Building the most trusted gold-buying brand across AP & Telangana',
-  },
-] as const
-
 const KYC_DOCS = {
   'direct-sale': [
     {
@@ -133,10 +115,6 @@ export default function TrustGoldRedesignedPage() {
   const [loanPayoffAmount, setLoanPayoffAmount] = useState<number>(110000)
   const [receiptTransitioning, setReceiptTransitioning] = useState(false)
 
-  // Founder Portrait Stage State
-  const [activePortrait, setActivePortrait] = useState(0)
-  const [portraitSwitching, setPortraitSwitching] = useState(false)
-
   // KYC Document Checklist Tab State
   const [kycTab, setKycTab] = useState<EstimateMode>('direct-sale')
   const [kycSwitching, setKycSwitching] = useState(false)
@@ -174,13 +152,6 @@ export default function TrustGoldRedesignedPage() {
     setReceiptTransitioning(true)
     setMode(nextMode)
     setTimeout(() => setReceiptTransitioning(false), 180)
-  }
-
-  function selectPortrait(index: number) {
-    if (index === activePortrait) return
-    setPortraitSwitching(true)
-    setActivePortrait(index)
-    setTimeout(() => setPortraitSwitching(false), 180)
   }
 
   function switchKycTab(nextTab: EstimateMode) {
@@ -377,20 +348,25 @@ export default function TrustGoldRedesignedPage() {
 
               {/* Founder Personal Guarantee Strip */}
               <div className="hero-founder-strip">
-                <div className="hero-founder-avatar">
-                  <Image
-                    src="/images/owner-2.png"
-                    alt="Manohar Reddy — Founder of Trust Gold Services"
-                    fill
-                    sizes="64px"
-                    priority
-                  />
+                <div
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 12,
+                    background: 'rgba(200, 146, 42, 0.16)',
+                    border: '1px solid rgba(230, 185, 92, 0.4)',
+                    display: 'grid',
+                    placeItems: 'center',
+                    color: 'var(--bullion-gold-bright)',
+                    flexShrink: 0,
+                  }}
+                >
+                  <ShieldCheck size={24} />
                 </div>
                 <div className="hero-founder-meta">
-                  <strong>{BUSINESS_INFO.founderName}</strong>
+                  <strong>Open-Counter Assay Promise</strong>
                   <span>
-                    Founder · Trust Gold Services (Vijayawada, AP &amp;
-                    Telangana)
+                     Gandhinagar, Vijayawada · Serving AP &amp; Telangana
                   </span>
                   <p>
                     “Selling gold should never feel confusing or unfair. Every
@@ -977,18 +953,12 @@ export default function TrustGoldRedesignedPage() {
             ==================================================================== */}
         <section id="founder" className="section-pad section-vault">
           <div className="container-shell founder-grid">
-            {/* Left Column: Interactive Founder Portrait Gallery */}
+            {/* Left Column: Single Founder Portrait */}
             <div className="portrait-stage">
-              <div
-                className={
-                  portraitSwitching
-                    ? 'portrait-main-frame switching'
-                    : 'portrait-main-frame'
-                }
-              >
+              <div className="portrait-main-frame">
                 <Image
-                  src={FOUNDER_PORTRAITS[activePortrait].src}
-                  alt={FOUNDER_PORTRAITS[activePortrait].label}
+                  src="/images/owner-2.png"
+                  alt="Manohar Reddy — Founder, Trust Gold Services"
                   fill
                   sizes="(max-width: 1024px) 100vw, 480px"
                 />
@@ -1012,7 +982,7 @@ export default function TrustGoldRedesignedPage() {
                       color: '#ffffff',
                     }}
                   >
-                    {FOUNDER_PORTRAITS[activePortrait].label}
+                    {BUSINESS_INFO.founderName} — Founder, Trust Gold Services
                   </strong>
                   <span
                     style={{
@@ -1020,36 +990,9 @@ export default function TrustGoldRedesignedPage() {
                       color: 'var(--bullion-gold-bright)',
                     }}
                   >
-                    {FOUNDER_PORTRAITS[activePortrait].caption}
+                    Personal guidance at our Gandhinagar, Vijayawada branch
                   </span>
                 </div>
-              </div>
-
-              <div
-                className="portrait-thumbs"
-                role="group"
-                aria-label="Founder portraits"
-              >
-                {FOUNDER_PORTRAITS.map((item, idx) => (
-                  <button
-                    key={item.src}
-                    type="button"
-                    onClick={() => selectPortrait(idx)}
-                    className={
-                      activePortrait === idx
-                        ? 'portrait-thumb-btn pressable active'
-                        : 'portrait-thumb-btn pressable'
-                    }
-                    aria-label={`View portrait ${idx + 1}: ${item.label}`}
-                  >
-                    <Image
-                      src={item.src}
-                      alt={item.label}
-                      fill
-                      sizes="76px"
-                    />
-                  </button>
-                ))}
               </div>
             </div>
 

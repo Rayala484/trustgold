@@ -121,17 +121,32 @@ export function TrustGold3DStage({
   const [isIntroActive, setIsIntroActive] = useState(false)
   const [isSpinning, setIsSpinning] = useState(false)
 
+  // Scroll-watch + hard timeout that guarantee the full-screen curtain can never get stuck
+  const introGuardRef = useRef<(() => void) | null>(null)
+
+  const endIntroGuard = useCallback(() => {
+    introGuardRef.current?.()
+    introGuardRef.current = null
+  }, [])
+
   // Fast-forward/skip the opening dock transition immediately if clicked
   const skipToDockedHero = useCallback(() => {
+    endIntroGuard()
     const tl = tlRef.current
     if (tl && tl.isActive()) {
       tl.progress(1)
     }
+    // Belt and braces: even if the timeline already died, never leave the curtain up
+    if (rigRef.current) gsap.set(rigRef.current, { clearProps: 'x,y,scale,zIndex,opacity,visibility' })
+    if (studioCurtainRef.current) {
+      gsap.set(studioCurtainRef.current, { autoAlpha: 0, pointerEvents: 'none' })
+    }
+    if (ribbonsRef.current) gsap.set(ribbonsRef.current, { autoAlpha: 1, scaleX: 1 })
     if (typeof document !== 'undefined') {
       document.documentElement.classList.remove('intro')
     }
     setIsIntroActive(false)
-  }, [])
+  }, [endIntroGuard])
 
   // Run the full 3D Studio Spin -> Hero Dock choreography
   const playOpeningToHeroChoreography = useCallback((forceFullIntro = false) => {
@@ -159,6 +174,7 @@ export function TrustGold3DStage({
       return
     }
 
+    endIntroGuard()
     if (tlRef.current) {
       tlRef.current.kill()
     }
@@ -177,7 +193,7 @@ export function TrustGold3DStage({
     }
 
     // Measure where the Hero anchor sits relative to the viewport center for FLIP docking
-    gsap.set(rig, { clearProps: 'x,y,scale,zIndex' })
+    gsap.set(rig, { clearProps: 'x,y,scale,zIndex,opacity,visibility' })
     const rect = anchor.getBoundingClientRect()
     const anchorCenterX = rect.left + rect.width / 2
     const anchorCenterY = rect.top + rect.height / 2
@@ -187,15 +203,30 @@ export function TrustGold3DStage({
     const deltaX = viewportCenterX - anchorCenterX
     const deltaY = viewportCenterY - anchorCenterY
     const startScale = window.innerWidth < 640 ? 1.08 : 1.26
+    const anchorBelowFold = rect.top > window.innerHeight * 0.85
 
     setIsIntroActive(true)
     document.documentElement.classList.remove('intro')
 
+    // The medallion is positioned from a measurement taken at this scroll offset. If the browser
+    // restores a previous scroll position mid-intro (reload) or the visitor scrolls, the measured
+    // dock path is wrong and only the empty curtain is left. Bail out to the real page instead.
+    const bailIfScrolled = () => {
+      if (window.scrollY > 220) skipToDockedHero()
+    }
+    window.addEventListener('scroll', bailIfScrolled, { passive: true })
+    const failSafe = window.setTimeout(skipToDockedHero, 4500)
+    introGuardRef.current = () => {
+      window.removeEventListener('scroll', bailIfScrolled)
+      window.clearTimeout(failSafe)
+    }
+
     const tl = gsap.timeline({
       defaults: { ease: 'power3.out' },
       onComplete: () => {
+        endIntroGuard()
         setIsIntroActive(false)
-        gsap.set(rig, { clearProps: 'x,y,scale,zIndex' })
+        gsap.set(rig, { clearProps: 'x,y,scale,zIndex,opacity,visibility' })
         gsap.set(curtain, { autoAlpha: 0, pointerEvents: 'none' })
       },
     })
@@ -266,15 +297,24 @@ export function TrustGold3DStage({
     // ACT II (1.26s -> 2.2s): Medallion glides & docks into the Hero Stage while studio curtain reveals the page
     tl.addLabel('dockToHero', 1.26)
 
+    // On phones the Hero stage sits far below the fold, so docking would fly the medallion
+    // off-screen. Ease it out in place instead and let the page rise from underneath.
     tl.to(
       rig,
-      {
-        x: 0,
-        y: 0,
-        scale: 1,
-        duration: 0.94,
-        ease: 'expo.inOut',
-      },
+      anchorBelowFold
+        ? {
+            autoAlpha: 0,
+            scale: startScale * 0.9,
+            duration: 0.62,
+            ease: 'power2.in',
+          }
+        : {
+            x: 0,
+            y: 0,
+            scale: 1,
+            duration: 0.94,
+            ease: 'expo.inOut',
+          },
       'dockToHero'
     )
 
@@ -301,7 +341,7 @@ export function TrustGold3DStage({
         'dockToHero+=0.2'
       )
     }
-  }, [])
+  }, [endIntroGuard, skipToDockedHero])
 
   // Interactive 360° 3D spin right inside the Hero stage when user clicks the medallion
   const handleSpinMedallion = useCallback(() => {
@@ -354,7 +394,7 @@ export function TrustGold3DStage({
     }
 
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isIntroActive) {
+      if (e.key === 'Escape' && tlRef.current?.isActive()) {
         skipToDockedHero()
       }
     }
@@ -362,12 +402,13 @@ export function TrustGold3DStage({
 
     return () => {
       window.removeEventListener('keydown', onKeyDown)
+      endIntroGuard()
       if (tlRef.current) {
         tlRef.current.kill()
       }
       delete window.triggerTrustGoldIntro
     }
-  }, [playOpeningToHeroChoreography])
+  }, [playOpeningToHeroChoreography, skipToDockedHero, endIntroGuard])
 
   // Interactive 3D pointer tilt on hover-capable desktop devices
   useEffect(() => {

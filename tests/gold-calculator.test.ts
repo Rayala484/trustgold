@@ -135,7 +135,7 @@ test('bilingual TRANSLATIONS dictionary provides complete English and Telugu con
   assert.equal(TRANSLATIONS.te.whyTrustGold.examples[1].finalValue, '₹82,200')
 })
 
-test('homepage implements the 11-step Competitor-Informed Conversion Hierarchy, Telugu toggle, and Vijayawada branch SEO page', async () => {
+test('minimal homepage: 5 sections, real facts only, full Telugu parity', async () => {
   const fs = await import('node:fs/promises')
   const pageSource = await fs.readFile(
     new URL('../app/page.tsx', import.meta.url),
@@ -149,99 +149,41 @@ test('homepage implements the 11-step Competitor-Informed Conversion Hierarchy, 
     new URL('../app/globals.css', import.meta.url),
     'utf8'
   )
+  const copySource = await fs.readFile(
+    new URL('../lib/home-copy.ts', import.meta.url),
+    'utf8'
+  )
+  const { HOME_COPY } = await import('../lib/home-copy.ts')
 
-  // Social icons in footer:
-  assert.ok(
-    pageSource.includes('social-icon-btn'),
-    'app/page.tsx must use .social-icon-btn for footer social icons'
-  )
-  assert.ok(
-    pageSource.includes('aria-label="Follow Trust Gold Services on Instagram"'),
-    'Instagram icon button must have accessible aria-label'
-  )
-  assert.ok(
-    pageSource.includes('aria-label="Follow Trust Gold Services on Facebook"'),
-    'Facebook icon button must have accessible aria-label'
-  )
-  assert.ok(
-    pageSource.includes(
-      'aria-label="Subscribe to Trust Gold Services on YouTube"'
-    ),
-    'YouTube icon button must have accessible aria-label'
-  )
-  assert.ok(
-    pageSource.includes('aria-label="Chat with Trust Gold Services on WhatsApp"'),
-    'WhatsApp icon button must have accessible aria-label'
-  )
+  for (const id of ['services', 'how-it-works', 'faq', 'visit']) {
+    assert.ok(pageSource.includes(`id="${id}"`), `homepage must keep #${id}`)
+  }
+  for (const id of ['trust-pillars', 'shop-gallery', 'why-trust-gold', 'reviews', 'documents', 'contact', 'calculator']) {
+    assert.ok(!pageSource.includes(`id="${id}"`), `homepage must stay minimal: #${id} was removed on purpose`)
+  }
+  assert.ok(!pageSource.includes('<form'), 'homepage has no enquiry form; WhatsApp and call are the actions')
+  assert.ok(pageSource.includes('lang-switcher'), 'header keeps the EN | తెలుగు switcher')
+  assert.ok(pageSource.includes('hero-showcase-stage'), 'desktop hero keeps the medallion stage')
+  assert.ok(pageSource.includes('BUSINESS_INFO.mapsUrl'), 'visit card links to the real Google Maps location')
 
-  // Calculator removed, Hero & 11-step structure present:
-  assert.ok(
-    pageSource.includes('hero-showcase-stage'),
-    'Hero must feature the luxury .hero-showcase-stage centerpiece'
-  )
-  assert.ok(
-    !pageSource.includes('calculator-shell'),
-    'Page must NOT contain .calculator-shell anywhere'
-  )
-  assert.ok(
-    !pageSource.includes('id="calculator"'),
-    'Page must NOT contain #calculator section anywhere'
-  )
-  assert.ok(
-    pageSource.includes('/images/hero.png'),
-    'Hero & shop gallery must showcase authentic /images/hero.png scale & touchstone photo'
-  )
-  assert.ok(
-    pageSource.includes('lang-switcher'),
-    'Header must include the bilingual EN | తెలుగు language switcher'
-  )
-  assert.ok(
-    pageSource.includes('id="trust-pillars"'),
-    'Page must include #trust-pillars (Three Trust Pillars) right after Hero'
-  )
-  assert.ok(
-    pageSource.includes('id="services"'),
-    'Page must include #services (Sell Old Gold & Release Pledged Gold)'
-  )
-  assert.ok(
-    pageSource.includes('id="how-it-works"'),
-    'Page must include #how-it-works (4-Step Valuation & Settlement Process)'
-  )
-  assert.ok(
-    pageSource.includes('id="shop-gallery"'),
-    'Page must include #shop-gallery (Real Shop, Staff & Equipment Photography)'
-  )
-  assert.ok(
-    pageSource.includes('id="why-trust-gold"'),
-    'Page must include #why-trust-gold (Transparent 1% Fee & Worked Calculation Ledgers)'
-  )
-  assert.ok(
-    pageSource.includes('worked-ledgers-grid'),
-    'Page must include step-by-step worked calculation ledgers'
-  )
-  assert.ok(
-    pageSource.includes('id="reviews"'),
-    'Page must include #reviews (Customer Reviews)'
-  )
-  assert.ok(
-    pageSource.includes('id="founder"'),
-    'Page must include #founder (Founder Manohar Reddy single portrait & story)'
-  )
-  assert.ok(
-    pageSource.includes('id="documents"'),
-    'Page must include #documents (Required Documents)'
-  )
-  assert.ok(
-    pageSource.includes('id="faq"'),
-    'Page must include #faq (Frequently Asked Questions)'
-  )
-  assert.ok(
-    pageSource.includes('id="contact"'),
-    'Page must include #contact (Enquiry Form & Google Map)'
-  )
+  // The old site invented customer reviews. Never again.
+  for (const fake of ['Ramesh K.', 'Lakshmi P.', 'Suresh M.']) {
+    assert.ok(!pageSource.includes(fake) && !copySource.includes(fake), `no fabricated review (${fake}) on the homepage`)
+  }
+
+  // Every English string has a non-empty Telugu counterpart in the same place.
+  const shape = (o: unknown, path = ''): string[] =>
+    typeof o === 'string'
+      ? [path]
+      : Object.entries(o as Record<string, unknown>).flatMap(([k, v]) => shape(v, `${path}.${k}`))
+  assert.deepEqual(shape(HOME_COPY.te), shape(HOME_COPY.en), 'Telugu copy must mirror English copy key-for-key')
+  const empty = (o: unknown): boolean =>
+    typeof o === 'string' ? o.trim() === '' : Object.values(o as object).some(empty)
+  assert.ok(!empty(HOME_COPY.en) && !empty(HOME_COPY.te), 'no empty copy strings')
+
   assert.ok(
     vjaSource.includes('Vasisth Enclave, Gandhinagar'),
-    '/vijayawada branch page must include verified Gandhinagar address and local landmarks'
+    '/vijayawada branch page must include the real Gandhinagar address'
   )
 
   const siteMotion = await fs.readFile(
@@ -261,9 +203,8 @@ test('homepage implements the 11-step Competitor-Informed Conversion Hierarchy, 
     'utf8'
   )
 
-  assert.ok(css.includes('.three-pillars-grid'), 'globals.css must style .three-pillars-grid')
-  assert.ok(css.includes('.worked-ledgers-grid'), 'globals.css must style .worked-ledgers-grid')
-  assert.ok(css.includes('.reviews-grid'), 'globals.css must style .reviews-grid')
+  assert.ok(css.includes('.mini-steps'), 'globals.css must style .mini-steps')
+  assert.ok(css.includes('.visit-card'), 'globals.css must style .visit-card')
   assert.ok(css.includes('.lang-switcher'), 'globals.css must style .lang-switcher')
   assert.ok(css.includes('.floating-whatsapp-btn'), 'globals.css must style .floating-whatsapp-btn')
   assert.ok(pageSource.includes('<FloatingWhatsApp'), 'app/page.tsx must render FloatingWhatsApp button')
@@ -289,7 +230,6 @@ test('homepage implements the 11-step Competitor-Informed Conversion Hierarchy, 
   const filesToAudit = [
     '../app/page.tsx',
     '../app/vijayawada/page.tsx',
-    '../components/GoldTouchstoneAssay.tsx',
     '../components/FloatingWhatsApp.tsx',
     '../components/TrustGold3DStage.tsx',
   ]
@@ -350,10 +290,8 @@ test('Coded 3D Trust Gold Medallion Stage & Single-Layer Segmented Control Verif
     'TrustGold3DStage must implement the 3D extruded gold ring and wave ribbons'
   )
   assert.ok(
-    stageSource.includes('Spin 3D') &&
-      stageSource.includes('Replay Intro') &&
-      stageSource.includes('triggerTrustGoldIntro'),
-    'TrustGold3DStage must provide Spin 3D and a Replay Intro control wired to the opening'
+    stageSource.includes('handleSpinMedallion') && !stageSource.includes('tg-3d-stage-topbar'),
+    'TrustGold3DStage stays decoration: click-to-spin, no extra control bar'
   )
 })
 

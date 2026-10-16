@@ -1,16 +1,8 @@
 'use client'
 
-import Image from 'next/image'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { ensureGsapRegistered, gsap } from '@/animations/gsap'
 
-export interface TrustGold3DStageProps {
-  /** Localized caption for the authentic branch verification strip below the 3D stage */
-  captionTitle: string
-  captionSub: string
-  purityBadge: string
-  choiceBadge: string
-}
 
 // 24 solid metallic gold Z-slices (-14px to +14px) create a thick, unbroken 3D gold bullion cylinder rim when viewed edge-on
 const EXTRUSION_SLICES = Array.from({ length: 24 }, (_, idx) => {
@@ -83,15 +75,9 @@ const WAVE_RIBBON_PATHS = [
 
 /**
  * Coded 3D Trust Gold Medallion, Shield & Wave Stage: the interactive hero centrepiece.
- * Pointer tilt, click-to-spin and a "Replay Intro" button (the opening itself lives in
- * `OpeningSequence`).
+ * Pointer tilt and click-to-spin (the opening itself lives in `OpeningSequence`).
  */
-export function TrustGold3DStage({
-  captionTitle,
-  captionSub,
-  purityBadge,
-  choiceBadge,
-}: TrustGold3DStageProps) {
+export function TrustGold3DStage() {
   const uid = useId().replace(/:/g, '')
   const stageCardRef = useRef<HTMLDivElement | null>(null)
   const anchorRef = useRef<HTMLDivElement | null>(null)
@@ -188,33 +174,6 @@ export function TrustGold3DStage({
       ref={stageCardRef}
       className="tg-3d-hero-card spotlight-card"
     >
-      {/* Top Controls Bar Inside the Hero 3D Stage */}
-      <div className="tg-3d-stage-topbar">
-        <span className="tg-3d-stage-pill">
-          <span className="tg-3d-stage-dot" aria-hidden="true" />
-          {purityBadge}
-        </span>
-
-        <div className="tg-3d-stage-actions">
-          <button
-            type="button"
-            className="tg-3d-action-btn"
-            onClick={handleSpinMedallion}
-            title="Spin the 3D Gold Medallion"
-          >
-            ↻ Spin 3D
-          </button>
-          <button
-            type="button"
-            className="tg-3d-action-btn"
-            onClick={() => window.triggerTrustGoldIntro?.()}
-            title="Replay full-screen 3D opening transition"
-          >
-            ▶ Replay Intro
-          </button>
-        </div>
-      </div>
-
       {/* Main Studio Stage with Architectural Light Arcs, Flowing Wave Ribbons & 3D Extruded Medallion */}
       <div className="tg-3d-stage-viewport">
         {/* Background Flowing Royal-Blue & 24K-Gold Silk Wave Ribbons (Frame 00:02-00:03) */}
@@ -582,25 +541,6 @@ export function TrustGold3DStage({
         </div>
       </div>
 
-      {/* Authentic Shop & Open-Counter Verification Strip at the Base of the Hero Stage */}
-      <div className="tg-3d-verification-bar">
-        <div className="tg-3d-verif-thumb">
-          <Image
-            src="/images/hero.png"
-            alt="Calibrated digital weighing scale and basanite touchstone at Trust Gold Services Vijayawada"
-            width={64}
-            height={48}
-            className="tg-3d-verif-img"
-          />
-        </div>
-        <div className="tg-3d-verif-copy">
-          <div className="tg-3d-verif-badges">
-            <span className="tg-3d-verif-tag">{choiceBadge}</span>
-          </div>
-          <strong>{captionTitle}</strong>
-          <p>{captionSub}</p>
-        </div>
-      </div>
     </div>
   )
 }
